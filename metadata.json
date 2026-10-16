@@ -1,0 +1,6 @@
+{
+  "name": "Cortexx AI Institute & Ad Studio",
+  "description": "Streamlined institute management and banner ad studio for Cortexx AI to manage courses, students, invoices, receipts, and multi-format advertising campaigns.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
