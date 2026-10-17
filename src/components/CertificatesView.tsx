@@ -757,9 +757,9 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                 </div>
               </div>
 
-              {/* Student Name */}
-              <div className="py-1">
-                <span className="text-3xl sm:text-5xl font-bold font-serif text-slate-900 border-b-2 border-amber-700 pb-1 px-6 inline-block">
+              {/* Student Name with Generous Clearance */}
+              <div className="py-2">
+                <span className="text-3xl sm:text-5xl font-bold font-serif text-slate-900 border-b-2 border-amber-700 pb-2.5 px-8 inline-block tracking-tight">
                   {previewCert.student.name}
                 </span>
               </div>
@@ -779,23 +779,23 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               </div>
 
               {/* Footer: Date LHS, 3 Signatories, and Centered Attached Official Seal */}
-              <div className="grid grid-cols-2 sm:grid-cols-5 items-end pt-5 mt-3 border-t border-amber-900/20 text-xs font-sans gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-5 items-end pt-5 mt-4 border-t border-amber-900/20 text-xs font-sans gap-3">
                 {/* Date & Cert ID */}
                 <div className="text-left">
-                  <div className="font-mono font-black text-neutral-950 mb-1 text-sm">{previewCert.cert.issueDate}</div>
-                  <div className="border-t-2 border-neutral-900 pt-1 font-black text-neutral-950 text-xs uppercase tracking-wider">
+                  <div className="font-mono font-black text-neutral-950 mb-2 text-sm">{previewCert.cert.issueDate}</div>
+                  <div className="border-t-2 border-neutral-900 pt-1.5 font-black text-neutral-950 text-xs uppercase tracking-wider">
                     Date of Issue
                   </div>
-                  <div className="text-[11px] text-neutral-950 font-mono font-bold mt-0.5">ID: {previewCert.cert.id}</div>
+                  <div className="text-[11px] text-neutral-950 font-mono font-bold mt-1">ID: {previewCert.cert.id}</div>
                 </div>
 
                 {/* 1st Signatory: Keval Gajjar */}
                 <div className="text-center">
-                  <div className="font-['Brush_Script_MT',cursive] text-lg sm:text-xl text-neutral-950 font-bold mb-0.5">
+                  <div className="font-['Brush_Script_MT',cursive] text-lg sm:text-xl text-neutral-950 font-bold mb-2">
                     Keval Gajjar
                   </div>
-                  <div className="border-t border-neutral-900 pt-1 font-extrabold text-neutral-950">Keval Gajjar</div>
-                  <div className="text-[10px] text-neutral-800 font-semibold">Founder & CEO</div>
+                  <div className="border-t-2 border-neutral-900 pt-1.5 font-extrabold text-neutral-950">Keval Gajjar</div>
+                  <div className="text-[10px] text-neutral-800 font-semibold mt-0.5">Founder & CEO</div>
                 </div>
 
                 {/* Centered Attached Official Seal Stamp */}
@@ -805,20 +805,20 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
 
                 {/* 2nd Signatory: Hiren Raval */}
                 <div className="text-center">
-                  <div className="font-['Brush_Script_MT',cursive] text-lg sm:text-xl text-neutral-950 font-bold mb-0.5">
+                  <div className="font-['Brush_Script_MT',cursive] text-lg sm:text-xl text-neutral-950 font-bold mb-2">
                     Hiren Raval
                   </div>
-                  <div className="border-t border-neutral-900 pt-1 font-extrabold text-neutral-950">Hiren Raval</div>
-                  <div className="text-[10px] text-neutral-800 font-semibold">Head of AI Engineering</div>
+                  <div className="border-t-2 border-neutral-900 pt-1.5 font-extrabold text-neutral-950">Hiren Raval</div>
+                  <div className="text-[10px] text-neutral-800 font-semibold mt-0.5">Head of AI Engineering</div>
                 </div>
 
                 {/* 3rd Signatory: Shweta Malaviya */}
                 <div className="text-center">
-                  <div className="font-['Brush_Script_MT',cursive] text-lg sm:text-xl text-neutral-950 font-bold mb-0.5">
+                  <div className="font-['Brush_Script_MT',cursive] text-lg sm:text-xl text-neutral-950 font-bold mb-2">
                     Shweta Malaviya
                   </div>
-                  <div className="border-t border-neutral-900 pt-1 font-extrabold text-neutral-950">Shweta Malaviya</div>
-                  <div className="text-[10px] text-neutral-800 font-semibold">Academic Director</div>
+                  <div className="border-t-2 border-neutral-900 pt-1.5 font-extrabold text-neutral-950">Shweta Malaviya</div>
+                  <div className="text-[10px] text-neutral-800 font-semibold mt-0.5">Academic Director</div>
                 </div>
               </div>
             </div>

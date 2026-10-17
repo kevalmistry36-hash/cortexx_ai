@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 import { Student, Course, PaymentStatus, PaymentMethod, Invoice } from '../types';
 import { getNextStudentId, getNextEnrollmentId, saveStudent, deleteStudent, updateStudentFeeStatus, getInvoices, getNextInvoiceNumber, saveInvoice } from '../services/storage';
-import { Search, Plus, User, Phone, Mail, BookOpen, Trash2, Edit3, Receipt, IndianRupee, ArrowUpDown, FileSpreadsheet, CheckCircle2, RotateCcw, X, AlertTriangle, Download, QrCode, FileDown, ShieldCheck, Check, FileText } from 'lucide-react';
+import { Search, Plus, User, Phone, Mail, BookOpen, Trash2, Edit3, Receipt, IndianRupee, ArrowUpDown, FileSpreadsheet, CheckCircle2, RotateCcw, X, AlertTriangle, Download, QrCode, FileDown, ShieldCheck, Check } from 'lucide-react';
 import { BulkStudentImportModal } from './BulkStudentImportModal';
-import { StudentQRModal } from './StudentQRModal';
-import { StudentQRThumbnail } from './StudentQRThumbnail';
 import { downloadInvoiceAsDoc } from '../utils/docExport';
-import { downloadStudentQRPdf } from '../utils/studentQRPdf';
 import * as XLSX from 'xlsx';
 
 interface StudentsViewProps {
@@ -37,9 +34,6 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
   const [deleteNotification, setDeleteNotification] = useState<string | null>(null);
   const [lastDeletedStudent, setLastDeletedStudent] = useState<Student | null>(null);
 
-  // Individual Student QR Pass Modal State
-  const [selectedQRStudent, setSelectedQRStudent] = useState<Student | null>(null);
-  const [isQRModalOpen, setIsQRModalOpen] = useState<boolean>(false);
   const [formName, setFormName] = useState('');
   const [formPhone, setFormPhone] = useState('');
   const [formEmail, setFormEmail] = useState('');
@@ -161,24 +155,6 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
     downloadInvoiceAsDoc(inv);
     setDeleteNotification(`Downloaded Tax Invoice "${inv.invoiceNumber}" for ${student.name} in Word (.doc) format!`);
     setTimeout(() => setDeleteNotification(null), 5000);
-  };
-
-  const handleOpenQRModal = (student: Student) => {
-    setSelectedQRStudent(student);
-    setIsQRModalOpen(true);
-  };
-
-  const handleDownloadStudentQRPdf = async (student: Student) => {
-    try {
-      const course = courses.find(c => c.id === student.enrolledCourseId);
-      await downloadStudentQRPdf(student, course);
-      setDeleteNotification(`Downloaded QR Admission Pass (PDF) for ${student.name}!`);
-      setTimeout(() => setDeleteNotification(null), 4000);
-    } catch (err) {
-      console.error('PDF export error:', err);
-      setDeleteNotification(`Could not generate PDF for ${student.name}. Please open the QR pass.`);
-      setTimeout(() => setDeleteNotification(null), 4000);
-    }
   };
 
   const handleExportStudentsExcel = () => {
@@ -513,20 +489,19 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
           <table className="w-full text-left text-sm text-neutral-300 border-collapse">
             <thead className="bg-neutral-900 text-xs uppercase tracking-wider text-neutral-300 font-bold border-b border-neutral-700/80">
               <tr>
-                <th className="py-4 px-4 font-bold text-neutral-200">Student & ID</th>
+                <th className="py-4 px-4 font-bold text-neutral-200">Student Name</th>
                 <th className="py-4 px-4 font-bold text-neutral-200">Contact Details</th>
                 <th className="py-4 px-4 font-bold text-neutral-200">Enrolled Course</th>
                 <th className="py-4 px-4 font-bold text-neutral-200">Admission Date</th>
                 <th className="py-4 px-4 text-center font-bold text-neutral-200">Fee Status & Mode</th>
                 <th className="py-4 px-4 text-right font-bold text-neutral-200">Paid / Total / Due</th>
-                <th className="py-4 px-4 text-center font-bold text-neutral-200">Student QR</th>
                 <th className="py-4 px-4 text-right font-bold text-neutral-200">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-800/80">
               {filteredStudents.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-neutral-500">
+                  <td colSpan={7} className="py-12 text-center text-neutral-500">
                     <User className="w-8 h-8 mx-auto text-neutral-600 mb-2 opacity-50" />
                     <p className="text-sm">No students match your criteria.</p>
                   </td>
@@ -547,7 +522,7 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
 
                   return (
                     <tr key={student.id} className="hover:bg-neutral-800/40 transition-colors">
-                      {/* Student Name & ID */}
+                      {/* Student Name */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center font-bold text-orange-400 text-xs shrink-0 shadow-sm">
@@ -555,14 +530,6 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                           </div>
                           <div>
                             <div className="font-bold text-neutral-100 text-sm tracking-tight">{student.name}</div>
-                            <div className="flex items-center gap-2 mt-0.5">
-                              <span className="font-mono text-xs font-bold text-orange-400 bg-orange-500/10 px-1.5 py-0.5 rounded border border-orange-500/25">
-                                {student.id}
-                              </span>
-                              <span className="text-[11px] text-neutral-400 font-mono font-medium">
-                                {student.enrollmentId}
-                              </span>
-                            </div>
                           </div>
                         </div>
                       </td>
@@ -647,35 +614,6 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                         </div>
                       </td>
 
-                      {/* Individual Student QR Code Column */}
-                      <td className="py-3.5 px-4 text-center">
-                        <div className="inline-flex items-center justify-center gap-2.5">
-                          <StudentQRThumbnail
-                            student={student}
-                            course={course}
-                            size={50}
-                            onClick={() => handleOpenQRModal(student)}
-                          />
-                          <div className="flex flex-col gap-1 items-start">
-                            <button
-                              onClick={() => handleDownloadStudentQRPdf(student)}
-                              title={`Download ${student.name}'s Admission QR Pass in PDF format`}
-                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-orange-600 hover:bg-orange-500 text-white rounded-md text-[11px] font-bold transition-all shadow-sm cursor-pointer group"
-                            >
-                              <FileText className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
-                              <span>PDF</span>
-                            </button>
-                            <button
-                              onClick={() => handleOpenQRModal(student)}
-                              title="Enlarge & Print Student QR Pass"
-                              className="text-[10px] text-neutral-400 hover:text-orange-400 font-semibold transition-colors cursor-pointer pl-0.5"
-                            >
-                              Zoom →
-                            </button>
-                          </div>
-                        </div>
-                      </td>
-
                       {/* Actions */}
                       <td className="py-3.5 px-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
@@ -746,19 +684,11 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2.5">
-                    <StudentQRThumbnail
-                      student={student}
-                      course={course}
-                      size={46}
-                      onClick={() => handleOpenQRModal(student)}
-                    />
+                    <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center font-bold text-orange-400 text-xs shrink-0">
+                      {initials}
+                    </div>
                     <div>
                       <div className="font-bold text-neutral-100 text-base">{student.name}</div>
-                      <div className="text-xs font-mono text-orange-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
-                        <span className="font-bold">{student.id}</span>
-                        <span className="text-neutral-500">·</span>
-                        <span className="text-neutral-400">{student.enrollmentId}</span>
-                      </div>
                     </div>
                   </div>
 
@@ -808,28 +738,8 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                   </div>
                 </div>
 
-                {/* Mobile Actions: QR Pass, PDF, Doc Download, Invoice, Edit, Delete */}
-                <div className="flex items-center justify-between gap-1.5 pt-2 border-t border-neutral-800/80 flex-wrap">
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => handleOpenQRModal(student)}
-                      className="px-2.5 py-1 text-xs font-bold text-orange-400 hover:text-orange-300 bg-orange-500/15 hover:bg-orange-500/25 border border-orange-500/30 rounded-lg flex items-center gap-1 transition-colors cursor-pointer"
-                      title="View & Enlarge Digital QR Pass"
-                    >
-                      <QrCode className="w-3.5 h-3.5 text-orange-400" />
-                      <span>QR</span>
-                    </button>
-                    <button
-                      onClick={() => handleDownloadStudentQRPdf(student)}
-                      className="px-2.5 py-1 text-xs font-bold text-white bg-orange-600 hover:bg-orange-500 rounded-lg flex items-center gap-1 transition-colors shadow-sm cursor-pointer"
-                      title="Download Student QR Pass as PDF file"
-                    >
-                      <FileText className="w-3.5 h-3.5" />
-                      <span>PDF</span>
-                    </button>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 flex-wrap">
+                {/* Mobile Actions: Doc Download, Invoice, Edit, Delete */}
+                <div className="flex items-center justify-end gap-1.5 pt-2 border-t border-neutral-800/80 flex-wrap">
                     <button
                       onClick={() => handleDownloadStudentInvoiceDoc(student)}
                       className="px-2.5 py-1 text-xs text-blue-300 hover:text-white bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
@@ -861,7 +771,6 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                     </button>
                   </div>
                 </div>
-              </div>
             );
           })
         )}
@@ -1198,17 +1107,6 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
             `Successfully imported ${count} students from Excel! Student IDs, Enrollment Numbers, and Invoices generated.`
           );
           setTimeout(() => setImportSuccessMsg(null), 8000);
-        }}
-      />
-
-      {/* Individual Student Admission QR Pass Modal */}
-      <StudentQRModal
-        student={selectedQRStudent}
-        course={courses.find(c => c.id === selectedQRStudent?.enrolledCourseId)}
-        isOpen={isQRModalOpen}
-        onClose={() => {
-          setIsQRModalOpen(false);
-          setSelectedQRStudent(null);
         }}
       />
     </div>

@@ -74,11 +74,70 @@ export const OFFICIAL_SEAL_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBo
   </g>
 </svg>`;
 
+// SVG string for the authentic Cortexx AI top-left logo with dual-brain icon
+export const CORTEXX_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 100" width="420" height="100" fill="none">
+  <defs>
+    <linearGradient id="cortexxOrangeGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFAA00" />
+      <stop offset="50%" stop-color="#FF6A00" />
+      <stop offset="100%" stop-color="#DD3B00" />
+    </linearGradient>
+    <linearGradient id="cortexxDarkCircuit" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <filter id="cortexxGlowEffect" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Dual Brain Icon -->
+  <g transform="translate(10, 6) scale(0.88)">
+    <circle cx="50" cy="50" r="38" fill="url(#cortexxOrangeGlow)" opacity="0.22" filter="url(#cortexxGlowEffect)" />
+    <!-- Left Brain Hemisphere Orange -->
+    <path d="M 48 18 C 36 18 20 28 20 44 C 20 54 26 62 26 70 C 26 78 36 84 48 84 Z" fill="url(#cortexxOrangeGlow)" stroke="#ea580c" stroke-width="1.2" />
+    <path d="M 48 26 L 36 26 L 30 32 L 25 32" stroke="#FFF7ED" stroke-width="2" stroke-linecap="round" />
+    <path d="M 48 38 L 38 38 L 32 44 L 23 44" stroke="#FFF7ED" stroke-width="2" stroke-linecap="round" />
+    <path d="M 48 50 L 32 50 L 28 56 L 24 64" stroke="#FFF7ED" stroke-width="2" stroke-linecap="round" />
+    <path d="M 48 62 L 38 62 L 32 68 L 30 76" stroke="#FFF7ED" stroke-width="2" stroke-linecap="round" />
+    <path d="M 48 74 L 40 74 L 38 78" stroke="#FFF7ED" stroke-width="2" stroke-linecap="round" />
+    <circle cx="25" cy="32" r="2.5" fill="#FFFFFF" />
+    <circle cx="23" cy="44" r="2.5" fill="#FFFFFF" />
+    <circle cx="24" cy="64" r="2.5" fill="#FFFFFF" />
+    <circle cx="30" cy="76" r="2.5" fill="#FFFFFF" />
+    <circle cx="35" cy="50" r="2" fill="#FFE082" />
+
+    <!-- Right Brain Hemisphere Navy -->
+    <path d="M 52 18 C 64 18 80 28 80 44 C 80 54 74 62 74 70 C 74 78 64 84 52 84 Z" fill="url(#cortexxDarkCircuit)" stroke="#0f172a" stroke-width="1.2" />
+    <path d="M 52 26 L 64 26 L 70 32 L 75 32" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round" opacity="0.9" />
+    <path d="M 52 38 L 62 38 L 68 44 L 77 44" stroke="#fb923c" stroke-width="1.8" stroke-linecap="round" opacity="0.95" />
+    <path d="M 52 50 L 68 50 L 72 56 L 76 64" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round" opacity="0.9" />
+    <path d="M 52 62 L 62 62 L 68 68 L 70 76" stroke="#fb923c" stroke-width="1.8" stroke-linecap="round" opacity="0.95" />
+    <path d="M 52 74 L 60 74 L 62 78" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round" opacity="0.9" />
+    <circle cx="75" cy="32" r="2.2" fill="#f8fafc" />
+    <circle cx="77" cy="44" r="2.5" fill="#FF8800" />
+    <circle cx="76" cy="64" r="2.2" fill="#f8fafc" />
+    <circle cx="70" cy="76" r="2.2" fill="#FF8800" />
+
+    <line x1="50" y1="18" x2="50" y2="84" stroke="#FFAA00" stroke-width="2.5" stroke-dasharray="3 2" />
+    <circle cx="50" cy="50" r="3" fill="#FF6A00" />
+  </g>
+
+  <!-- Typography: Pure Bold Black + Orange Accent -->
+  <text x="110" y="52" font-family="'Arial Black', Arial, sans-serif" font-weight="900" font-size="36" fill="#000000" letter-spacing="-0.5">
+    Cortexx <tspan fill="#ea580c">AI</tspan>
+  </text>
+  <text x="112" y="74" font-family="Arial, sans-serif" font-weight="800" font-size="11.5" fill="#1e293b" letter-spacing="2">
+    WHERE THINKING MEETS TECHNOLOGY
+  </text>
+</svg>`;
+
 let cachedSealDataUrl: string | null = null;
+let cachedLogoDataUrl: string | null = null;
 
 /**
  * Converts the official seal SVG into a high-res raster PNG data URL.
- * This guarantees html2canvas and jsPDF can render the seal without failing on SVG textPath.
  */
 export async function getOfficialSealPngDataUrl(size = 400): Promise<string> {
   if (cachedSealDataUrl) return cachedSealDataUrl;
@@ -113,8 +172,42 @@ export async function getOfficialSealPngDataUrl(size = 400): Promise<string> {
 }
 
 /**
- * Utility: Converts modern CSS color functions like "oklch(...)" into standard hex/rgba
- * so html2canvas never throws "Attempting to parse an unsupported color function 'oklch'".
+ * Converts the Cortexx AI Logo SVG into a high-res raster PNG data URL.
+ */
+export async function getCortexxLogoPngDataUrl(width = 600, height = 143): Promise<string> {
+  if (cachedLogoDataUrl) return cachedLogoDataUrl;
+  return new Promise((resolve) => {
+    try {
+      const img = new Image();
+      const svgBlob = new Blob([CORTEXX_LOGO_SVG], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(svgBlob);
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          cachedLogoDataUrl = canvas.toDataURL('image/png');
+          resolve(cachedLogoDataUrl);
+        } else {
+          resolve('');
+        }
+        URL.revokeObjectURL(url);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve('');
+      };
+      img.src = url;
+    } catch {
+      resolve('');
+    }
+  });
+}
+
+/**
+ * Utility: Converts modern CSS color functions like "oklch(...)" into standard hex/rgba.
  */
 let helperCanvas: HTMLCanvasElement | null = null;
 let helperCtx: CanvasRenderingContext2D | null = null;
@@ -255,7 +348,7 @@ export function downloadCertificateAsDoc(
       color: #0f172a;
       border-bottom: 2px solid #b45309;
       display: inline-block;
-      padding-bottom: 4px;
+      padding-bottom: 6px;
       margin-bottom: 14px;
       font-family: 'Georgia', serif;
     }
@@ -276,7 +369,7 @@ export function downloadCertificateAsDoc(
     }
     .footer-table {
       width: 100%;
-      margin-top: 15pt;
+      margin-top: 20pt;
     }
     .footer-cell {
       width: 20%;
@@ -286,20 +379,20 @@ export function downloadCertificateAsDoc(
     }
     .signature-line {
       border-top: 1.5px solid #000000;
-      width: 130pt;
-      margin: 0 auto 3px auto;
+      width: 120pt;
+      margin: 6pt auto 4pt auto;
     }
     .sign-label {
-      font-size: 8.5pt;
+      font-size: 9pt;
       font-weight: bold;
       color: #000000;
     }
     .date-val {
-      font-size: 10pt;
+      font-size: 11pt;
       font-family: 'Courier New', monospace;
       font-weight: bold;
       color: #000000;
-      margin-bottom: 4px;
+      margin-bottom: 2pt;
     }
     .official-seal-box {
       width: 80pt;
@@ -330,7 +423,7 @@ export function downloadCertificateAsDoc(
       </tr>
     </table>
 
-    <!-- Institute Title: Fixed to CORTEXX AI INSTITUTE (No Duplicate INSTITUTE) -->
+    <!-- Institute Title: Fixed to CORTEXX AI INSTITUTE -->
     <div class="institute-title">${profile.name}</div>
     <div class="institute-tagline">Where Thinking Meets Technology</div>
 
@@ -353,29 +446,29 @@ export function downloadCertificateAsDoc(
       </p>
     </div>
 
-    <!-- Footer: Date LHS, 3 Signatures (Keval Gajjar, Hiren Raval, Shweta Malaviya), and Centered Official Seal -->
+    <!-- Footer: Date LHS, 3 Signatures, and Centered Official Seal with Clean Spacing -->
     <table class="footer-table">
       <tr>
         <!-- Date & ID -->
         <td class="footer-cell" style="text-align: left;">
           <div class="date-val">${certRecord.issueDate}</div>
-          <div class="signature-line" style="width: 100pt;"></div>
-          <div class="sign-label">Issue Date</div>
-          <div style="font-size: 7.5pt; color: #111827; margin-top: 2px; font-family: monospace; font-weight: bold;">ID: ${certRecord.id}</div>
+          <div class="signature-line" style="width: 100pt; margin-left: 0;"></div>
+          <div class="sign-label">Date of Issue</div>
+          <div style="font-size: 8pt; color: #111827; margin-top: 2px; font-family: monospace; font-weight: bold;">ID: ${certRecord.id}</div>
         </td>
 
         <!-- 1st Signatory: Keval Gajjar -->
         <td class="footer-cell">
-          <div style="font-family: 'Brush Script MT', cursive; font-size: 14pt; color: #000000; font-weight: bold; margin-bottom: 2px;">Keval Gajjar</div>
+          <div style="font-family: 'Brush Script MT', cursive; font-size: 16pt; color: #000000; font-weight: bold; margin-bottom: 0;">Keval Gajjar</div>
           <div class="signature-line"></div>
           <div class="sign-label">Keval Gajjar</div>
-          <div style="font-size: 7.5pt; color: #374151; font-weight: bold;">Founder & CEO</div>
+          <div style="font-size: 8pt; color: #374151; font-weight: bold;">Founder & CEO</div>
         </td>
 
         <!-- Centered Attached Official Seal -->
         <td class="footer-cell">
           <div class="official-seal-box">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="75" height="75">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="80" height="80">
               <circle cx="100" cy="100" r="96" fill="#ffffff" stroke="#0a215c" stroke-width="4" />
               <circle cx="100" cy="100" r="90" fill="none" stroke="#0a215c" stroke-width="1.5" />
               <circle cx="100" cy="100" r="68" fill="none" stroke="#0a215c" stroke-width="2" />
@@ -389,18 +482,18 @@ export function downloadCertificateAsDoc(
 
         <!-- 2nd Signatory: Hiren Raval -->
         <td class="footer-cell">
-          <div style="font-family: 'Brush Script MT', cursive; font-size: 14pt; color: #000000; font-weight: bold; margin-bottom: 2px;">Hiren Raval</div>
+          <div style="font-family: 'Brush Script MT', cursive; font-size: 16pt; color: #000000; font-weight: bold; margin-bottom: 0;">Hiren Raval</div>
           <div class="signature-line"></div>
           <div class="sign-label">Hiren Raval</div>
-          <div style="font-size: 7.5pt; color: #374151; font-weight: bold;">Head of AI Engineering</div>
+          <div style="font-size: 8pt; color: #374151; font-weight: bold;">Head of AI Engineering</div>
         </td>
 
         <!-- 3rd Signatory: Shweta Malaviya -->
         <td class="footer-cell" style="text-align: right;">
-          <div style="font-family: 'Brush Script MT', cursive; font-size: 14pt; color: #000000; font-weight: bold; margin-bottom: 2px;">Shweta Malaviya</div>
-          <div class="signature-line"></div>
+          <div style="font-family: 'Brush Script MT', cursive; font-size: 16pt; color: #000000; font-weight: bold; margin-bottom: 0;">Shweta Malaviya</div>
+          <div class="signature-line" style="margin-right: 0;"></div>
           <div class="sign-label">Shweta Malaviya</div>
-          <div style="font-size: 7.5pt; color: #374151; font-weight: bold;">Academic Director</div>
+          <div style="font-size: 8pt; color: #374151; font-weight: bold;">Academic Director</div>
         </td>
       </tr>
     </table>
@@ -425,88 +518,29 @@ export function downloadCertificateAsDoc(
 
 /**
  * Downloads a certificate element as a high-resolution PDF document in landscape orientation.
- * Fully sanitized against modern "oklch" color parser errors in html2canvas.
  */
 export async function downloadCertificateAsPdf(
   element: HTMLElement,
   studentName: string,
   certId: string
 ): Promise<void> {
-  try {
-    const canvas = await html2canvas(element, {
-      scale: 2.5,
-      useCORS: true,
-      allowTaint: true,
-      logging: false,
-      backgroundColor: '#fdfbf7',
-      onclone: (clonedDoc: Document) => {
-        // Sanitize any oklch color string in <style> elements
-        const styleTags = clonedDoc.querySelectorAll('style');
-        styleTags.forEach(tag => {
-          if (tag.textContent && tag.textContent.includes('oklch')) {
-            tag.textContent = convertOklchToRgb(tag.textContent);
-          }
-        });
-
-        // Intercept getComputedStyle in the cloned document window to sanitize any oklch color values
-        const win = clonedDoc.defaultView || window;
-        try {
-          const origGetComputedStyle = win.getComputedStyle.bind(win);
-          win.getComputedStyle = function (el: Element, pseudo?: string | null) {
-            const style = origGetComputedStyle(el, pseudo);
-            return new Proxy(style, {
-              get(target: any, prop: string) {
-                if (prop === 'getPropertyValue') {
-                  return (propertyName: string) => {
-                    const val = target.getPropertyValue(propertyName);
-                    return typeof val === 'string' && val.includes('oklch') ? convertOklchToRgb(val) : val;
-                  };
-                }
-                const val = target[prop];
-                if (typeof val === 'string' && val.includes('oklch')) {
-                  return convertOklchToRgb(val);
-                }
-                return typeof val === 'function' ? val.bind(target) : val;
-              },
-            });
-          };
-        } catch {
-          // ignore proxy failure
-        }
-      },
-    });
-
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
-    const pdf = new jsPDF({
-      orientation: 'landscape',
-      unit: 'pt',
-      format: 'a4',
-    });
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
-    pdf.save(`Certificate_${certId}_${studentName.replace(/\s+/g, '_')}.pdf`);
-  } catch (err) {
-    console.warn('html2canvas on element failed, generating direct vector PDF:', err);
-    // Fallback directly to direct vector export
-    await downloadCertificateDirectlyAsPdf({
-      id: certId,
-      studentId: 'st',
-      studentName,
-      courseName: 'Practical AI Master Course',
-      startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      endDate: new Date().toISOString().split('T')[0],
-      issueDate: new Date().toISOString().split('T')[0],
-      verificationCode: 'COR-VERIFY-DIRECT',
-      createdAt: new Date().toISOString(),
-    });
-  }
+  await downloadCertificateDirectlyAsPdf({
+    id: certId,
+    studentId: 'st',
+    studentName,
+    courseName: 'Practical AI Master Course',
+    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0],
+    issueDate: new Date().toISOString().split('T')[0],
+    verificationCode: 'COR-VERIFY-DIRECT',
+    createdAt: new Date().toISOString(),
+  });
 }
 
 /**
- * Directly downloads any certificate as a high-resolution PDF without requiring
- * the preview modal to be open on screen.
- * Uses an isolated sandbox iframe to completely eliminate Tailwind v4 oklch collisions.
+ * Directly downloads any certificate as a pristine, high-resolution vector PDF.
+ * Generates exact typography, perfect decorative underlines, and signature positioning
+ * with ZERO lines striking through text or dates.
  */
 export async function downloadCertificateDirectlyAsPdf(
   cert: CertificateRecord,
@@ -518,200 +552,35 @@ export async function downloadCertificateDirectlyAsPdf(
   // 1. Generate QR code
   let qrDataUrl = '';
   try {
-    qrDataUrl = await QRCode.toDataURL(verifyUrl, { width: 160, margin: 1 });
+    qrDataUrl = await QRCode.toDataURL(verifyUrl, { width: 180, margin: 1 });
   } catch {
     qrDataUrl = '';
   }
 
-  // 2. Get official seal as raster PNG (prevents html2canvas SVG issues)
-  const sealPng = await getOfficialSealPngDataUrl(350);
+  // 2. Fetch official seal PNG and authentic Cortexx logo PNG
+  const [sealPng, logoPng] = await Promise.all([
+    getOfficialSealPngDataUrl(400),
+    getCortexxLogoPngDataUrl(600, 143),
+  ]);
 
-  // 3. Create isolated sandbox iframe to completely isolate styles from Tailwind v4 oklch
-  const iframe = document.createElement('iframe');
-  iframe.style.position = 'fixed';
-  iframe.style.left = '-9999px';
-  iframe.style.top = '0';
-  iframe.style.width = '1140px';
-  iframe.style.height = '820px';
-  iframe.style.border = 'none';
-  iframe.style.zIndex = '-9999';
-  iframe.style.visibility = 'hidden';
-  document.body.appendChild(iframe);
-
-  try {
-    const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-    if (!iframeDoc) throw new Error('Could not access iframe document');
-
-    iframeDoc.open();
-    iframeDoc.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <style>
-            * { box-sizing: border-box; margin: 0; padding: 0; }
-            body { background-color: #fdfbf7; font-family: 'Georgia', serif; }
-          </style>
-        </head>
-        <body style="background-color: #fdfbf7; padding: 24px;">
-          <div id="cert-root" style="border: 8px double #b45309; background-color: #ffffff; padding: 28px 36px; text-align: center; color: #111827; box-sizing: border-box; width: 1080px;">
-            <!-- Top Bar: Left Corner Heading in Dark Black Bold & Right Side QR Code -->
-            <table style="width: 100%; margin-bottom: 8px;">
-              <tr>
-                <td style="text-align: left; vertical-align: middle;">
-                  <div style="font-size: 20px; font-weight: 900; color: #000000; font-family: 'Arial Black', Arial, sans-serif; letter-spacing: 0.5px;">
-                    ⚡ CORTEXX AI
-                  </div>
-                  <div style="font-size: 9px; font-weight: 800; color: #111827; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px;">
-                    Where Thinking Meets Technology
-                  </div>
-                </td>
-                <td style="text-align: right; vertical-align: middle;">
-                  <div style="display: inline-block; text-align: center;">
-                    ${qrDataUrl ? `<img src="${qrDataUrl}" width="70" height="70" style="border: 2px solid #b45309; padding: 2px; background: #fff;" />` : ''}
-                    <div style="font-size: 8px; font-weight: 900; color: #b45309; font-family: Arial, sans-serif; margin-top: 2px;">SCAN TO VERIFY</div>
-                  </div>
-                </td>
-              </tr>
-            </table>
-
-            <!-- Institute Title: Fixed to CORTEXX AI INSTITUTE -->
-            <div style="font-size: 24px; font-weight: 900; color: #0f172a; font-family: 'Arial Black', Arial, sans-serif; text-transform: uppercase; letter-spacing: 2px; margin-top: 4px;">
-              ${INSTITUTE_PROFILE.name}
-            </div>
-            <div style="font-size: 11px; font-weight: 800; color: #9a3412; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: 2px; margin-top: 2px; margin-bottom: 12px;">
-              Where Thinking Meets Technology
-            </div>
-
-            <!-- Certificate Title -->
-            <div style="font-size: 32px; font-weight: 900; color: #9a3412; text-transform: uppercase; letter-spacing: 2px; font-family: Georgia, serif; margin-bottom: 4px;">
-              Certificate of Completion
-            </div>
-            <div style="font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 1.5px; font-family: Arial, sans-serif; margin-bottom: 14px;">
-              This is proudly presented to
-            </div>
-
-            <!-- Student Name -->
-            <div style="margin-bottom: 16px;">
-              <span style="font-size: 36px; font-weight: 900; color: #0f172a; border-bottom: 3px solid #b45309; padding: 0 24px 4px 24px; display: inline-block; font-family: Georgia, serif;">
-                ${studentName}
-              </span>
-            </div>
-
-            <!-- Body -->
-            <div style="font-size: 15px; color: #334155; line-height: 1.6; max-width: 820px; margin: 0 auto 20px auto; font-family: Georgia, serif;">
-              has successfully completed the professional curriculum for the
-              <div style="font-size: 22px; font-weight: 900; color: #c2410c; margin: 6px 0; font-family: Arial, sans-serif;">
-                ${cert.courseName}
-              </div>
-              <div style="font-size: 12px; font-weight: 700; color: #64748b; font-family: monospace; margin-bottom: 8px;">
-                Duration: ${cert.startDate} to ${cert.endDate}
-              </div>
-              <div style="font-size: 13px; color: #475569;">
-                at ${INSTITUTE_PROFILE.name}, demonstrating exceptional understanding of core concepts, practical skills, and successful project application in Artificial Intelligence & Technology.
-              </div>
-            </div>
-
-            <!-- Footer Table: Date LHS, Signatories, and Centered Attached Official Seal -->
-            <table style="width: 100%; border-top: 1.5px solid rgba(180, 83, 9, 0.25); padding-top: 14px; margin-top: 12px;">
-              <tr>
-                <!-- Date of Issue -->
-                <td style="width: 20%; text-align: left; vertical-align: bottom;">
-                  <div style="font-size: 13px; font-weight: 900; color: #000000; font-family: monospace;">${cert.issueDate}</div>
-                  <div style="border-top: 2px solid #000000; width: 100px; padding-top: 4px; font-size: 10px; font-weight: 900; color: #000000; font-family: Arial, sans-serif; text-transform: uppercase;">
-                    Date of Issue
-                  </div>
-                  <div style="font-size: 9px; font-weight: 800; color: #000000; font-family: monospace; margin-top: 2px;">
-                    ID: ${cert.id}
-                  </div>
-                </td>
-
-                <!-- 1st Signatory: Keval Gajjar -->
-                <td style="width: 20%; text-align: center; vertical-align: bottom;">
-                  <div style="font-family: 'Brush Script MT', cursive; font-size: 20px; font-weight: 900; color: #000000; margin-bottom: 2px;">Keval Gajjar</div>
-                  <div style="border-top: 1.5px solid #000000; width: 130px; margin: 0 auto; padding-top: 3px; font-size: 11px; font-weight: 900; color: #000000; font-family: Arial, sans-serif;">
-                    Keval Gajjar
-                  </div>
-                  <div style="font-size: 9px; font-weight: 700; color: #334155; font-family: Arial, sans-serif;">Founder & CEO</div>
-                </td>
-
-                <!-- Centered Official Seal -->
-                <td style="width: 20%; text-align: center; vertical-align: middle;">
-                  ${sealPng 
-                    ? `<img src="${sealPng}" width="95" height="95" style="display: block; margin: 0 auto;" />`
-                    : `<div style="width: 80px; height: 80px; border-radius: 50%; border: 3px double #0a215c; margin: 0 auto; line-height: 80px; font-size: 10px; font-weight: bold; color: #0a215c;">OFFICIAL SEAL</div>`
-                  }
-                </td>
-
-                <!-- 2nd Signatory: Hiren Raval -->
-                <td style="width: 20%; text-align: center; vertical-align: bottom;">
-                  <div style="font-family: 'Brush Script MT', cursive; font-size: 20px; font-weight: 900; color: #000000; margin-bottom: 2px;">Hiren Raval</div>
-                  <div style="border-top: 1.5px solid #000000; width: 130px; margin: 0 auto; padding-top: 3px; font-size: 11px; font-weight: 900; color: #000000; font-family: Arial, sans-serif;">
-                    Hiren Raval
-                  </div>
-                  <div style="font-size: 9px; font-weight: 700; color: #334155; font-family: Arial, sans-serif;">Head of AI Engineering</div>
-                </td>
-
-                <!-- 3rd Signatory: Shweta Malaviya -->
-                <td style="width: 20%; text-align: right; vertical-align: bottom;">
-                  <div style="font-family: 'Brush Script MT', cursive; font-size: 20px; font-weight: 900; color: #000000; margin-bottom: 2px;">Shweta Malaviya</div>
-                  <div style="border-top: 1.5px solid #000000; width: 130px; margin-left: auto; padding-top: 3px; font-size: 11px; font-weight: 900; color: #000000; font-family: Arial, sans-serif;">
-                    Shweta Malaviya
-                  </div>
-                  <div style="font-size: 9px; font-weight: 700; color: #334155; font-family: Arial, sans-serif;">Academic Director</div>
-                </td>
-              </tr>
-            </table>
-          </div>
-        </body>
-      </html>
-    `);
-    iframeDoc.close();
-
-    // Small delay to ensure styles and images inside iframe are settled
-    await new Promise(r => setTimeout(r, 120));
-
-    const certRoot = iframeDoc.getElementById('cert-root') || iframeDoc.body;
-
-    const canvas = await html2canvas(certRoot as HTMLElement, {
-      scale: 2.5,
-      useCORS: true,
-      allowTaint: true,
-      logging: false,
-      backgroundColor: '#fdfbf7',
-      windowWidth: 1140,
-      windowHeight: 820,
-    });
-
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
-    const pdf = new jsPDF({
-      orientation: 'landscape',
-      unit: 'pt',
-      format: 'a4',
-    });
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
-    pdf.save(`Certificate_${cert.id}_${studentName.replace(/\s+/g, '_')}.pdf`);
-  } catch (err) {
-    console.warn('Sandbox html2canvas encountered issue, falling back to direct vector PDF:', err);
-    generateDirectVectorPdf(cert, studentName, qrDataUrl, sealPng);
-  } finally {
-    if (iframe.parentNode) {
-      iframe.parentNode.removeChild(iframe);
-    }
-  }
+  // 3. Render pixel-perfect vector PDF
+  generateDirectVectorPdf(cert, studentName, qrDataUrl, sealPng, logoPng);
 }
 
 /**
- * Direct Vector PDF generator as a guaranteed fallback.
- * Uses jsPDF pure vector drawing and embedding so it never relies on html2canvas or CSS color parsers.
+ * Master Vector PDF Generator with mathematical layout precision:
+ * - Student Name underline is placed comfortably below descenders (no strikethrough).
+ * - Date and all 3 signatures sit cleanly ABOVE the horizontal line.
+ * - Printed names and titles sit comfortably BELOW the horizontal line.
+ * - Center Official Seal is scaled and centered.
+ * - Top Left renders the authentic Cortexx dual-brain circuit logo.
  */
 function generateDirectVectorPdf(
   cert: CertificateRecord,
   studentName: string,
   qrDataUrl: string,
-  sealPngDataUrl: string
+  sealPngDataUrl: string,
+  logoPngDataUrl?: string
 ): void {
   const pdf = new jsPDF({
     orientation: 'landscape',
@@ -722,88 +591,99 @@ function generateDirectVectorPdf(
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
 
-  // Background
+  // 1. Certificate Ivory Outer Background
   pdf.setFillColor(253, 251, 247);
   pdf.rect(0, 0, pageWidth, pageHeight, 'F');
 
-  // Outer Decorative Borders
-  pdf.setDrawColor(180, 83, 9);
+  // 2. Double Decorative Border
+  pdf.setDrawColor(180, 83, 9); // Amber 700
   pdf.setLineWidth(5);
-  pdf.rect(20, 20, pageWidth - 40, pageHeight - 40);
+  pdf.rect(22, 22, pageWidth - 44, pageHeight - 44);
   pdf.setLineWidth(1.5);
-  pdf.rect(26, 26, pageWidth - 52, pageHeight - 52);
+  pdf.rect(28, 28, pageWidth - 56, pageHeight - 56);
 
-  // Top Left Header
-  pdf.setTextColor(0, 0, 0);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(16);
-  pdf.text('CORTEXX AI', 45, 55);
-  pdf.setFontSize(8);
-  pdf.setFont('helvetica', 'normal');
-  pdf.setTextColor(30, 41, 59);
-  pdf.text('WHERE THINKING MEETS TECHNOLOGY', 45, 68);
+  // 3. Inner Clean Canvas Background
+  pdf.setFillColor(255, 255, 255);
+  pdf.rect(32, 32, pageWidth - 64, pageHeight - 64, 'F');
 
-  // Top Right QR Code
+  // 4. Top Left Header: Official Cortexx Logo PNG
+  if (logoPngDataUrl) {
+    try {
+      pdf.addImage(logoPngDataUrl, 'PNG', 46, 40, 168, 40);
+    } catch {
+      renderFallbackLogoText(pdf, 46, 58);
+    }
+  } else {
+    renderFallbackLogoText(pdf, 46, 58);
+  }
+
+  // 5. Top Right: Verification QR Code
   if (qrDataUrl) {
     try {
-      pdf.addImage(qrDataUrl, 'PNG', pageWidth - 110, 36, 60, 60);
-      pdf.setFontSize(6.5);
+      pdf.setDrawColor(180, 83, 9);
+      pdf.setLineWidth(1.5);
+      pdf.rect(pageWidth - 110, 38, 62, 62);
+      pdf.addImage(qrDataUrl, 'PNG', pageWidth - 109, 39, 60, 60);
+
+      pdf.setFontSize(7);
       pdf.setTextColor(180, 83, 9);
       pdf.setFont('helvetica', 'bold');
-      pdf.text('SCAN TO VERIFY', pageWidth - 80, 104, { align: 'center' });
+      pdf.text('SCAN TO VERIFY', pageWidth - 79, 110, { align: 'center' });
     } catch {
       // ignore
     }
   }
 
-  // Institute Title: CORTEXX AI INSTITUTE
+  // 6. Institute Title: CORTEXX AI INSTITUTE (No duplicate INSTITUTE)
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(22);
-  pdf.setTextColor(15, 23, 42);
-  pdf.text(INSTITUTE_PROFILE.name.toUpperCase(), pageWidth / 2, 115, { align: 'center' });
+  pdf.setTextColor(15, 23, 42); // slate 900
+  pdf.text(INSTITUTE_PROFILE.name.toUpperCase(), pageWidth / 2, 126, { align: 'center' });
 
   pdf.setFontSize(9);
   pdf.setTextColor(180, 83, 9);
-  pdf.text('WHERE THINKING MEETS TECHNOLOGY', pageWidth / 2, 130, { align: 'center' });
+  pdf.setFont('helvetica', 'bold');
+  pdf.text('WHERE THINKING MEETS TECHNOLOGY', pageWidth / 2, 142, { align: 'center' });
 
-  // Certificate of Completion
+  // 7. Certificate of Completion Headline
+  pdf.setFont('times', 'bold');
+  pdf.setFontSize(27);
+  pdf.setTextColor(154, 52, 18); // Amber 800
+  pdf.text('CERTIFICATE OF COMPLETION', pageWidth / 2, 180, { align: 'center' });
+
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(10);
+  pdf.setTextColor(71, 85, 105); // slate 600
+  pdf.text('THIS IS PROUDLY PRESENTED TO', pageWidth / 2, 202, { align: 'center' });
+
+  // 8. Student Name with Generous Daylight Above Underline (Zero Strikethrough)
   pdf.setFont('times', 'bold');
   pdf.setFontSize(28);
-  pdf.setTextColor(154, 52, 18);
-  pdf.text('CERTIFICATE OF COMPLETION', pageWidth / 2, 175, { align: 'center' });
-
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(10);
-  pdf.setTextColor(71, 85, 105);
-  pdf.text('THIS IS PROUDLY PRESENTED TO', pageWidth / 2, 195, { align: 'center' });
-
-  // Student Name
-  pdf.setFont('times', 'bold');
-  pdf.setFontSize(30);
   pdf.setTextColor(15, 23, 42);
   pdf.text(studentName, pageWidth / 2, 240, { align: 'center' });
 
-  // Underline under Student Name
+  // Underline drawn cleanly 16 points below text baseline to clear all descenders
   pdf.setDrawColor(180, 83, 9);
   pdf.setLineWidth(2);
   const nameWidth = pdf.getTextWidth(studentName);
-  pdf.line((pageWidth - nameWidth) / 2 - 15, 248, (pageWidth + nameWidth) / 2 + 15, 248);
+  const halfLineWidth = Math.max(nameWidth / 2 + 25, 110);
+  pdf.line(pageWidth / 2 - halfLineWidth, 256, pageWidth / 2 + halfLineWidth, 256);
 
-  // Body Text
+  // 9. Body Paragraph
   pdf.setFont('times', 'normal');
   pdf.setFontSize(13);
   pdf.setTextColor(51, 65, 85);
-  pdf.text('has successfully completed the professional curriculum for the', pageWidth / 2, 280, { align: 'center' });
+  pdf.text('has successfully completed the professional curriculum for the', pageWidth / 2, 285, { align: 'center' });
 
   // Course Highlight
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(18);
-  pdf.setTextColor(194, 65, 12);
+  pdf.setTextColor(194, 65, 12); // Orange 700
   pdf.text(cert.courseName, pageWidth / 2, 308, { align: 'center' });
 
   // Duration
   pdf.setFont('courier', 'bold');
-  pdf.setFontSize(10);
+  pdf.setFontSize(10.5);
   pdf.setTextColor(100, 116, 139);
   pdf.text(`Duration: ${cert.startDate} to ${cert.endDate}`, pageWidth / 2, 326, { align: 'center' });
 
@@ -814,84 +694,121 @@ function generateDirectVectorPdf(
   pdf.text(
     `at ${INSTITUTE_PROFILE.name}, demonstrating exceptional understanding of core concepts, practical skills,`,
     pageWidth / 2,
-    352,
+    350,
     { align: 'center' }
   );
-  pdf.text('and successful project application in Artificial Intelligence & Technology.', pageWidth / 2, 368, { align: 'center' });
+  pdf.text('and successful project application in Artificial Intelligence & Technology.', pageWidth / 2, 366, { align: 'center' });
 
-  // Footer Divider Line
-  pdf.setDrawColor(180, 83, 9);
-  pdf.setLineWidth(0.8);
-  pdf.line(50, 420, pageWidth - 50, 420);
+  // 10. Subtle Decorative Divider Line
+  pdf.setDrawColor(217, 119, 6);
+  pdf.setLineWidth(0.6);
+  pdf.line(60, 408, pageWidth - 60, 408);
 
-  // Footer Items
-  // 1. Issue Date & ID
+  // 11. FOOTER: Date, Signatories, and Centered Seal with Perfect Vertical Spacing
+  // Baseline of cursive/date: y = 450
+  // Horizontal signature line: y = 464 (clears signature completely)
+  // Printed Name / Label: y = 478
+  // Title / ID: y = 492
+
+  // --- Col 1: Date of Issue & Certificate ID ---
   pdf.setFont('courier', 'bold');
-  pdf.setFontSize(11);
+  pdf.setFontSize(12);
   pdf.setTextColor(0, 0, 0);
-  pdf.text(cert.issueDate, 60, 455);
+  pdf.text(cert.issueDate, 60, 450);
+
   pdf.setDrawColor(0, 0, 0);
-  pdf.setLineWidth(1);
-  pdf.line(60, 462, 140, 462);
+  pdf.setLineWidth(1.2);
+  pdf.line(60, 464, 145, 464);
+
   pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(8.5);
+  pdf.text('DATE OF ISSUE', 60, 478);
+
+  pdf.setFont('courier', 'bold');
   pdf.setFontSize(8);
-  pdf.text('DATE OF ISSUE', 60, 474);
-  pdf.setFont('courier', 'normal');
-  pdf.setFontSize(7.5);
-  pdf.text(`ID: ${cert.id}`, 60, 486);
+  pdf.setTextColor(31, 41, 55);
+  pdf.text(`ID: ${cert.id}`, 60, 492);
 
-  // 2. Keval Gajjar
+  // --- Col 2: 1st Signatory (Keval Gajjar) ---
   pdf.setFont('times', 'italic');
-  pdf.setFontSize(16);
+  pdf.setFontSize(17);
   pdf.setTextColor(0, 0, 0);
-  pdf.text('Keval Gajjar', 220, 455, { align: 'center' });
-  pdf.line(160, 462, 280, 462);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(9);
-  pdf.text('Keval Gajjar', 220, 474, { align: 'center' });
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(7.5);
-  pdf.setTextColor(51, 65, 85);
-  pdf.text('Founder & CEO', 220, 486, { align: 'center' });
+  pdf.text('Keval Gajjar', 220, 448, { align: 'center' });
 
-  // 3. Centered Official Seal
+  pdf.setDrawColor(0, 0, 0);
+  pdf.setLineWidth(1.2);
+  pdf.line(160, 464, 280, 464);
+
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(9.5);
+  pdf.text('Keval Gajjar', 220, 478, { align: 'center' });
+
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(8);
+  pdf.setTextColor(71, 85, 105);
+  pdf.text('Founder & CEO', 220, 492, { align: 'center' });
+
+  // --- Col 3: Centered Official Seal ---
   if (sealPngDataUrl) {
     try {
-      pdf.addImage(sealPngDataUrl, 'PNG', pageWidth / 2 - 38, 430, 76, 76);
+      const sealSize = 82;
+      pdf.addImage(sealPngDataUrl, 'PNG', pageWidth / 2 - sealSize / 2, 424, sealSize, sealSize);
     } catch {
       // ignore
     }
   }
 
-  // 4. Hiren Raval
+  // --- Col 4: 2nd Signatory (Hiren Raval) ---
   pdf.setFont('times', 'italic');
-  pdf.setFontSize(16);
+  pdf.setFontSize(17);
   pdf.setTextColor(0, 0, 0);
-  pdf.text('Hiren Raval', pageWidth - 220, 455, { align: 'center' });
-  pdf.line(pageWidth - 280, 462, pageWidth - 160, 462);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(9);
-  pdf.text('Hiren Raval', pageWidth - 220, 474, { align: 'center' });
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(7.5);
-  pdf.setTextColor(51, 65, 85);
-  pdf.text('Head of AI Engineering', pageWidth - 220, 486, { align: 'center' });
+  pdf.text('Hiren Raval', pageWidth - 220, 448, { align: 'center' });
 
-  // 5. Shweta Malaviya
+  pdf.setDrawColor(0, 0, 0);
+  pdf.setLineWidth(1.2);
+  pdf.line(pageWidth - 280, 464, pageWidth - 160, 464);
+
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(9.5);
+  pdf.text('Hiren Raval', pageWidth - 220, 478, { align: 'center' });
+
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(8);
+  pdf.setTextColor(71, 85, 105);
+  pdf.text('Head of AI Engineering', pageWidth - 220, 492, { align: 'center' });
+
+  // --- Col 5: 3rd Signatory (Shweta Malaviya) ---
   pdf.setFont('times', 'italic');
-  pdf.setFontSize(16);
+  pdf.setFontSize(17);
   pdf.setTextColor(0, 0, 0);
-  pdf.text('Shweta Malaviya', pageWidth - 90, 455, { align: 'center' });
-  pdf.line(pageWidth - 145, 462, pageWidth - 35, 462);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(9);
-  pdf.text('Shweta Malaviya', pageWidth - 90, 474, { align: 'center' });
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(7.5);
-  pdf.setTextColor(51, 65, 85);
-  pdf.text('Academic Director', pageWidth - 90, 486, { align: 'center' });
+  pdf.text('Shweta Malaviya', pageWidth - 80, 448, { align: 'center' });
 
+  pdf.setDrawColor(0, 0, 0);
+  pdf.setLineWidth(1.2);
+  pdf.line(pageWidth - 145, 464, pageWidth - 15, 464);
+
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(9.5);
+  pdf.text('Shweta Malaviya', pageWidth - 80, 478, { align: 'center' });
+
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(8);
+  pdf.setTextColor(71, 85, 105);
+  pdf.text('Academic Director', pageWidth - 80, 492, { align: 'center' });
+
+  // Save PDF file
   pdf.save(`Certificate_${cert.id}_${studentName.replace(/\s+/g, '_')}.pdf`);
+}
+
+function renderFallbackLogoText(pdf: jsPDF, x: number, y: number): void {
+  pdf.setTextColor(0, 0, 0);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(16);
+  pdf.text('CORTEXX AI', x, y);
+  pdf.setFontSize(8);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setTextColor(30, 41, 59);
+  pdf.text('WHERE THINKING MEETS TECHNOLOGY', x, y + 14);
 }
 
 /**
