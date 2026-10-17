@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { CertificateRecord, Student } from '../types';
-import { getCertificates, getStudents } from '../services/storage';
+import { getCertificates, getStudents, isAdminAuthenticated, setAdminAuthenticated } from '../services/storage';
+import { verifyCertificateFromCloud, subscribeToCertificatesRealtime } from '../services/supabase';
 import { CortexxOfficialSeal } from './CortexxOfficialSeal';
 import { CortexxLogo } from './CortexxLogo';
+import { AdminLockModal } from './AdminLockModal';
 import { INSTITUTE_PROFILE } from '../constants/initialData';
 import { downloadCertificateDirectlyAsPdf, downloadCertificateAsDoc } from '../utils/certificateExport';
 import QRCode from 'qrcode';
@@ -20,7 +22,10 @@ import {
   ExternalLink,
   ArrowLeft,
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  RefreshCw,
+  Cloud,
+  Lock,
 } from 'lucide-react';
 
 interface CertificateVerificationGatewayProps {
@@ -37,51 +42,87 @@ export const CertificateVerificationGateway: React.FC<CertificateVerificationGat
   const [certificate, setCertificate] = useState<CertificateRecord | null>(null);
   const [student, setStudent] = useState<Student | null>(null);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
+  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
 
+  // Cloud & Realtime verification lookup
   useEffect(() => {
-    // If initialCode is provided, search immediately
-    const certs = getCertificates();
-    const students = getStudents();
-
-    if (activeCode.trim()) {
-      const clean = activeCode.trim().toLowerCase();
-      const found = certs.find(
-        c =>
-          c.verificationCode.toLowerCase() === clean ||
-          c.id.toLowerCase() === clean ||
-          c.studentName.toLowerCase() === clean
-      );
-
-      if (found) {
-        setCertificate(found);
-        const st = students.find(s => s.id === found.studentId) || {
-          id: found.studentId,
-          name: found.studentName,
-          phone: '+91 7984691082',
-          email: 'student@cortexx.ai',
-          enrolledCourseId: 'course-1',
-          enrolledCourseName: found.courseName,
-          enrollmentId: 'COR-ENR-2026-0001',
-          enrollmentDate: found.startDate,
-          agreedFee: 6000,
-          totalPaid: 6000,
-          paymentStatus: 'paid',
-          createdAt: found.createdAt,
-        };
-        setStudent(st);
-
-        // Generate QR Code for this credential
-        const verifyUrl = `https://cortexxai-app.vercel.app/?verify=${found.verificationCode}`;
-        QRCode.toDataURL(verifyUrl, { width: 180, margin: 1 })
-          .then(url => setQrDataUrl(url))
-          .catch(() => {});
-      } else {
-        setCertificate(null);
-        setStudent(null);
-      }
+    if (!activeCode.trim()) {
+      setCertificate(null);
+      setStudent(null);
+      return;
     }
+
+    let isMounted = true;
+    setIsSearching(true);
+
+    verifyCertificateFromCloud(activeCode)
+      .then(found => {
+        if (!isMounted) return;
+
+        if (found) {
+          setCertificate(found);
+          const students = getStudents();
+          const st = students.find(s => s.id === found.studentId) || {
+            id: found.studentId,
+            name: found.studentName,
+            phone: '+91 7984691082',
+            email: 'student@cortexx.ai',
+            enrolledCourseId: 'course-1',
+            enrolledCourseName: found.courseName,
+            enrollmentId: 'COR-ENR-2026-0001',
+            enrollmentDate: found.startDate,
+            agreedFee: 6000,
+            totalPaid: 6000,
+            paymentStatus: 'paid',
+            createdAt: found.createdAt,
+          };
+          setStudent(st);
+
+          // Generate QR Code for this credential
+          const verifyUrl = `https://cortexxai-app.vercel.app/?verify=${found.verificationCode}`;
+          QRCode.toDataURL(verifyUrl, { width: 180, margin: 1 })
+            .then(url => {
+              if (isMounted) setQrDataUrl(url);
+            })
+            .catch(() => {});
+        } else {
+          setCertificate(null);
+          setStudent(null);
+        }
+      })
+      .catch(err => {
+        console.error('Verification query failed:', err);
+        if (isMounted) {
+          setCertificate(null);
+          setStudent(null);
+        }
+      })
+      .finally(() => {
+        if (isMounted) setIsSearching(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeCode]);
+
+  // Subscribe to realtime certificate updates
+  useEffect(() => {
+    const unsubscribe = subscribeToCertificatesRealtime(newCert => {
+      if (
+        activeCode &&
+        (newCert.verificationCode.toLowerCase() === activeCode.toLowerCase() ||
+          newCert.id.toLowerCase() === activeCode.toLowerCase() ||
+          (newCert.certificateNumber && newCert.certificateNumber.toLowerCase() === activeCode.toLowerCase()))
+      ) {
+        setCertificate(newCert);
+      }
+    });
+
+    return () => unsubscribe();
   }, [activeCode]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -125,17 +166,40 @@ export const CertificateVerificationGateway: React.FC<CertificateVerificationGat
       paymentStatus: 'paid',
       createdAt: certificate.createdAt,
     };
-
-    downloadCertificateAsDoc(fallbackStudent, certificate, {
-      startDate: certificate.startDate,
-      endDate: certificate.endDate,
-      courseName: certificate.courseName,
-      qrDataUrl,
-      verificationUrl: `https://cortexxai-app.vercel.app/?verify=${certificate.verificationCode}`,
-    }, INSTITUTE_PROFILE);
-
-    setNotification(`Downloaded Official Word (.doc) Certificate!`);
+    const verifyUrl = `https://cortexxai-app.vercel.app/?verify=${certificate.verificationCode}`;
+    downloadCertificateAsDoc(
+      fallbackStudent,
+      certificate,
+      {
+        startDate: certificate.startDate,
+        endDate: certificate.endDate,
+        courseName: certificate.courseName,
+        qrDataUrl,
+        verificationUrl: verifyUrl,
+      },
+      INSTITUTE_PROFILE
+    );
+    setNotification('Certificate exported as Word (.doc) document!');
     setTimeout(() => setNotification(null), 4000);
+  };
+
+  const handlePrintCertificate = () => {
+    window.print();
+  };
+
+  // Protected navigation to the Institute Portal: Require PIN
+  const handleRequestPortalAccess = () => {
+    if (isAdminAuthenticated()) {
+      if (onGoToPortal) onGoToPortal();
+    } else {
+      setIsPinModalOpen(true);
+    }
+  };
+
+  const handlePinUnlock = () => {
+    setAdminAuthenticated(true);
+    setIsPinModalOpen(false);
+    if (onGoToPortal) onGoToPortal();
   };
 
   return (
@@ -155,11 +219,12 @@ export const CertificateVerificationGateway: React.FC<CertificateVerificationGat
           <div className="flex items-center gap-2">
             {onGoToPortal && (
               <button
-                onClick={onGoToPortal}
+                onClick={handleRequestPortalAccess}
                 className="flex items-center gap-2 px-3.5 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold rounded-xl border border-neutral-700 transition-colors cursor-pointer"
+                title="Admin PIN Required"
               >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Go to Institute Portal</span>
+                <Lock className="w-3.5 h-3.5 text-orange-400" />
+                <span>Admin Portal</span>
               </button>
             )}
           </div>
@@ -177,8 +242,8 @@ export const CertificateVerificationGateway: React.FC<CertificateVerificationGat
             Certificate Authenticity Verification Gateway
           </h1>
           <p className="text-sm text-neutral-400 max-w-xl mx-auto">
-            Official cryptographic validation system for credentials issued by{' '}
-            <strong className="text-neutral-200">Cortexx AI Institute</strong>. Verify student completion, course dates, and digital signature records.
+            Official cloud validation system for credentials issued by{' '}
+            <strong className="text-neutral-200">Cortexx AI Institute</strong>. Real-time verification across any device or browser.
           </p>
         </div>
 
@@ -196,9 +261,11 @@ export const CertificateVerificationGateway: React.FC<CertificateVerificationGat
           </div>
           <button
             type="submit"
-            className="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-neutral-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md cursor-pointer shrink-0"
+            disabled={isSearching}
+            className="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-neutral-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md cursor-pointer shrink-0 flex items-center gap-1.5"
           >
-            Verify Credential
+            {isSearching ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : null}
+            <span>{isSearching ? 'Verifying...' : 'Verify Credential'}</span>
           </button>
         </form>
 
@@ -209,175 +276,195 @@ export const CertificateVerificationGateway: React.FC<CertificateVerificationGat
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>{notification}</span>
             </div>
-            <button onClick={() => setNotification(null)} className="text-neutral-400 hover:text-neutral-200 text-xs">✕</button>
+            <button onClick={() => setNotification(null)} className="text-neutral-400 hover:text-neutral-200 text-xs cursor-pointer">✕</button>
           </div>
         )}
 
         {/* RESULTS SECTION */}
-        {certificate ? (
+        {isSearching ? (
+          <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-12 text-center space-y-4">
+            <RefreshCw className="w-8 h-8 text-amber-500 animate-spin mx-auto" />
+            <p className="text-sm text-neutral-300 font-medium">
+              Querying Realtime Verification Database...
+            </p>
+          </div>
+        ) : certificate ? (
           /* AUTHENTIC VERIFIED CERTIFICATE CARD */
           <div className="bg-neutral-900/90 border-2 border-emerald-500/50 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden animate-fadeIn">
             {/* Top Status Banner */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-neutral-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-800">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
-                  <CheckCircle2 className="w-7 h-7" />
+                <div className="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                  <Award className="w-6 h-6" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs uppercase font-mono font-black tracking-widest text-emerald-400">
-                      OFFICIALLY VERIFIED & AUTHENTIC
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" />
+                      Authentic Credential Verified
                     </span>
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="text-xs font-mono font-semibold text-neutral-400 flex items-center gap-1">
+                      <Cloud className="w-3 h-3 text-emerald-400" />
+                      Synced
+                    </span>
                   </div>
-                  <h2 className="text-xl font-bold text-neutral-100">
-                    Cortexx AI Institute Course Completion Credential
+                  <h2 className="text-lg font-bold text-neutral-100 mt-1">
+                    Cortexx AI Certified Completion
                   </h2>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 font-mono text-xs">
-                <span className="px-3 py-1 bg-neutral-800 text-amber-400 border border-amber-500/30 rounded-lg font-bold">
-                  {certificate.id}
-                </span>
+              {/* Certificate Number Stamp */}
+              <div className="text-left sm:text-right font-mono bg-neutral-950/80 px-4 py-2 rounded-xl border border-neutral-800">
+                <div className="text-[10px] text-neutral-500 uppercase tracking-widest font-bold">Certificate ID</div>
+                <div className="text-amber-400 font-bold text-sm">{certificate.certificateNumber || certificate.id}</div>
               </div>
             </div>
 
-            {/* Credential Data Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* Recipient Details */}
-              <div className="p-4 bg-neutral-950/80 border border-neutral-800 rounded-xl space-y-3">
-                <div className="text-xs uppercase font-bold tracking-wider text-neutral-400 flex items-center gap-2">
-                  <User className="w-4 h-4 text-amber-400" />
+            {/* Recipient Details Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-neutral-950/60 p-4 rounded-xl border border-neutral-800/80 space-y-1">
+                <span className="text-[11px] text-neutral-400 uppercase tracking-wider flex items-center gap-1.5 font-bold">
+                  <User className="w-3.5 h-3.5 text-orange-400" />
                   <span>Certified Recipient</span>
-                </div>
-                <div>
-                  <div className="text-2xl font-black text-neutral-100">{certificate.studentName}</div>
-                  <div className="text-xs font-mono text-neutral-400 mt-1">
-                    Student ID: <span className="text-neutral-200">{certificate.studentId}</span>
-                    {student?.enrollmentId && (
-                      <> · Enrollment: <span className="text-neutral-200">{student.enrollmentId}</span></>
-                    )}
-                  </div>
-                </div>
+                </span>
+                <p className="text-lg font-bold text-neutral-100">{certificate.studentName}</p>
+                <p className="text-xs text-neutral-400 font-mono">
+                  Verified Student ID: {certificate.studentId}
+                </p>
               </div>
 
-              {/* Course & Curriculum Details */}
-              <div className="p-4 bg-neutral-950/80 border border-neutral-800 rounded-xl space-y-3">
-                <div className="text-xs uppercase font-bold tracking-wider text-neutral-400 flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-amber-400" />
-                  <span>Curriculum Completed</span>
-                </div>
-                <div>
-                  <div className="text-lg font-bold text-amber-400">{certificate.courseName}</div>
-                  <div className="text-xs font-mono text-neutral-300 mt-1 flex items-center gap-2">
-                    <Calendar className="w-3.5 h-3.5 text-neutral-400" />
-                    <span>Duration: {certificate.startDate} to {certificate.endDate}</span>
-                  </div>
-                </div>
+              <div className="bg-neutral-950/60 p-4 rounded-xl border border-neutral-800/80 space-y-1">
+                <span className="text-[11px] text-neutral-400 uppercase tracking-wider flex items-center gap-1.5 font-bold">
+                  <BookOpen className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Program Completed</span>
+                </span>
+                <p className="text-lg font-bold text-neutral-100">{certificate.courseName}</p>
+                <p className="text-xs text-neutral-400 font-mono">
+                  Mode: {certificate.courseMode || '100% Online'} · Duration: {certificate.courseDuration || '1 Month'}
+                </p>
+              </div>
+
+              <div className="bg-neutral-950/60 p-4 rounded-xl border border-neutral-800/80 space-y-1">
+                <span className="text-[11px] text-neutral-400 uppercase tracking-wider flex items-center gap-1.5 font-bold">
+                  <Calendar className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Training Timeline</span>
+                </span>
+                <p className="text-sm font-semibold text-neutral-200">
+                  {certificate.startDate} to {certificate.endDate}
+                </p>
+                <p className="text-xs text-neutral-400 font-mono">
+                  Issued on: {certificate.issueDate}
+                </p>
+              </div>
+
+              <div className="bg-neutral-950/60 p-4 rounded-xl border border-neutral-800/80 space-y-1">
+                <span className="text-[11px] text-neutral-400 uppercase tracking-wider flex items-center gap-1.5 font-bold">
+                  <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Cryptographic Verification Code</span>
+                </span>
+                <p className="text-sm font-bold font-mono text-amber-400 break-all">
+                  {certificate.verificationCode}
+                </p>
+                <p className="text-xs text-emerald-400/90 font-mono flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  Signature Record Validated
+                </p>
               </div>
             </div>
 
-            {/* Cryptographic Security Details & Signatories */}
-            <div className="p-4 bg-neutral-950/80 border border-neutral-800 rounded-xl space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
-                <div>
-                  <span className="text-neutral-400">Cryptographic Verification Hash: </span>
-                  <span className="text-emerald-400 font-bold">{certificate.verificationCode}</span>
-                </div>
-                <div>
-                  <span className="text-neutral-400">Date of Issuance: </span>
-                  <span className="text-neutral-200 font-bold">{certificate.issueDate}</span>
-                </div>
-              </div>
-
-              {/* Signatories Roster */}
-              <div className="pt-3 border-t border-neutral-800/80">
-                <div className="text-xs text-neutral-400 mb-2 font-semibold">Authorized Institute Signatories:</div>
+            {/* Official Signatories & Seal Section */}
+            <div className="p-4 bg-neutral-950/90 rounded-xl border border-neutral-800/80 flex flex-col md:flex-row items-center justify-between gap-6">
+              {/* Authorized Signatories */}
+              <div className="space-y-2 flex-1">
+                <span className="text-[11px] text-neutral-400 uppercase tracking-wider font-mono font-bold">
+                  Authorized Signatories:
+                </span>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="p-2.5 bg-neutral-900 border border-neutral-800 rounded-lg">
-                    <div className="font-bold text-neutral-200 text-xs">Keval Gajjar</div>
-                    <div className="text-[10px] text-neutral-400">Founder & CEO</div>
-                    <div className="text-[9px] text-emerald-400 mt-0.5">✓ Cryptographically Signed</div>
-                  </div>
-                  <div className="p-2.5 bg-neutral-900 border border-neutral-800 rounded-lg">
-                    <div className="font-bold text-neutral-200 text-xs">Hiren Raval</div>
-                    <div className="text-[10px] text-neutral-400">Head of AI Engineering</div>
-                    <div className="text-[9px] text-emerald-400 mt-0.5">✓ Cryptographically Signed</div>
-                  </div>
-                  <div className="p-2.5 bg-neutral-900 border border-neutral-800 rounded-lg">
-                    <div className="font-bold text-neutral-200 text-xs">Shweta Malaviya</div>
-                    <div className="text-[10px] text-neutral-400">Academic Director</div>
-                    <div className="text-[9px] text-emerald-400 mt-0.5">✓ Cryptographically Signed</div>
-                  </div>
+                  {(certificate.signatories && certificate.signatories.length > 0
+                    ? certificate.signatories
+                    : [
+                        { name: 'Keval Gajjar', role: 'Founder & Director', organization: 'Cortexx AI' },
+                        { name: 'Hiren Raval', role: 'Head of AI Curriculum', organization: 'Cortexx AI' },
+                        { name: 'Shweta Malaviya', role: 'Chief Technical Lead', organization: 'Cortexx AI' },
+                      ]
+                  ).map((sig: { name: string; role: string; organization?: string }, i: number) => (
+                    <div key={i} className="border-l-2 border-amber-500/40 pl-2">
+                      <div className="text-xs font-bold text-neutral-200">{sig.name}</div>
+                      <div className="text-[10px] text-neutral-400">{sig.role}</div>
+                      <div className="text-[9px] text-neutral-500 font-mono">{sig.organization || 'Cortexx AI'}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
+
+              {/* Centered Seal */}
+              <div className="flex flex-col items-center justify-center shrink-0">
+                <CortexxOfficialSeal size={80} className="w-20 h-20 drop-shadow-lg" />
+                <span className="text-[10px] font-mono text-amber-400/90 font-bold mt-1">Official Seal</span>
+              </div>
+
+              {/* QR Code */}
+              {qrDataUrl && (
+                <div className="flex flex-col items-center justify-center shrink-0 bg-white p-2 rounded-xl shadow-md">
+                  <img src={qrDataUrl} alt="Verify QR Code" className="w-20 h-20" />
+                  <span className="text-[9px] font-mono text-neutral-900 font-bold mt-0.5">Scan to Verify</span>
+                </div>
+              )}
             </div>
 
-            {/* Center Official Seal & Verification Stamp */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 p-4 bg-gradient-to-r from-neutral-950 via-blue-950/20 to-neutral-950 border border-neutral-800 rounded-xl text-center">
-              <div className="shrink-0">
-                <CortexxOfficialSeal size={90} className="w-22 h-22 drop-shadow-md" />
-              </div>
-              <div className="text-left space-y-1">
-                <div className="font-black text-sm text-neutral-200 uppercase tracking-wider font-sans">
-                  Official Institute Seal Affixed
-                </div>
-                <div className="text-xs text-neutral-400 max-w-md">
-                  This electronic credential is cryptographically tied to the Cortexx AI Institute registry and verified via decentralized digital hash.
-                </div>
-                <div className="text-[11px] font-mono text-emerald-400 font-bold">
-                  Issuer: Cortexx AI Institute · Gujarat, India · +91 7984691082
-                </div>
-              </div>
-            </div>
-
-            {/* Export and Download Actions */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-neutral-800">
-              <div className="text-xs text-neutral-400">
-                Recipient or verifier can download original official copy:
-              </div>
-
-              <div className="flex items-center gap-3 w-full sm:w-auto">
+            {/* Action Buttons: Download PDF, Word, and Print */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-neutral-800">
+              <div className="flex items-center gap-2 flex-wrap">
                 <button
-                  type="button"
-                  onClick={handleDownloadDoc}
-                  className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
-                >
-                  <FileText className="w-4 h-4" />
-                  <span>Download Word (.doc)</span>
-                </button>
-
-                <button
-                  type="button"
                   onClick={handleDownloadPdf}
                   disabled={isExportingPdf}
-                  className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-neutral-950 font-bold rounded-xl text-xs shadow-lg transition-colors cursor-pointer"
+                  className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-neutral-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md cursor-pointer disabled:opacity-50"
                 >
                   <Download className="w-4 h-4" />
                   <span>{isExportingPdf ? 'Exporting PDF...' : 'Download Verified PDF'}</span>
                 </button>
+
+                <button
+                  onClick={handleDownloadDoc}
+                  className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-xl border border-neutral-700 transition-colors cursor-pointer"
+                >
+                  <FileText className="w-4 h-4 text-blue-400" />
+                  <span>Download Word (.doc)</span>
+                </button>
+
+                <button
+                  onClick={handlePrintCertificate}
+                  className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-xl border border-neutral-700 transition-colors cursor-pointer"
+                >
+                  <Printer className="w-4 h-4 text-neutral-400" />
+                  <span>Print Certificate</span>
+                </button>
+              </div>
+
+              <div className="text-xs text-neutral-400 font-mono">
+                Official Issuer: <strong className="text-neutral-200">Cortexx AI Institute</strong>
               </div>
             </div>
           </div>
         ) : (
           /* NOT FOUND / SEARCH PROMPT STATE */
-          <div className="bg-neutral-900/60 border border-neutral-800 rounded-2xl p-8 sm:p-12 text-center space-y-4 max-w-xl mx-auto animate-fadeIn">
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-neutral-800 flex items-center justify-center text-neutral-400">
-              <AlertCircle className="w-7 h-7 text-amber-500" />
+          <div className="bg-neutral-900/60 border border-neutral-800 rounded-2xl p-8 sm:p-12 text-center space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
+              <Search className="w-7 h-7" />
             </div>
             <div className="space-y-1">
               <h3 className="text-lg font-bold text-neutral-200">
-                {activeCode ? 'Certificate Not Found' : 'Enter Certificate ID or Scan QR'}
+                {activeCode ? 'Certificate Record Not Found' : 'Ready to Verify Credential'}
               </h3>
-              <p className="text-xs text-neutral-400 max-w-sm mx-auto">
+              <p className="text-xs text-neutral-400 max-w-md mx-auto">
                 {activeCode
-                  ? `No verified record found matching "${activeCode}". Please verify that the code was typed correctly.`
-                  : 'Scan the QR code on the certificate or paste the verification code above to validate authenticity.'}
+                  ? `No verified credential matching "${activeCode}" could be located in the cloud registry. Please verify the Certificate ID, verification code, or QR URL.`
+                  : 'Enter a Certificate ID (e.g. COR-CERT-2026-0001) or verification code to validate credential authenticity, recipient, completion dates, and official signatures.'}
               </p>
             </div>
 
-            {/* Quick Demo Credentials */}
+            {/* Quick Sample Credentials */}
             <div className="pt-4 border-t border-neutral-800 text-left">
               <div className="text-[11px] font-mono uppercase tracking-wider text-neutral-400 mb-2 font-bold">
                 Recently Issued Sample Certificates:
@@ -391,7 +478,7 @@ export const CertificateVerificationGateway: React.FC<CertificateVerificationGat
                       setSearchCode(c.verificationCode);
                       setActiveCode(c.verificationCode);
                     }}
-                    className="w-full flex items-center justify-between p-2.5 bg-neutral-950 hover:bg-neutral-800/80 border border-neutral-800 rounded-xl text-xs font-mono text-neutral-300 transition-colors text-left"
+                    className="w-full flex items-center justify-between p-2.5 bg-neutral-950 hover:bg-neutral-800/80 border border-neutral-800 rounded-xl text-xs font-mono text-neutral-300 transition-colors text-left cursor-pointer"
                   >
                     <span>{c.studentName} — <strong className="text-amber-400">{c.id}</strong></span>
                     <span className="text-emerald-400 text-[10px]">Verify Now →</span>
@@ -410,6 +497,16 @@ export const CertificateVerificationGateway: React.FC<CertificateVerificationGat
           <span>Contact: +91 7984691082 · info.cortexx@gmail.com</span>
         </div>
       </footer>
+
+      {/* Admin Passcode Gatekeeper Modal to access the dashboard */}
+      <AdminLockModal
+        isOpen={isPinModalOpen}
+        onUnlock={handlePinUnlock}
+        onBack={() => setIsPinModalOpen(false)}
+        isMandatoryGate={false}
+        title="Admin Authentication Required"
+        description="Enter Admin PIN to access student databases, certificates manager, and financials"
+      />
     </div>
   );
 };

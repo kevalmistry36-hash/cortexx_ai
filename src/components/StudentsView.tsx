@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Student, Course, PaymentStatus, PaymentMethod, Invoice } from '../types';
 import { getNextStudentId, getNextEnrollmentId, saveStudent, deleteStudent, updateStudentFeeStatus, getInvoices, getNextInvoiceNumber, saveInvoice } from '../services/storage';
-import { Search, Plus, User, Phone, Mail, BookOpen, Trash2, Edit3, Receipt, IndianRupee, ArrowUpDown, FileSpreadsheet, CheckCircle2, RotateCcw, X, AlertTriangle, Download, QrCode, FileDown, ShieldCheck, Check } from 'lucide-react';
+import { Search, Plus, User, Phone, Mail, BookOpen, Trash2, Edit3, Receipt, IndianRupee, ArrowUpDown, FileSpreadsheet, CheckCircle2, RotateCcw, X, AlertTriangle, Download, FileDown, ShieldCheck, Check } from 'lucide-react';
 import { BulkStudentImportModal } from './BulkStudentImportModal';
 import { downloadInvoiceAsDoc } from '../utils/docExport';
 import * as XLSX from 'xlsx';

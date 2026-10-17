@@ -10,6 +10,11 @@ import {
   generateSupabaseSqlSchema,
 } from '../services/storage';
 import {
+  testSupabaseConnection,
+  pushAllLocalDataToSupabase,
+  fetchAndSyncAllDataFromSupabase,
+} from '../services/supabase';
+import {
   KeyRound,
   Download,
   Upload,
@@ -21,6 +26,9 @@ import {
   X,
   ShieldCheck,
   AlertCircle,
+  Wifi,
+  ArrowDownCircle,
+  ArrowUpCircle,
 } from 'lucide-react';
 
 interface SettingsModalProps {
@@ -40,6 +48,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const [supabaseKey, setSupabaseKey] = useState(initialSupabase.anonKey);
   const [copiedSchema, setCopiedSchema] = useState(false);
   const [supabaseStatus, setSupabaseStatus] = useState<string | null>(null);
+  const [isTesting, setIsTesting] = useState(false);
+  const [isSyncingAll, setIsSyncingAll] = useState(false);
+  const [isPullingAll, setIsPullingAll] = useState(false);
 
   // Backup state
   const [importText, setImportText] = useState('');
@@ -108,7 +119,54 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
       autoSync: !!supabaseUrl && !!supabaseKey,
     });
     setSupabaseStatus('Supabase configuration saved.');
-    setTimeout(() => setSupabaseStatus(null), 3000);
+    setTimeout(() => setSupabaseStatus(null), 3500);
+  };
+
+  const handleTestConnection = async () => {
+    setIsTesting(true);
+    setSupabaseStatus(null);
+    try {
+      const res = await testSupabaseConnection(supabaseUrl.trim(), supabaseKey.trim());
+      setSupabaseStatus(res.message);
+    } catch (err: any) {
+      setSupabaseStatus(`Connection error: ${err.message}`);
+    } finally {
+      setIsTesting(false);
+    }
+  };
+
+  const handleSyncAllNow = async () => {
+    setIsSyncingAll(true);
+    setSupabaseStatus(null);
+    try {
+      const res = await pushAllLocalDataToSupabase();
+      if (res.error) {
+        setSupabaseStatus(`Sync failed: ${res.error}`);
+      } else {
+        setSupabaseStatus(
+          `Successfully synced to Supabase: ${res.studentsCount} students, ${res.coursesCount} courses, ${res.invoicesCount} invoices, ${res.receiptsCount} receipts, and ${res.certificatesCount} certificates!`
+        );
+      }
+    } catch (err: any) {
+      setSupabaseStatus(`Sync error: ${err.message}`);
+    } finally {
+      setIsSyncingAll(false);
+    }
+  };
+
+  const handlePullAllNow = async () => {
+    setIsPullingAll(true);
+    setSupabaseStatus(null);
+    try {
+      const res = await fetchAndSyncAllDataFromSupabase();
+      setSupabaseStatus(
+        `Pulled & synced ${res.students.length} students, ${res.courses.length} courses, ${res.invoices.length} invoices, ${res.receipts.length} receipts, and ${res.certificates.length} certificates from Supabase Cloud!`
+      );
+    } catch (err: any) {
+      setSupabaseStatus(`Pull error: ${err.message}`);
+    } finally {
+      setIsPullingAll(false);
+    }
   };
 
   const handleCopySchema = () => {
@@ -138,7 +196,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               Security access, local database backups, and cloud synchronization
             </p>
           </div>
-          <button onClick={onClose} className="text-neutral-400 hover:text-neutral-200 p-1">
+          <button onClick={onClose} className="text-neutral-400 hover:text-neutral-200 p-1 cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -152,7 +210,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 Change Admin PIN
               </span>
             </div>
-            <span className="text-[11px] text-neutral-500 font-mono">Default: 2026</span>
           </div>
 
           <form onSubmit={handleUpdatePin} className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -172,7 +229,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             />
             <button
               type="submit"
-              className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-100 font-semibold text-xs rounded-lg transition-colors"
+              className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-100 font-semibold text-xs rounded-lg transition-colors cursor-pointer"
             >
               Update PIN
             </button>
@@ -194,13 +251,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             </span>
           </div>
           <p className="text-xs text-neutral-400">
-            Export all courses, students, invoices, and payment receipts into a single JSON file.
+            Export all courses, students, invoices, payment receipts, and certificates into a single JSON file.
           </p>
 
-          <div className="flex items-center gap-2 pt-1">
+          <div className="flex items-center gap-2 pt-1 flex-wrap">
             <button
               onClick={handleExportBackup}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold rounded-lg transition-colors"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-orange-400" />
               <span>Download JSON Backup</span>
@@ -220,23 +277,27 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           )}
         </div>
 
-        {/* 3. Optional Supabase Cloud Sync */}
+        {/* 3. Supabase Cloud Sync & Realtime Persistence */}
         <div className="bg-neutral-950 border border-neutral-800/80 rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Cloud className="w-4 h-4 text-emerald-400" />
               <span className="text-xs font-bold uppercase tracking-wider text-neutral-200">
-                Supabase Cloud Persistence (Optional)
+                Supabase Realtime Cloud Sync (All Data)
               </span>
             </div>
             <button
               onClick={handleCopySchema}
-              className="text-[11px] text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1"
+              className="text-[11px] text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1 cursor-pointer"
             >
               {copiedSchema ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-              <span>{copiedSchema ? 'SQL Copied!' : 'Copy SQL Schema'}</span>
+              <span>{copiedSchema ? 'SQL Copied!' : 'Copy Complete Realtime SQL Schema'}</span>
             </button>
           </div>
+
+          <p className="text-xs text-neutral-400">
+            Records all Students, Courses, Invoices, Payment Receipts, and Certificates in Supabase Realtime so data integrity is uniform across all devices anywhere.
+          </p>
 
           <div className="space-y-2">
             <div>
@@ -261,30 +322,60 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-1">
+          <div className="flex items-center gap-2 pt-1 flex-wrap">
             <button
               onClick={handleSaveSupabase}
-              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-lg transition-colors"
+              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-lg transition-colors cursor-pointer"
             >
-              Save Cloud Credentials
+              Save Credentials
             </button>
-            {supabaseStatus && (
-              <span className="text-xs text-emerald-400 font-medium">{supabaseStatus}</span>
-            )}
+
+            <button
+              onClick={handleTestConnection}
+              disabled={isTesting}
+              className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+            >
+              <Wifi className="w-3 h-3 text-emerald-400" />
+              <span>{isTesting ? 'Testing...' : 'Test Connection'}</span>
+            </button>
+
+            <button
+              onClick={handleSyncAllNow}
+              disabled={isSyncingAll}
+              className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+            >
+              <ArrowUpCircle className={`w-3.5 h-3.5 text-orange-400 ${isSyncingAll ? 'animate-spin' : ''}`} />
+              <span>{isSyncingAll ? 'Syncing...' : 'Push All Data to Cloud'}</span>
+            </button>
+
+            <button
+              onClick={handlePullAllNow}
+              disabled={isPullingAll}
+              className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+            >
+              <ArrowDownCircle className={`w-3.5 h-3.5 text-blue-400 ${isPullingAll ? 'animate-spin' : ''}`} />
+              <span>{isPullingAll ? 'Pulling...' : 'Pull Cloud Data'}</span>
+            </button>
           </div>
+
+          {supabaseStatus && (
+            <p className="text-xs text-emerald-400 font-medium bg-emerald-500/10 border border-emerald-500/20 p-2 rounded-lg">
+              {supabaseStatus}
+            </p>
+          )}
         </div>
 
         {/* 4. Factory Demo Reset */}
         <div className="flex items-center justify-between pt-2 border-t border-neutral-800">
           <button
             onClick={handleResetDefaults}
-            className="text-xs text-neutral-500 hover:text-rose-400 transition-colors"
+            className="text-xs text-neutral-500 hover:text-rose-400 transition-colors cursor-pointer"
           >
             Reset to Factory Demo Data
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold rounded-lg"
+            className="px-4 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold rounded-lg cursor-pointer"
           >
             Done
           </button>

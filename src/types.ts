@@ -117,5 +117,10 @@ export interface CertificateRecord {
   issueDate: string;
   verificationCode: string; // e.g. COR-VERIFY-XXXX
   createdAt: string;
+  certificateNumber?: string;
+  courseMode?: string;
+  courseDuration?: string;
+  signatories?: { name: string; role: string; organization?: string }[];
+  status?: 'issued' | 'revoked' | 'verified';
 }
 

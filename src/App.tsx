@@ -6,7 +6,13 @@ import {
   getInvoices,
   getReceipts,
   subscribeToDbChanges,
+  isAdminAuthenticated,
+  setAdminAuthenticated,
 } from './services/storage';
+import {
+  fetchAndSyncAllDataFromSupabase,
+  subscribeToAllSupabaseRealtime,
+} from './services/supabase';
 import { Navbar, NavView } from './components/Navbar';
 import { DashboardView } from './components/DashboardView';
 import { StudentsView } from './components/StudentsView';
@@ -32,7 +38,7 @@ export default function App() {
     try {
       const params = new URLSearchParams(window.location.search);
       const code = params.get('verify') || params.get('v');
-      if (code) return code;
+      if (code !== null) return code;
       if (window.location.hash.includes('verify=')) {
         const match = window.location.hash.match(/verify=([^&]+)/);
         if (match) return decodeURIComponent(match[1]);
@@ -43,8 +49,10 @@ export default function App() {
     return null;
   });
 
+  // Protected Portal Access: App strictly requires PIN entry on initial load
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => false);
+
   // Modals & Overlays
-  const [isLocked, setIsLocked] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
   const [isAddCourseOpen, setIsAddCourseOpen] = useState(false);
@@ -80,7 +88,7 @@ export default function App() {
   const [selectedStudentForInvoice, setSelectedStudentForInvoice] = useState<Student | null>(null);
   const [courseForAdStudio, setCourseForAdStudio] = useState<Course | null>(null);
 
-  // Load Database State
+  // Load Database State & background sync
   const reloadData = () => {
     setCourses(getCourses());
     setStudents(getStudents());
@@ -90,10 +98,24 @@ export default function App() {
 
   useEffect(() => {
     reloadData();
-    const unsubscribe = subscribeToDbChanges(() => {
+    const unsubscribeDb = subscribeToDbChanges(() => {
       reloadData();
     });
-    return () => unsubscribe();
+
+    // 1. Initial Cloud Boot Sync: Fetch all Students, Courses, Invoices, Receipts, and Certificates from Supabase
+    fetchAndSyncAllDataFromSupabase()
+      .then(() => reloadData())
+      .catch(err => console.warn('Supabase initial sync note:', err));
+
+    // 2. Realtime Subscription: Listen for changes across all tables in real-time
+    const unsubscribeRealtime = subscribeToAllSupabaseRealtime(() => {
+      reloadData();
+    });
+
+    return () => {
+      unsubscribeDb();
+      unsubscribeRealtime();
+    };
   }, []);
 
   // Listen for browser popstate or verification navigation
@@ -107,12 +129,20 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // Clear verification gateway and go to main app portal
+  // Transition from public verification gateway to institute dashboard (requires authentication)
   const handleExitVerificationGateway = () => {
     const cleanUrl = window.location.origin + window.location.pathname;
     window.history.pushState({}, '', cleanUrl);
     setVerifyParam(null);
+    setAdminAuthenticated(true);
+    setIsAuthenticated(true);
     setActiveView('dashboard');
+  };
+
+  // Lock Admin Session
+  const handleLockAdmin = () => {
+    setAdminAuthenticated(false);
+    setIsAuthenticated(false);
   };
 
   // Quick Action Handlers
@@ -156,7 +186,7 @@ export default function App() {
     setActiveView('students');
   };
 
-  // If ?verify= parameter is detected in the URL, render the dedicated public verification gateway
+  // 1. If ?verify= parameter is detected in the URL, render the dedicated public verification gateway
   if (verifyParam !== null) {
     return (
       <CertificateVerificationGateway
@@ -166,6 +196,28 @@ export default function App() {
     );
   }
 
+  // 2. PIN-based authentication gate: App is strictly accessible only after entering Admin PIN
+  if (!isAuthenticated) {
+    return (
+      <div className={`min-h-screen ${theme === 'light' ? 'bg-[#fafafc]' : 'bg-neutral-950'} flex flex-col font-sans`}>
+        <AdminLockModal
+          isOpen={true}
+          isMandatoryGate={true}
+          onUnlock={() => {
+            setAdminAuthenticated(true);
+            setIsAuthenticated(true);
+          }}
+          onGoToVerification={() => {
+            setVerifyParam('');
+          }}
+          title="Admin Authentication Required"
+          description="Enter 4-digit PIN to access institute management and records"
+        />
+      </div>
+    );
+  }
+
+  // 3. Authenticated Dashboard & Management Portal
   return (
     <div
       className={`min-h-screen ${
@@ -176,9 +228,9 @@ export default function App() {
       <Navbar
         activeView={activeView}
         onSelectView={setActiveView}
-        onLockAdmin={() => setIsLocked(true)}
+        onLockAdmin={handleLockAdmin}
         onOpenSettings={() => setIsSettingsOpen(true)}
-        isLocked={isLocked}
+        isLocked={false}
         theme={theme}
         onToggleTheme={handleToggleTheme}
       />
@@ -264,13 +316,6 @@ export default function App() {
 
       {/* A4 Payment Receipt Modal */}
       <ReceiptModal receipt={activeReceipt} onClose={() => setActiveReceipt(null)} />
-
-      {/* Admin Passcode Gatekeeper */}
-      <AdminLockModal
-        isOpen={isLocked}
-        onUnlock={() => setIsLocked(false)}
-        onBack={() => setIsLocked(false)}
-      />
 
       {/* System Settings & Cloud Sync Modal */}
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />

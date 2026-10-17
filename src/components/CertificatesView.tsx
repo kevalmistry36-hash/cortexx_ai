@@ -11,6 +11,11 @@ import { CortexxLogo } from './CortexxLogo';
 import { CortexxOfficialSeal } from './CortexxOfficialSeal';
 import QRCode from 'qrcode';
 import {
+  fetchAndSyncAllCertificatesFromSupabase,
+  subscribeToCertificatesRealtime,
+  pushAllLocalCertificatesToSupabase,
+} from '../services/supabase';
+import {
   Award,
   CheckCircle2,
   Download,
@@ -31,6 +36,8 @@ import {
   Sparkles,
   FileText,
   Loader2,
+  Cloud,
+  RefreshCw,
 } from 'lucide-react';
 import { INSTITUTE_PROFILE } from '../constants/initialData';
 
@@ -47,6 +54,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
 }) => {
   const [certificates, setCertificates] = useState<CertificateRecord[]>([]);
   const [wizardStep, setWizardStep] = useState<1 | 2 | 3>(1);
+  const [isCloudSyncing, setIsCloudSyncing] = useState(false);
 
   // Wizard Form State
   const [selectedCourseId, setSelectedCourseId] = useState<string>(courses[0]?.id || 'other');
@@ -69,6 +77,22 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
 
   useEffect(() => {
     setCertificates(getCertificates());
+
+    // Fetch latest from Supabase Realtime DB across all devices
+    fetchAndSyncAllCertificatesFromSupabase()
+      .then(latest => {
+        if (latest && latest.length > 0) {
+          setCertificates(latest);
+        }
+      })
+      .catch(() => {});
+
+    // Subscribe to realtime changes
+    const unsubscribe = subscribeToCertificatesRealtime(() => {
+      setCertificates(getCertificates());
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const activeCourseName =
