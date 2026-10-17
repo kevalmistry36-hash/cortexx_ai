@@ -714,39 +714,39 @@ function generateDirectVectorPdf(
   pdf.setFont('courier', 'bold');
   pdf.setFontSize(12);
   pdf.setTextColor(0, 0, 0);
-  pdf.text(cert.issueDate, 60, 450);
+  pdf.text(cert.issueDate, 117.5, 450, { align: 'center' });
 
   pdf.setDrawColor(0, 0, 0);
   pdf.setLineWidth(1.2);
-  pdf.line(60, 464, 145, 464);
+  pdf.line(60, 464, 175, 464);
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(8.5);
-  pdf.text('DATE OF ISSUE', 60, 478);
+  pdf.text('DATE OF ISSUE', 117.5, 478, { align: 'center' });
 
   pdf.setFont('courier', 'bold');
   pdf.setFontSize(8);
   pdf.setTextColor(31, 41, 55);
-  pdf.text(`ID: ${cert.id}`, 60, 492);
+  pdf.text(`ID: ${cert.id}`, 117.5, 492, { align: 'center' });
 
   // --- Col 2: 1st Signatory (Keval Gajjar) ---
   pdf.setFont('times', 'italic');
   pdf.setFontSize(17);
   pdf.setTextColor(0, 0, 0);
-  pdf.text('Keval Gajjar', 220, 448, { align: 'center' });
+  pdf.text('Keval Gajjar', 272.5, 448, { align: 'center' });
 
   pdf.setDrawColor(0, 0, 0);
   pdf.setLineWidth(1.2);
-  pdf.line(160, 464, 280, 464);
+  pdf.line(205, 464, 340, 464);
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(9.5);
-  pdf.text('Keval Gajjar', 220, 478, { align: 'center' });
+  pdf.text('Keval Gajjar', 272.5, 478, { align: 'center' });
 
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(8);
   pdf.setTextColor(71, 85, 105);
-  pdf.text('Founder & CEO', 220, 492, { align: 'center' });
+  pdf.text('Founder & CEO', 272.5, 492, { align: 'center' });
 
   // --- Col 3: Centered Official Seal ---
   if (sealPngDataUrl) {
@@ -762,39 +762,39 @@ function generateDirectVectorPdf(
   pdf.setFont('times', 'italic');
   pdf.setFontSize(17);
   pdf.setTextColor(0, 0, 0);
-  pdf.text('Hiren Raval', pageWidth - 220, 448, { align: 'center' });
+  pdf.text('Hiren Raval', pageWidth - 272.5, 448, { align: 'center' });
 
   pdf.setDrawColor(0, 0, 0);
   pdf.setLineWidth(1.2);
-  pdf.line(pageWidth - 280, 464, pageWidth - 160, 464);
+  pdf.line(pageWidth - 340, 464, pageWidth - 205, 464);
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(9.5);
-  pdf.text('Hiren Raval', pageWidth - 220, 478, { align: 'center' });
+  pdf.text('Hiren Raval', pageWidth - 272.5, 478, { align: 'center' });
 
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(8);
   pdf.setTextColor(71, 85, 105);
-  pdf.text('Head of AI Engineering', pageWidth - 220, 492, { align: 'center' });
+  pdf.text('Head of AI Engineering', pageWidth - 272.5, 492, { align: 'center' });
 
   // --- Col 5: 3rd Signatory (Shweta Malaviya) ---
   pdf.setFont('times', 'italic');
   pdf.setFontSize(17);
   pdf.setTextColor(0, 0, 0);
-  pdf.text('Shweta Malaviya', pageWidth - 80, 448, { align: 'center' });
+  pdf.text('Shweta Malaviya', pageWidth - 117.5, 448, { align: 'center' });
 
   pdf.setDrawColor(0, 0, 0);
   pdf.setLineWidth(1.2);
-  pdf.line(pageWidth - 145, 464, pageWidth - 15, 464);
+  pdf.line(pageWidth - 175, 464, pageWidth - 60, 464);
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(9.5);
-  pdf.text('Shweta Malaviya', pageWidth - 80, 478, { align: 'center' });
+  pdf.text('Shweta Malaviya', pageWidth - 117.5, 478, { align: 'center' });
 
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(8);
   pdf.setTextColor(71, 85, 105);
-  pdf.text('Academic Director', pageWidth - 80, 492, { align: 'center' });
+  pdf.text('Academic Director', pageWidth - 117.5, 492, { align: 'center' });
 
   // Save PDF file
   pdf.save(`Certificate_${cert.id}_${studentName.replace(/\s+/g, '_')}.pdf`);

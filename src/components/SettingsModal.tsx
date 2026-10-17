@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   getAdminPin,
   setAdminPin,
   exportDataJson,
   importDataJson,
   resetToDefaults,
-  getSupabaseConfig,
-  saveSupabaseConfig,
   generateSupabaseSqlSchema,
 } from '../services/storage';
 import {
   testSupabaseConnection,
   pushAllLocalDataToSupabase,
   fetchAndSyncAllDataFromSupabase,
+  saveSupabaseCredentialsToServer,
+  getActiveSupabaseCredentials,
+  fetchServerSupabaseConfig,
 } from '../services/supabase';
 import {
   KeyRound,
@@ -29,6 +30,7 @@ import {
   Wifi,
   ArrowDownCircle,
   ArrowUpCircle,
+  Globe,
 } from 'lucide-react';
 
 interface SettingsModalProps {
@@ -43,14 +45,24 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const [pinMessage, setPinMessage] = useState<{ text: string; error?: boolean } | null>(null);
 
   // Supabase state
-  const initialSupabase = getSupabaseConfig();
-  const [supabaseUrl, setSupabaseUrl] = useState(initialSupabase.url);
-  const [supabaseKey, setSupabaseKey] = useState(initialSupabase.anonKey);
+  const activeCreds = getActiveSupabaseCredentials();
+  const [supabaseUrl, setSupabaseUrl] = useState(activeCreds.url);
+  const [supabaseKey, setSupabaseKey] = useState(activeCreds.anonKey);
   const [copiedSchema, setCopiedSchema] = useState(false);
   const [supabaseStatus, setSupabaseStatus] = useState<string | null>(null);
   const [isTesting, setIsTesting] = useState(false);
   const [isSyncingAll, setIsSyncingAll] = useState(false);
   const [isPullingAll, setIsPullingAll] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchServerSupabaseConfig().then(creds => {
+        if (creds.url) setSupabaseUrl(creds.url);
+        if (creds.anonKey) setSupabaseKey(creds.anonKey);
+      });
+    }
+  }, [isOpen]);
+
 
   // Backup state
   const [importText, setImportText] = useState('');
@@ -112,15 +124,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     reader.readAsText(file);
   };
 
-  const handleSaveSupabase = () => {
-    saveSupabaseConfig({
-      url: supabaseUrl.trim(),
-      anonKey: supabaseKey.trim(),
-      autoSync: !!supabaseUrl && !!supabaseKey,
-    });
-    setSupabaseStatus('Supabase configuration saved.');
-    setTimeout(() => setSupabaseStatus(null), 3500);
+  const handleSaveSupabase = async () => {
+    setIsTesting(true);
+    setSupabaseStatus(null);
+    try {
+      const res = await saveSupabaseCredentialsToServer(supabaseUrl.trim(), supabaseKey.trim());
+      setSupabaseStatus(res.message);
+    } catch (err: any) {
+      setSupabaseStatus(`Save error: ${err.message}`);
+    } finally {
+      setIsTesting(false);
+    }
   };
+
 
   const handleTestConnection = async () => {
     setIsTesting(true);

@@ -14,23 +14,113 @@ import {
   getInvoices,
   getReceipts,
   getSupabaseConfig,
+  saveSupabaseConfig,
 } from './storage';
 
 let supabaseInstance: SupabaseClient | null = null;
 let currentSupabaseUrl = '';
 let currentSupabaseKey = '';
+let serverConfigAttempted = false;
+let memoryServerUrl = '';
+let memoryServerKey = '';
 
-// Resolve active Supabase credentials (Vite env variables or user-configured in Settings)
+// Helper to safely format ISO date for Postgres DATE column
+function safeDate(d?: string | null): string {
+  if (!d) return new Date().toISOString().split('T')[0];
+  const parsed = new Date(d);
+  if (isNaN(parsed.getTime())) return new Date().toISOString().split('T')[0];
+  return parsed.toISOString().split('T')[0];
+}
+
+// Proactively pull Supabase credentials from the central server so all devices/browsers share them
+export async function fetchServerSupabaseConfig(): Promise<{ url: string; anonKey: string }> {
+  try {
+    const res = await fetch('/api/supabase-config');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.url && data.anonKey) {
+        memoryServerUrl = data.url.trim();
+        memoryServerKey = data.anonKey.trim();
+        saveSupabaseConfig({
+          url: memoryServerUrl,
+          anonKey: memoryServerKey,
+          autoSync: true,
+        });
+        getSupabaseClient(); // re-init client
+      }
+    }
+  } catch (err) {
+    // Backend fetch failed (e.g. offline) - fallback to local storage
+  } finally {
+    serverConfigAttempted = true;
+  }
+  return getActiveSupabaseCredentials();
+}
+
+// Save Supabase credentials to both central server (all devices) and local cache
+export async function saveSupabaseCredentialsToServer(url: string, anonKey: string): Promise<{ success: boolean; message: string }> {
+  const cleanUrl = url.trim();
+  const cleanKey = anonKey.trim();
+
+  memoryServerUrl = cleanUrl;
+  memoryServerKey = cleanKey;
+
+  saveSupabaseConfig({
+    url: cleanUrl,
+    anonKey: cleanKey,
+    autoSync: !!(cleanUrl && cleanKey),
+  });
+
+  // Reset current client so it reinitializes
+  supabaseInstance = null;
+  currentSupabaseUrl = '';
+  currentSupabaseKey = '';
+
+  let serverSaved = false;
+  try {
+    const res = await fetch('/api/supabase-config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: cleanUrl, anonKey: cleanKey }),
+    });
+    if (res.ok) {
+      serverSaved = true;
+    }
+  } catch {
+    // Network or server error
+  }
+
+  // Test the new client
+  if (cleanUrl && cleanKey) {
+    const testRes = await testSupabaseConnection(cleanUrl, cleanKey);
+    return {
+      success: testRes.success,
+      message: serverSaved
+        ? `${testRes.message} (Credentials saved globally for all devices)`
+        : testRes.message,
+    };
+  }
+
+  return { success: true, message: 'Supabase credentials cleared.' };
+}
+
+// Resolve active Supabase credentials (In-memory server config -> Vite env -> local storage)
 export function getActiveSupabaseCredentials(): { url: string; anonKey: string } {
   const envUrl = (import.meta as any).env?.VITE_SUPABASE_URL || '';
   const envKey = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || '';
 
   const localConfig = getSupabaseConfig();
 
-  const url = (envUrl || localConfig.url || '').trim();
-  const anonKey = (envKey || localConfig.anonKey || '').trim();
+  const url = (memoryServerUrl || envUrl || localConfig.url || '').trim();
+  const anonKey = (memoryServerKey || envKey || localConfig.anonKey || '').trim();
 
   return { url, anonKey };
+}
+
+// Check if Supabase is currently configured
+export function isSupabaseConfigured(): boolean {
+  const { url, anonKey } = getActiveSupabaseCredentials();
+  return !!(url && anonKey);
 }
 
 // Get or initialize singleton Supabase client
@@ -38,6 +128,10 @@ export function getSupabaseClient(): SupabaseClient | null {
   const { url, anonKey } = getActiveSupabaseCredentials();
 
   if (!url || !anonKey) {
+    // Trigger lazy server fetch once in background if not yet attempted
+    if (!serverConfigAttempted && typeof window !== 'undefined') {
+      fetchServerSupabaseConfig().catch(() => {});
+    }
     return null;
   }
 
@@ -66,13 +160,19 @@ export function getSupabaseClient(): SupabaseClient | null {
   }
 }
 
-// Test Supabase connection across database tables
-export async function testSupabaseConnection(url?: string, anonKey?: string): Promise<{ success: boolean; message: string }> {
+// Comprehensive connection test across all 5 tables
+export async function testSupabaseConnection(
+  url?: string,
+  anonKey?: string
+): Promise<{ success: boolean; message: string; tablesFound?: string[]; missingTables?: string[] }> {
   const activeUrl = url || getActiveSupabaseCredentials().url;
   const activeKey = anonKey || getActiveSupabaseCredentials().anonKey;
 
   if (!activeUrl || !activeKey) {
-    return { success: false, message: 'Supabase URL and Anon Key are required.' };
+    return {
+      success: false,
+      message: 'Supabase URL and Anon Key are required to enable multi-device sync.',
+    };
   }
 
   try {
@@ -80,24 +180,55 @@ export async function testSupabaseConnection(url?: string, anonKey?: string): Pr
       auth: { persistSession: false },
     });
 
-    // Check query access
-    const { error: certErr } = await client
-      .from('certificates')
-      .select('id')
-      .limit(1);
+    const tables = ['courses', 'students', 'invoices', 'receipts', 'certificates'];
+    const tablesFound: string[] = [];
+    const missingTables: string[] = [];
+    let permissionError = false;
 
-    if (certErr && certErr.code === '42P01') {
+    for (const table of tables) {
+      const { error } = await client.from(table).select('id').limit(1);
+      if (error) {
+        if (error.code === '42P01') {
+          missingTables.push(table);
+        } else if (error.code === '42501') {
+          permissionError = true;
+          tablesFound.push(table);
+        } else if (error.message && error.message.toLowerCase().includes('does not exist')) {
+          missingTables.push(table);
+        } else {
+          // Table exists but maybe column differs, count as found
+          tablesFound.push(table);
+        }
+      } else {
+        tablesFound.push(table);
+      }
+    }
+
+    if (missingTables.length > 0) {
       return {
         success: false,
-        message: 'Connected to Supabase, but tables are missing. Copy and run the SQL schema in your Supabase SQL Editor.',
+        message: `Connected to Supabase, but ${missingTables.length} table(s) missing (${missingTables.join(
+          ', '
+        )}). Please copy and run the SQL schema in your Supabase SQL Editor.`,
+        tablesFound,
+        missingTables,
       };
     }
 
-    if (certErr && certErr.message) {
-      return { success: false, message: `Supabase returned: ${certErr.message} (${certErr.code || ''})` };
+    if (permissionError) {
+      return {
+        success: false,
+        message:
+          'Connected to Supabase, but Row Level Security blocked access. Execute the RLS policies in the SQL schema.',
+        tablesFound,
+      };
     }
 
-    return { success: true, message: 'Successfully connected to Supabase Realtime Database!' };
+    return {
+      success: true,
+      message: 'Successfully connected to Supabase! All 5 tables are live and ready for real-time cloud sync.',
+      tablesFound,
+    };
   } catch (err: any) {
     return { success: false, message: `Connection failed: ${err.message || 'Network error'}` };
   }
@@ -117,7 +248,7 @@ function mapStudentToRow(s: Student) {
     enrolled_course_id: s.enrolledCourseId || '',
     enrolled_course_name: s.enrolledCourseName || '',
     enrollment_id: s.enrollmentId || '',
-    enrollment_date: s.enrollmentDate || null,
+    enrollment_date: safeDate(s.enrollmentDate),
     agreed_fee: Number(s.agreedFee) || 5000,
     total_paid: Number(s.totalPaid) || 0,
     payment_status: s.paymentStatus || 'unpaid',
@@ -183,7 +314,7 @@ function mapRowToCourse(row: any): Course {
 function mapInvoiceToRow(inv: Invoice) {
   return {
     invoice_number: inv.invoiceNumber,
-    invoice_date: inv.invoiceDate || new Date().toISOString().split('T')[0],
+    invoice_date: safeDate(inv.invoiceDate),
     student_id: inv.studentId,
     student_name: inv.studentName,
     student_phone: inv.studentPhone || '',
@@ -235,7 +366,7 @@ function mapReceiptToRow(rec: PaymentReceipt) {
     invoice_number: rec.invoiceNumber,
     student_id: rec.studentId,
     student_name: rec.studentName,
-    payment_date: rec.paymentDate || new Date().toISOString().split('T')[0],
+    payment_date: safeDate(rec.paymentDate),
     amount_received: Number(rec.amountReceived) || 0,
     payment_method: rec.paymentMethod || 'UPI',
     remaining_balance_after: Number(rec.remainingBalanceAfter) || 0,
@@ -272,9 +403,9 @@ function mapCertToRow(cert: CertificateRecord) {
     course_name: cert.courseName,
     course_mode: cert.courseMode || '100% Online',
     course_duration: cert.courseDuration || '1 Month',
-    start_date: cert.startDate,
-    end_date: cert.endDate,
-    issue_date: cert.issueDate,
+    start_date: safeDate(cert.startDate),
+    end_date: safeDate(cert.endDate),
+    issue_date: safeDate(cert.issueDate),
     certificate_number: cert.certificateNumber || cert.id,
     verification_code: cert.verificationCode,
     signatories: cert.signatories || [],
@@ -308,7 +439,11 @@ function mapRowToCert(row: any): CertificateRecord {
 
 // --- Students Sync ---
 export async function syncStudentToSupabase(student: Student): Promise<{ success: boolean; error?: string }> {
-  const supabase = getSupabaseClient();
+  let supabase = getSupabaseClient();
+  if (!supabase) {
+    await fetchServerSupabaseConfig();
+    supabase = getSupabaseClient();
+  }
   if (!supabase) return { success: false, error: 'Supabase client not initialized' };
 
   try {
@@ -336,7 +471,11 @@ export async function deleteStudentFromSupabase(studentId: string): Promise<void
 
 // --- Courses Sync ---
 export async function syncCourseToSupabase(course: Course): Promise<{ success: boolean; error?: string }> {
-  const supabase = getSupabaseClient();
+  let supabase = getSupabaseClient();
+  if (!supabase) {
+    await fetchServerSupabaseConfig();
+    supabase = getSupabaseClient();
+  }
   if (!supabase) return { success: false, error: 'Supabase client not initialized' };
 
   try {
@@ -364,7 +503,11 @@ export async function deleteCourseFromSupabase(courseId: string): Promise<void> 
 
 // --- Invoices Sync ---
 export async function syncInvoiceToSupabase(invoice: Invoice): Promise<{ success: boolean; error?: string }> {
-  const supabase = getSupabaseClient();
+  let supabase = getSupabaseClient();
+  if (!supabase) {
+    await fetchServerSupabaseConfig();
+    supabase = getSupabaseClient();
+  }
   if (!supabase) return { success: false, error: 'Supabase client not initialized' };
 
   try {
@@ -392,7 +535,11 @@ export async function deleteInvoiceFromSupabase(invoiceNumber: string): Promise<
 
 // --- Receipts Sync ---
 export async function syncReceiptToSupabase(receipt: PaymentReceipt): Promise<{ success: boolean; error?: string }> {
-  const supabase = getSupabaseClient();
+  let supabase = getSupabaseClient();
+  if (!supabase) {
+    await fetchServerSupabaseConfig();
+    supabase = getSupabaseClient();
+  }
   if (!supabase) return { success: false, error: 'Supabase client not initialized' };
 
   try {
@@ -420,8 +567,12 @@ export async function deleteReceiptFromSupabase(receiptNumber: string): Promise<
 
 // --- Certificates Sync ---
 export async function syncCertificateToSupabase(cert: CertificateRecord): Promise<{ success: boolean; error?: string }> {
-  const supabase = getSupabaseClient();
-  if (!supabase) return { success: false, error: 'Supabase client not initialized' };
+  let supabase = getSupabaseClient();
+  if (!supabase) {
+    await fetchServerSupabaseConfig();
+    supabase = getSupabaseClient();
+  }
+  if (!supabase) return { success: false, error: 'Supabase client not initialized. Configure Supabase in Settings.' };
 
   try {
     const row = mapCertToRow(cert);
@@ -457,9 +608,20 @@ export async function pushAllLocalDataToSupabase(): Promise<{
   certificatesCount: number;
   error?: string;
 }> {
-  const supabase = getSupabaseClient();
+  let supabase = getSupabaseClient();
   if (!supabase) {
-    return { studentsCount: 0, coursesCount: 0, invoicesCount: 0, receiptsCount: 0, certificatesCount: 0, error: 'Supabase client not configured' };
+    await fetchServerSupabaseConfig();
+    supabase = getSupabaseClient();
+  }
+  if (!supabase) {
+    return {
+      studentsCount: 0,
+      coursesCount: 0,
+      invoicesCount: 0,
+      receiptsCount: 0,
+      certificatesCount: 0,
+      error: 'Supabase client not configured. Enter Supabase URL and Anon Key in Settings.',
+    };
   }
 
   try {
@@ -472,31 +634,36 @@ export async function pushAllLocalDataToSupabase(): Promise<{
     // 1. Courses
     if (courses.length > 0) {
       const courseRows = courses.map(mapCourseToRow);
-      await supabase.from('courses').upsert(courseRows, { onConflict: 'id' });
+      const { error: cErr } = await supabase.from('courses').upsert(courseRows, { onConflict: 'id' });
+      if (cErr) throw new Error(`Courses table error: ${cErr.message}`);
     }
 
     // 2. Students
     if (students.length > 0) {
       const studentRows = students.map(mapStudentToRow);
-      await supabase.from('students').upsert(studentRows, { onConflict: 'id' });
+      const { error: sErr } = await supabase.from('students').upsert(studentRows, { onConflict: 'id' });
+      if (sErr) throw new Error(`Students table error: ${sErr.message}`);
     }
 
     // 3. Invoices
     if (invoices.length > 0) {
       const invoiceRows = invoices.map(mapInvoiceToRow);
-      await supabase.from('invoices').upsert(invoiceRows, { onConflict: 'invoice_number' });
+      const { error: iErr } = await supabase.from('invoices').upsert(invoiceRows, { onConflict: 'invoice_number' });
+      if (iErr) throw new Error(`Invoices table error: ${iErr.message}`);
     }
 
     // 4. Receipts
     if (receipts.length > 0) {
       const receiptRows = receipts.map(mapReceiptToRow);
-      await supabase.from('receipts').upsert(receiptRows, { onConflict: 'receipt_number' });
+      const { error: rErr } = await supabase.from('receipts').upsert(receiptRows, { onConflict: 'receipt_number' });
+      if (rErr) throw new Error(`Receipts table error: ${rErr.message}`);
     }
 
     // 5. Certificates
     if (certs.length > 0) {
       const certRows = certs.map(mapCertToRow);
-      await supabase.from('certificates').upsert(certRows, { onConflict: 'id' });
+      const { error: certErr } = await supabase.from('certificates').upsert(certRows, { onConflict: 'id' });
+      if (certErr) throw new Error(`Certificates table error: ${certErr.message}`);
     }
 
     return {
@@ -535,7 +702,11 @@ export async function fetchAndSyncAllDataFromSupabase(): Promise<{
   receipts: PaymentReceipt[];
   certificates: CertificateRecord[];
 }> {
-  const supabase = getSupabaseClient();
+  let supabase = getSupabaseClient();
+  if (!supabase) {
+    await fetchServerSupabaseConfig();
+    supabase = getSupabaseClient();
+  }
   if (!supabase) {
     return {
       students: getStudents(),
@@ -653,67 +824,65 @@ export async function verifyCertificateFromCloud(code: string): Promise<Certific
   const cleanCode = code.trim();
   if (!cleanCode) return null;
 
-  const supabase = getSupabaseClient();
+  let supabase = getSupabaseClient();
   if (!supabase) {
-    const localCerts = getCertificates();
-    const clean = cleanCode.toLowerCase();
-    return localCerts.find(
-      c =>
-        c.verificationCode.toLowerCase() === clean ||
-        c.id.toLowerCase() === clean ||
-        (c.certificateNumber ? c.certificateNumber.toLowerCase() === clean : false) ||
-        c.studentName.toLowerCase() === clean
-    ) || null;
+    await fetchServerSupabaseConfig();
+    supabase = getSupabaseClient();
   }
 
-  try {
-    const { data, error } = await supabase
-      .from('certificates')
-      .select('*')
-      .or(`verification_code.eq.${cleanCode},certificate_number.eq.${cleanCode},id.eq.${cleanCode},student_name.ilike.%${cleanCode}%`)
-      .limit(1);
+  if (supabase) {
+    try {
+      // 1. Try exact match on verification_code or id or certificate_number
+      const { data, error } = await supabase
+        .from('certificates')
+        .select('*')
+        .or(`verification_code.eq.${cleanCode},certificate_number.eq.${cleanCode},id.eq.${cleanCode}`)
+        .limit(1);
 
-    if (error) {
-      console.warn('Supabase verification lookup note:', error.message);
-      const localCerts = getCertificates();
-      const clean = cleanCode.toLowerCase();
-      return localCerts.find(
-        c =>
-          c.verificationCode.toLowerCase() === clean ||
-          c.id.toLowerCase() === clean ||
-          (c.certificateNumber ? c.certificateNumber.toLowerCase() === clean : false) ||
-          c.studentName.toLowerCase() === clean
-      ) || null;
+      if (!error && data && data.length > 0) {
+        const cloudCert = mapRowToCert(data[0]);
+        // Update local cache directly without re-triggering mutation sync
+        const certs = getCertificates();
+        const idx = certs.findIndex(c => c.id === cloudCert.id);
+        if (idx >= 0) certs[idx] = cloudCert;
+        else certs.unshift(cloudCert);
+        localStorage.setItem('cortexx_certificates_v1', JSON.stringify(certs));
+        return cloudCert;
+      }
+
+      // 2. Try partial search by student name or loose code
+      const { data: nameData } = await supabase
+        .from('certificates')
+        .select('*')
+        .ilike('student_name', `%${cleanCode}%`)
+        .limit(1);
+
+      if (nameData && nameData.length > 0) {
+        const cloudCert = mapRowToCert(nameData[0]);
+        const certs = getCertificates();
+        const idx = certs.findIndex(c => c.id === cloudCert.id);
+        if (idx >= 0) certs[idx] = cloudCert;
+        else certs.unshift(cloudCert);
+        localStorage.setItem('cortexx_certificates_v1', JSON.stringify(certs));
+        return cloudCert;
+      }
+    } catch (err) {
+      console.warn('Cloud verification lookup notice:', err);
     }
-
-    if (data && data.length > 0) {
-      const cloudCert = mapRowToCert(data[0]);
-      saveCertificate(cloudCert);
-      return cloudCert;
-    }
-
-    // Fallback to local
-    const localCerts = getCertificates();
-    const clean = cleanCode.toLowerCase();
-    return localCerts.find(
-      c =>
-        c.verificationCode.toLowerCase() === clean ||
-        c.id.toLowerCase() === clean ||
-        (c.certificateNumber ? c.certificateNumber.toLowerCase() === clean : false) ||
-        c.studentName.toLowerCase() === clean
-    ) || null;
-  } catch (err) {
-    console.error('Cloud verification failed:', err);
-    const localCerts = getCertificates();
-    const clean = cleanCode.toLowerCase();
-    return localCerts.find(
-      c =>
-        c.verificationCode.toLowerCase() === clean ||
-        c.id.toLowerCase() === clean ||
-        (c.certificateNumber ? c.certificateNumber.toLowerCase() === clean : false) ||
-        c.studentName.toLowerCase() === clean
-    ) || null;
   }
+
+  // Fallback to local cache
+  const localCerts = getCertificates();
+  const clean = cleanCode.toLowerCase();
+  return (
+    localCerts.find(
+      c =>
+        c.verificationCode.toLowerCase() === clean ||
+        c.id.toLowerCase() === clean ||
+        (c.certificateNumber ? c.certificateNumber.toLowerCase() === clean : false) ||
+        c.studentName.toLowerCase().includes(clean)
+    ) || null
+  );
 }
 
 // ==========================================
@@ -798,7 +967,11 @@ export function subscribeToAllSupabaseRealtime(onSync?: () => void): () => void 
       .on('postgres_changes', { event: '*', schema: 'public', table: 'certificates' }, payload => {
         if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
           const cert = mapRowToCert(payload.new);
-          saveCertificate(cert);
+          const current = getCertificates();
+          const idx = current.findIndex(c => c.id === cert.id);
+          if (idx >= 0) current[idx] = cert;
+          else current.unshift(cert);
+          localStorage.setItem('cortexx_certificates_v1', JSON.stringify(current));
         } else if (payload.eventType === 'DELETE' && payload.old) {
           const oldId = (payload.old as any).id;
           const current = getCertificates().filter(c => c.id !== oldId);

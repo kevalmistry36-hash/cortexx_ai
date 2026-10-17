@@ -108,15 +108,23 @@ export function deleteCourse(courseId: string) {
 }
 
 // ----------------- Students -----------------
+const DUMMY_STUDENT_IDS = new Set(['COR-STU-2026-0001', 'COR-STU-2026-0002', 'COR-STU-2026-0003']);
+const DUMMY_STUDENT_NAMES = new Set(['aarav sharma', 'pooja patel', 'rohan mehta']);
+
 export function getStudents(): Student[] {
-  if (typeof window === 'undefined') return INITIAL_STUDENTS;
+  if (typeof window === 'undefined') return [];
   const raw = localStorage.getItem(STORAGE_KEYS.STUDENTS);
   if (!raw) {
-    localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(INITIAL_STUDENTS));
-    return INITIAL_STUDENTS;
+    return [];
   }
   try {
     let students: Student[] = JSON.parse(raw);
+    // Purge legacy dummy mock students
+    const originalCount = students.length;
+    students = students.filter(
+      s => !DUMMY_STUDENT_IDS.has(s.id) && !DUMMY_STUDENT_NAMES.has((s.name || '').trim().toLowerCase())
+    );
+
     const hasLegacyCourse = students.some(s => s.enrolledCourseId === 'course-ai-agents-02');
     if (hasLegacyCourse) {
       students = students.map(s => {
@@ -130,13 +138,17 @@ export function getStudents(): Student[] {
         }
         return s;
       });
+    }
+
+    if (students.length !== originalCount || hasLegacyCourse) {
       localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(students));
     }
     return students;
   } catch {
-    return INITIAL_STUDENTS;
+    return [];
   }
 }
+
 
 export function getNextStudentId(): string {
   const students = getStudents();
@@ -384,11 +396,20 @@ export function getCertificates(): CertificateRecord[] {
   const raw = localStorage.getItem(STORAGE_KEYS.CERTIFICATES);
   if (!raw) return [];
   try {
-    return JSON.parse(raw);
+    let certs: CertificateRecord[] = JSON.parse(raw);
+    const originalCount = certs.length;
+    certs = certs.filter(
+      c => !DUMMY_STUDENT_IDS.has(c.studentId) && !DUMMY_STUDENT_NAMES.has((c.studentName || '').trim().toLowerCase())
+    );
+    if (certs.length !== originalCount) {
+      localStorage.setItem(STORAGE_KEYS.CERTIFICATES, JSON.stringify(certs));
+    }
+    return certs;
   } catch {
     return [];
   }
 }
+
 
 export function saveCertificate(cert: CertificateRecord): void {
   const certs = getCertificates();
@@ -706,15 +727,21 @@ export function bulkSaveStudents(items: BulkStudentInput[]): {
 }
 
 // ----------------- Invoices -----------------
+const DUMMY_INVOICE_NUMBERS = new Set(['COR-INV-2026-0001', 'COR-INV-2026-0002', 'COR-INV-2026-0003']);
+
 export function getInvoices(): Invoice[] {
-  if (typeof window === 'undefined') return INITIAL_INVOICES;
+  if (typeof window === 'undefined') return [];
   const raw = localStorage.getItem(STORAGE_KEYS.INVOICES);
   if (!raw) {
-    localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(INITIAL_INVOICES));
-    return INITIAL_INVOICES;
+    return [];
   }
   try {
     let invoices: Invoice[] = JSON.parse(raw);
+    const originalCount = invoices.length;
+    invoices = invoices.filter(
+      i => !DUMMY_INVOICE_NUMBERS.has(i.invoiceNumber) && !DUMMY_STUDENT_NAMES.has((i.studentName || '').trim().toLowerCase())
+    );
+
     const hasLegacyCourse = invoices.some(i => i.courseName === 'Autonomous AI Agents & Workflows' || i.courseDuration.toLowerCase().includes('6 week'));
     if (hasLegacyCourse) {
       invoices = invoices.map(i => {
@@ -730,11 +757,14 @@ export function getInvoices(): Invoice[] {
         }
         return i;
       });
+    }
+
+    if (invoices.length !== originalCount || hasLegacyCourse) {
       localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
     }
     return invoices;
   } catch {
-    return INITIAL_INVOICES;
+    return [];
   }
 }
 
@@ -786,19 +816,29 @@ export function deleteInvoice(invoiceNumber: string) {
 }
 
 // ----------------- Receipts -----------------
+const DUMMY_RECEIPT_NUMBERS = new Set(['COR-REC-2026-0001', 'COR-REC-2026-0002']);
+
 export function getReceipts(): PaymentReceipt[] {
-  if (typeof window === 'undefined') return INITIAL_RECEIPTS;
+  if (typeof window === 'undefined') return [];
   const raw = localStorage.getItem(STORAGE_KEYS.RECEIPTS);
   if (!raw) {
-    localStorage.setItem(STORAGE_KEYS.RECEIPTS, JSON.stringify(INITIAL_RECEIPTS));
-    return INITIAL_RECEIPTS;
+    return [];
   }
   try {
-    return JSON.parse(raw);
+    let receipts: PaymentReceipt[] = JSON.parse(raw);
+    const originalCount = receipts.length;
+    receipts = receipts.filter(
+      r => !DUMMY_RECEIPT_NUMBERS.has(r.receiptNumber) && !DUMMY_STUDENT_NAMES.has((r.studentName || '').trim().toLowerCase())
+    );
+    if (receipts.length !== originalCount) {
+      localStorage.setItem(STORAGE_KEYS.RECEIPTS, JSON.stringify(receipts));
+    }
+    return receipts;
   } catch {
-    return INITIAL_RECEIPTS;
+    return [];
   }
 }
+
 
 export function getNextReceiptNumber(): string {
   const receipts = getReceipts();

@@ -14,6 +14,8 @@ import {
   fetchAndSyncAllCertificatesFromSupabase,
   subscribeToCertificatesRealtime,
   pushAllLocalCertificatesToSupabase,
+  syncCertificateToSupabase,
+  isSupabaseConfigured,
 } from '../services/supabase';
 import {
   Award,
