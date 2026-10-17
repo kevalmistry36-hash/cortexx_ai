@@ -13,6 +13,8 @@ import { StudentsView } from './components/StudentsView';
 import { CoursesView } from './components/CoursesView';
 import { InvoicesView } from './components/InvoicesView';
 import { BannerStudioView } from './components/BannerStudioView';
+import { CertificatesView } from './components/CertificatesView';
+import { CertificateVerificationGateway } from './components/CertificateVerificationGateway';
 import { InvoiceModal } from './components/InvoiceModal';
 import { ReceiptModal } from './components/ReceiptModal';
 import { AdminLockModal } from './components/AdminLockModal';
@@ -24,6 +26,22 @@ export default function App() {
   const [students, setStudents] = useState<Student[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [receipts, setReceipts] = useState<PaymentReceipt[]>([]);
+
+  // Public Certificate Verification Gateway state (?verify=...)
+  const [verifyParam, setVerifyParam] = useState<string | null>(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('verify') || params.get('v');
+      if (code) return code;
+      if (window.location.hash.includes('verify=')) {
+        const match = window.location.hash.match(/verify=([^&]+)/);
+        if (match) return decodeURIComponent(match[1]);
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  });
 
   // Modals & Overlays
   const [isLocked, setIsLocked] = useState(false);
@@ -78,6 +96,25 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
+  // Listen for browser popstate or verification navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('verify') || params.get('v');
+      setVerifyParam(code);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Clear verification gateway and go to main app portal
+  const handleExitVerificationGateway = () => {
+    const cleanUrl = window.location.origin + window.location.pathname;
+    window.history.pushState({}, '', cleanUrl);
+    setVerifyParam(null);
+    setActiveView('dashboard');
+  };
+
   // Quick Action Handlers
   const handleOpenAddStudent = () => {
     setIsAddStudentOpen(true);
@@ -102,7 +139,6 @@ export default function App() {
   };
 
   const handleRecordPaymentForStudent = (student: Student) => {
-    // Find matching invoice or switch to invoices
     const matchingInvoice = invoices.find(i => i.studentId === student.id);
     if (matchingInvoice) {
       setActiveInvoice(matchingInvoice);
@@ -120,8 +156,22 @@ export default function App() {
     setActiveView('students');
   };
 
+  // If ?verify= parameter is detected in the URL, render the dedicated public verification gateway
+  if (verifyParam !== null) {
+    return (
+      <CertificateVerificationGateway
+        initialCode={verifyParam}
+        onGoToPortal={handleExitVerificationGateway}
+      />
+    );
+  }
+
   return (
-    <div className={`min-h-screen ${theme === 'light' ? 'bg-[#fafafc] text-neutral-900' : 'bg-neutral-950 text-neutral-100'} flex flex-col font-sans transition-colors duration-200`}>
+    <div
+      className={`min-h-screen ${
+        theme === 'light' ? 'bg-[#fafafc] text-neutral-900' : 'bg-neutral-950 text-neutral-100'
+      } flex flex-col font-sans transition-colors duration-200`}
+    >
       {/* Top Bar Navigation with Theme Switcher right near Admin Lock */}
       <Navbar
         activeView={activeView}
@@ -188,15 +238,20 @@ export default function App() {
           />
         )}
 
-        {activeView === 'ad-studio' && (
-          <BannerStudioView
+        {activeView === 'certificates' && (
+          <CertificatesView
+            students={students}
             courses={courses}
-            initialCourse={courseForAdStudio}
+            onOpenVerificationGateway={code => setVerifyParam(code)}
           />
+        )}
+
+        {activeView === 'ad-studio' && (
+          <BannerStudioView courses={courses} initialCourse={courseForAdStudio} />
         )}
       </main>
 
-      {/* Footer Branding (Quiet and Anti-Slop) */}
+      {/* Footer Branding */}
       <footer className="mt-auto border-t border-neutral-900 py-6 px-4 text-center text-xs text-neutral-500 font-mono no-print mb-16 md:mb-0">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>Cortexx AI Institute · Where Thinking Meets Technology</span>
@@ -205,16 +260,10 @@ export default function App() {
       </footer>
 
       {/* A4 Vector Invoice Modal */}
-      <InvoiceModal
-        invoice={activeInvoice}
-        onClose={() => setActiveInvoice(null)}
-      />
+      <InvoiceModal invoice={activeInvoice} onClose={() => setActiveInvoice(null)} />
 
       {/* A4 Payment Receipt Modal */}
-      <ReceiptModal
-        receipt={activeReceipt}
-        onClose={() => setActiveReceipt(null)}
-      />
+      <ReceiptModal receipt={activeReceipt} onClose={() => setActiveReceipt(null)} />
 
       {/* Admin Passcode Gatekeeper */}
       <AdminLockModal
@@ -224,10 +273,7 @@ export default function App() {
       />
 
       {/* System Settings & Cloud Sync Modal */}
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-      />
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );
 }

@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { Student, Course, PaymentStatus, PaymentMethod, Invoice } from '../types';
 import { getNextStudentId, getNextEnrollmentId, saveStudent, deleteStudent, updateStudentFeeStatus, getInvoices, getNextInvoiceNumber, saveInvoice } from '../services/storage';
-import { Search, Plus, User, Phone, Mail, BookOpen, Trash2, Edit3, Receipt, IndianRupee, ArrowUpDown, FileSpreadsheet, CheckCircle2, RotateCcw, X, AlertTriangle, Download } from 'lucide-react';
+import { Search, Plus, User, Phone, Mail, BookOpen, Trash2, Edit3, Receipt, IndianRupee, ArrowUpDown, FileSpreadsheet, CheckCircle2, RotateCcw, X, AlertTriangle, Download, QrCode, FileDown, ShieldCheck, Check, FileText } from 'lucide-react';
 import { BulkStudentImportModal } from './BulkStudentImportModal';
+import { StudentQRModal } from './StudentQRModal';
+import { StudentQRThumbnail } from './StudentQRThumbnail';
 import { downloadInvoiceAsDoc } from '../utils/docExport';
+import { downloadStudentQRPdf } from '../utils/studentQRPdf';
+import * as XLSX from 'xlsx';
 
 interface StudentsViewProps {
   students: Student[];
@@ -33,7 +37,9 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
   const [deleteNotification, setDeleteNotification] = useState<string | null>(null);
   const [lastDeletedStudent, setLastDeletedStudent] = useState<Student | null>(null);
 
-  // Form State
+  // Individual Student QR Pass Modal State
+  const [selectedQRStudent, setSelectedQRStudent] = useState<Student | null>(null);
+  const [isQRModalOpen, setIsQRModalOpen] = useState<boolean>(false);
   const [formName, setFormName] = useState('');
   const [formPhone, setFormPhone] = useState('');
   const [formEmail, setFormEmail] = useState('');
@@ -155,6 +161,61 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
     downloadInvoiceAsDoc(inv);
     setDeleteNotification(`Downloaded Tax Invoice "${inv.invoiceNumber}" for ${student.name} in Word (.doc) format!`);
     setTimeout(() => setDeleteNotification(null), 5000);
+  };
+
+  const handleOpenQRModal = (student: Student) => {
+    setSelectedQRStudent(student);
+    setIsQRModalOpen(true);
+  };
+
+  const handleDownloadStudentQRPdf = async (student: Student) => {
+    try {
+      const course = courses.find(c => c.id === student.enrolledCourseId);
+      await downloadStudentQRPdf(student, course);
+      setDeleteNotification(`Downloaded QR Admission Pass (PDF) for ${student.name}!`);
+      setTimeout(() => setDeleteNotification(null), 4000);
+    } catch (err) {
+      console.error('PDF export error:', err);
+      setDeleteNotification(`Could not generate PDF for ${student.name}. Please open the QR pass.`);
+      setTimeout(() => setDeleteNotification(null), 4000);
+    }
+  };
+
+  const handleExportStudentsExcel = () => {
+    if (students.length === 0) {
+      setDeleteNotification('No student records to export.');
+      setTimeout(() => setDeleteNotification(null), 3000);
+      return;
+    }
+    const rows = students.map((s, index) => {
+      const course = courses.find(c => c.id === s.enrolledCourseId);
+      const totalFee = s.agreedFee || course?.fee || 6000;
+      const paid = s.totalPaid || 0;
+      const balance = Math.max(0, totalFee - paid);
+      return {
+        'S.No': index + 1,
+        'Student ID': s.id,
+        'Enrollment ID': s.enrollmentId,
+        'Full Name': s.name,
+        'Phone Number': `+91 ${s.phone}`,
+        'Email Address': s.email,
+        'Enrolled Course': s.enrolledCourseName,
+        'Admission Date': s.enrollmentDate,
+        'Fee Status': s.paymentStatus.toUpperCase(),
+        'Agreed Total Fee (INR)': totalFee,
+        'Amount Paid (INR)': paid,
+        'Balance Due (INR)': balance,
+        'Payment Method': s.paymentMethod || 'UPI',
+        'Notes': s.notes || '',
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Students');
+    XLSX.writeFile(workbook, `Cortexx_Admissions_${new Date().toISOString().split('T')[0]}.xlsx`);
+    setDeleteNotification(`Exported ${students.length} student records to Excel (.xlsx) successfully!`);
+    setTimeout(() => setDeleteNotification(null), 4000);
   };
 
   const handleCloseModal = () => {
@@ -286,10 +347,19 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <button
+            onClick={handleExportStudentsExcel}
+            className="flex items-center justify-center gap-2 px-3.5 py-2 bg-neutral-900 hover:bg-neutral-800 text-neutral-200 hover:text-white font-semibold rounded-lg border border-neutral-700/80 shadow-sm transition-colors shrink-0 text-sm cursor-pointer"
+            title="Export all student records to Excel (.xlsx)"
+          >
+            <FileDown className="w-4 h-4 text-orange-400" />
+            <span>Export Excel</span>
+          </button>
+
           <button
             onClick={() => setIsBulkImportOpen(true)}
-            className="flex items-center justify-center gap-2 px-3.5 py-2 bg-neutral-900 hover:bg-neutral-800 text-neutral-200 hover:text-white font-semibold rounded-lg border border-neutral-700/80 shadow-sm transition-colors shrink-0 text-sm"
+            className="flex items-center justify-center gap-2 px-3.5 py-2 bg-neutral-900 hover:bg-neutral-800 text-neutral-200 hover:text-white font-semibold rounded-lg border border-neutral-700/80 shadow-sm transition-colors shrink-0 text-sm cursor-pointer"
             title="Import multiple students from Excel (.xlsx, .xls) or Google Sheets"
           >
             <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
@@ -298,7 +368,7 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
 
           <button
             onClick={openAddModal}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white font-semibold rounded-lg shadow-md transition-colors shrink-0 text-sm"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white font-semibold rounded-lg shadow-md transition-colors shrink-0 text-sm cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>New Admission</span>
@@ -348,6 +418,43 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
           </div>
         </div>
       )}
+
+      {/* Visual Metrics & Admission Summary */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3">
+        <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl">
+          <div className="text-[11px] uppercase tracking-wider font-semibold text-neutral-400">Total Enrolled</div>
+          <div className="text-xl font-extrabold text-neutral-100 mt-1">{students.length} Students</div>
+          <div className="text-[10px] text-neutral-500 mt-0.5">Active Academic Roster</div>
+        </div>
+        <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl">
+          <div className="text-[11px] uppercase tracking-wider font-semibold text-emerald-400">Paid Fees</div>
+          <div className="text-xl font-extrabold text-emerald-400 mt-1">
+            {students.filter(s => s.paymentStatus === 'paid').length} Students
+          </div>
+          <div className="text-[10px] text-neutral-500 mt-0.5">100% Cleared</div>
+        </div>
+        <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl">
+          <div className="text-[11px] uppercase tracking-wider font-semibold text-amber-400">Partial Payments</div>
+          <div className="text-xl font-extrabold text-amber-400 mt-1">
+            {students.filter(s => s.paymentStatus === 'partially_paid').length} Students
+          </div>
+          <div className="text-[10px] text-neutral-500 mt-0.5">Installment Active</div>
+        </div>
+        <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl">
+          <div className="text-[11px] uppercase tracking-wider font-semibold text-rose-400">Pending Fees</div>
+          <div className="text-xl font-extrabold text-rose-400 mt-1">
+            {students.filter(s => s.paymentStatus === 'unpaid').length} Students
+          </div>
+          <div className="text-[10px] text-neutral-500 mt-0.5">Awaiting Payment</div>
+        </div>
+        <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl col-span-2 sm:col-span-4 lg:col-span-1">
+          <div className="text-[11px] uppercase tracking-wider font-semibold text-orange-400">Collected Revenue</div>
+          <div className="text-xl font-extrabold text-neutral-100 mt-1 font-mono">
+            ₹{students.reduce((sum, s) => sum + (s.totalPaid || 0), 0).toLocaleString('en-IN')}
+          </div>
+          <div className="text-[10px] text-neutral-500 mt-0.5">Total Admissions Paid</div>
+        </div>
+      </div>
 
       {/* Filter and Search Bar */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
@@ -403,119 +510,208 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
       {/* Students Data Grid / Table */}
       <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-neutral-300">
-            <thead className="bg-neutral-900/90 text-xs uppercase tracking-wider text-neutral-400 font-semibold border-b border-neutral-800">
+          <table className="w-full text-left text-sm text-neutral-300 border-collapse">
+            <thead className="bg-neutral-900 text-xs uppercase tracking-wider text-neutral-300 font-bold border-b border-neutral-700/80">
               <tr>
-                <th className="py-3.5 px-4">Student ID</th>
-                <th className="py-3.5 px-4">Student Name & Contact</th>
-                <th className="py-3.5 px-4">Enrolled Course</th>
-                <th className="py-3.5 px-4">Enrollment Date</th>
-                <th className="py-3.5 px-4 text-right">Fee Status</th>
-                <th className="py-3.5 px-4 text-right">Paid / Total</th>
-                <th className="py-3.5 px-4 text-right">Actions</th>
+                <th className="py-4 px-4 font-bold text-neutral-200">Student & ID</th>
+                <th className="py-4 px-4 font-bold text-neutral-200">Contact Details</th>
+                <th className="py-4 px-4 font-bold text-neutral-200">Enrolled Course</th>
+                <th className="py-4 px-4 font-bold text-neutral-200">Admission Date</th>
+                <th className="py-4 px-4 text-center font-bold text-neutral-200">Fee Status & Mode</th>
+                <th className="py-4 px-4 text-right font-bold text-neutral-200">Paid / Total / Due</th>
+                <th className="py-4 px-4 text-center font-bold text-neutral-200">Student QR</th>
+                <th className="py-4 px-4 text-right font-bold text-neutral-200">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-800/80">
               {filteredStudents.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-neutral-500">
+                  <td colSpan={8} className="py-12 text-center text-neutral-500">
                     <User className="w-8 h-8 mx-auto text-neutral-600 mb-2 opacity-50" />
                     <p className="text-sm">No students match your criteria.</p>
                   </td>
                 </tr>
               ) : (
-                filteredStudents.map(student => (
-                  <tr key={student.id} className="hover:bg-neutral-800/40 transition-colors">
-                    <td className="py-3.5 px-4 font-mono text-xs text-orange-400 font-semibold">
-                      {student.id}
-                      <div className="text-[10px] text-neutral-500 font-normal">{student.enrollmentId}</div>
-                    </td>
+                filteredStudents.map(student => {
+                  const course = courses.find(c => c.id === student.enrolledCourseId);
+                  const totalFee = student.agreedFee || course?.fee || 6000;
+                  const paid = student.totalPaid || 0;
+                  const balance = Math.max(0, totalFee - paid);
+                  const initials = student.name
+                    .trim()
+                    .split(/\s+/)
+                    .map(n => n[0])
+                    .join('')
+                    .toUpperCase()
+                    .slice(0, 2) || 'ST';
 
-                    <td className="py-3.5 px-4">
-                      <div className="font-semibold text-neutral-100">{student.name}</div>
-                      <div className="text-xs text-neutral-400 font-mono mt-0.5 flex items-center gap-2">
-                        <span>+91 {student.phone}</span>
-                        <span className="text-neutral-600">·</span>
-                        <span className="truncate max-w-[160px]">{student.email}</span>
-                      </div>
-                    </td>
+                  return (
+                    <tr key={student.id} className="hover:bg-neutral-800/40 transition-colors">
+                      {/* Student Name & ID */}
+                      <td className="py-3.5 px-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center font-bold text-orange-400 text-xs shrink-0 shadow-sm">
+                            {initials}
+                          </div>
+                          <div>
+                            <div className="font-bold text-neutral-100 text-sm tracking-tight">{student.name}</div>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <span className="font-mono text-xs font-bold text-orange-400 bg-orange-500/10 px-1.5 py-0.5 rounded border border-orange-500/25">
+                                {student.id}
+                              </span>
+                              <span className="text-[11px] text-neutral-400 font-mono font-medium">
+                                {student.enrollmentId}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
 
-                    <td className="py-3.5 px-4">
-                      <div className="text-neutral-200 font-medium text-xs lg:text-sm">{student.enrolledCourseName}</div>
-                    </td>
+                      {/* Contact Info */}
+                      <td className="py-3.5 px-4">
+                        <div className="space-y-1 text-xs font-mono">
+                          <div className="flex items-center gap-2 text-neutral-200 font-semibold">
+                            <Phone className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+                            <span>+91 {student.phone}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-neutral-400">
+                            <Mail className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                            <span className="truncate max-w-[170px]" title={student.email}>{student.email}</span>
+                          </div>
+                        </div>
+                      </td>
 
-                    <td className="py-3.5 px-4 font-mono text-xs text-neutral-400">
-                      {student.enrollmentDate}
-                    </td>
+                      {/* Enrolled Course */}
+                      <td className="py-3.5 px-4">
+                        <div className="text-neutral-100 font-bold text-sm">{student.enrolledCourseName}</div>
+                        <div className="text-xs text-neutral-400 flex items-center gap-1.5 mt-0.5">
+                          <BookOpen className="w-3 h-3 text-orange-400 shrink-0" />
+                          <span>{course?.duration || '1 Month Practical'}</span>
+                        </div>
+                      </td>
 
-                    <td className="py-3.5 px-4 text-right">
-                      <div className="inline-flex items-center justify-end">
-                        <select
-                          value={student.paymentStatus}
-                          onChange={e => handleTableFeeStatusChange(student, e.target.value as PaymentStatus)}
-                          aria-label={`Fee Status for ${student.name}`}
-                          className={`text-xs font-bold px-2.5 py-1 rounded-lg border cursor-pointer focus:outline-none transition-all shadow-sm ${
-                            student.paymentStatus === 'paid'
-                              ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/40 hover:border-emerald-400 hover:bg-emerald-500/25'
-                              : student.paymentStatus === 'partially_paid'
-                              ? 'bg-amber-500/15 text-amber-400 border-amber-500/40 hover:border-amber-400 hover:bg-amber-500/25'
-                              : 'bg-rose-500/15 text-rose-400 border-rose-500/40 hover:border-rose-400 hover:bg-rose-500/25'
-                          }`}
-                        >
-                          <option value="paid" className="bg-neutral-900 text-emerald-400 font-semibold">
-                            ✓ Paid
-                          </option>
-                          <option value="unpaid" className="bg-neutral-900 text-rose-400 font-semibold">
-                            ✕ Unpaid
-                          </option>
-                          {student.paymentStatus === 'partially_paid' && (
-                            <option value="partially_paid" className="bg-neutral-900 text-amber-400 font-semibold">
-                              ⏳ Partial
+                      {/* Admission Date */}
+                      <td className="py-3.5 px-4 font-mono text-xs font-semibold text-neutral-300">
+                        {student.enrollmentDate}
+                      </td>
+
+                      {/* Fee Status & Mode */}
+                      <td className="py-3.5 px-4 text-center">
+                        <div className="inline-flex flex-col items-center gap-1">
+                          <select
+                            value={student.paymentStatus}
+                            onChange={e => handleTableFeeStatusChange(student, e.target.value as PaymentStatus)}
+                            aria-label={`Fee Status for ${student.name}`}
+                            className={`text-xs font-bold px-2.5 py-1 rounded-lg border cursor-pointer focus:outline-none transition-all shadow-sm ${
+                              student.paymentStatus === 'paid'
+                                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50 hover:bg-emerald-500/30'
+                                : student.paymentStatus === 'partially_paid'
+                                ? 'bg-amber-500/20 text-amber-400 border-amber-500/50 hover:bg-amber-500/30'
+                                : 'bg-rose-500/20 text-rose-400 border-rose-500/50 hover:bg-rose-500/30'
+                            }`}
+                          >
+                            <option value="paid" className="bg-neutral-900 text-emerald-400 font-bold">
+                              ✓ Paid
                             </option>
+                            <option value="unpaid" className="bg-neutral-900 text-rose-400 font-bold">
+                              ✕ Unpaid
+                            </option>
+                            {student.paymentStatus === 'partially_paid' && (
+                              <option value="partially_paid" className="bg-neutral-900 text-amber-400 font-bold">
+                                ⏳ Partial
+                              </option>
+                            )}
+                          </select>
+                          <span className="text-[10px] text-neutral-400 font-mono uppercase font-semibold">
+                            {student.paymentMethod || 'UPI'}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Fee Breakdown */}
+                      <td className="py-3.5 px-4 text-right font-mono text-xs">
+                        <div className="font-bold text-emerald-400 text-sm">
+                          ₹{paid.toLocaleString('en-IN')}
+                          <span className="text-neutral-400 text-xs font-normal"> / ₹{totalFee.toLocaleString('en-IN')}</span>
+                        </div>
+                        <div className="mt-0.5">
+                          {balance > 0 ? (
+                            <span className="text-[11px] font-bold text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/25">
+                              Due: ₹{balance.toLocaleString('en-IN')}
+                            </span>
+                          ) : (
+                            <span className="text-[11px] font-bold text-emerald-400">
+                              ✓ Fully Cleared
+                            </span>
                           )}
-                        </select>
-                      </div>
-                    </td>
+                        </div>
+                      </td>
 
-                    <td className="py-3.5 px-4 text-right font-mono text-xs">
-                      <span className="font-bold text-neutral-100">₹{student.totalPaid.toLocaleString('en-IN')}</span>
-                      <span className="text-neutral-500"> / ₹{student.agreedFee.toLocaleString('en-IN')}</span>
-                    </td>
+                      {/* Individual Student QR Code Column */}
+                      <td className="py-3.5 px-4 text-center">
+                        <div className="inline-flex items-center justify-center gap-2.5">
+                          <StudentQRThumbnail
+                            student={student}
+                            course={course}
+                            size={50}
+                            onClick={() => handleOpenQRModal(student)}
+                          />
+                          <div className="flex flex-col gap-1 items-start">
+                            <button
+                              onClick={() => handleDownloadStudentQRPdf(student)}
+                              title={`Download ${student.name}'s Admission QR Pass in PDF format`}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-orange-600 hover:bg-orange-500 text-white rounded-md text-[11px] font-bold transition-all shadow-sm cursor-pointer group"
+                            >
+                              <FileText className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+                              <span>PDF</span>
+                            </button>
+                            <button
+                              onClick={() => handleOpenQRModal(student)}
+                              title="Enlarge & Print Student QR Pass"
+                              className="text-[10px] text-neutral-400 hover:text-orange-400 font-semibold transition-colors cursor-pointer pl-0.5"
+                            >
+                              Zoom →
+                            </button>
+                          </div>
+                        </div>
+                      </td>
 
-                    <td className="py-3.5 px-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          onClick={() => handleDownloadStudentInvoiceDoc(student)}
-                          title={`Download Tax Invoice (.doc) for ${student.name}`}
-                          className="p-1.5 text-blue-400 hover:text-blue-200 hover:bg-blue-500/20 bg-blue-500/10 border border-blue-500/20 rounded-lg transition-colors cursor-pointer group"
-                        >
-                          <Download className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                        </button>
-                        <button
-                          onClick={() => onGenerateInvoiceForStudent(student)}
-                          title="Generate Invoice in Ledger"
-                          className="p-1.5 text-neutral-400 hover:text-emerald-400 hover:bg-neutral-800 rounded-lg transition-colors cursor-pointer"
-                        >
-                          <Receipt className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => openEditModal(student)}
-                          title="Edit Student Info"
-                          className="p-1.5 text-neutral-400 hover:text-blue-400 hover:bg-neutral-800 rounded-lg transition-colors cursor-pointer"
-                        >
-                          <Edit3 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleInitiateDelete(student)}
-                          title={`Delete ${student.name}'s admission record`}
-                          className="p-1.5 text-rose-400 hover:text-rose-200 hover:bg-rose-500/20 bg-rose-500/10 border border-rose-500/30 rounded-lg transition-colors cursor-pointer group"
-                        >
-                          <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                      {/* Actions */}
+                      <td className="py-3.5 px-4 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => handleDownloadStudentInvoiceDoc(student)}
+                            title={`Download Tax Invoice (.doc) for ${student.name}`}
+                            className="p-1.5 text-blue-400 hover:text-blue-200 hover:bg-blue-500/20 bg-blue-500/10 border border-blue-500/20 rounded-lg transition-colors cursor-pointer group"
+                          >
+                            <Download className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                          </button>
+                          <button
+                            onClick={() => onGenerateInvoiceForStudent(student)}
+                            title="Generate Invoice in Ledger"
+                            className="p-1.5 text-neutral-400 hover:text-emerald-400 hover:bg-neutral-800 rounded-lg transition-colors cursor-pointer"
+                          >
+                            <Receipt className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => openEditModal(student)}
+                            title="Edit Student Info"
+                            className="p-1.5 text-neutral-400 hover:text-blue-400 hover:bg-neutral-800 rounded-lg transition-colors cursor-pointer"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleInitiateDelete(student)}
+                            title={`Delete ${student.name}'s admission record`}
+                            className="p-1.5 text-rose-400 hover:text-rose-200 hover:bg-rose-500/20 bg-rose-500/10 border border-rose-500/30 rounded-lg transition-colors cursor-pointer group"
+                          >
+                            <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -530,85 +726,144 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
             <p className="text-sm">No students match your criteria.</p>
           </div>
         ) : (
-          filteredStudents.map(student => (
-            <div
-              key={student.id}
-              className="bg-neutral-900/80 border border-neutral-800 rounded-xl p-4 space-y-3 shadow-sm hover:border-neutral-700 transition-colors"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <div className="font-bold text-neutral-100 text-base">{student.name}</div>
-                  <div className="text-xs font-mono text-orange-400 mt-0.5">
-                    {student.id} · <span className="text-neutral-500">{student.enrollmentId}</span>
+          filteredStudents.map(student => {
+            const course = courses.find(c => c.id === student.enrolledCourseId);
+            const totalFee = student.agreedFee || course?.fee || 6000;
+            const paid = student.totalPaid || 0;
+            const balance = Math.max(0, totalFee - paid);
+            const initials = student.name
+              .trim()
+              .split(/\s+/)
+              .map(n => n[0])
+              .join('')
+              .toUpperCase()
+              .slice(0, 2) || 'ST';
+
+            return (
+              <div
+                key={student.id}
+                className="bg-neutral-900/90 border border-neutral-800 rounded-xl p-4 space-y-3.5 shadow-sm hover:border-neutral-700 transition-colors"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <StudentQRThumbnail
+                      student={student}
+                      course={course}
+                      size={46}
+                      onClick={() => handleOpenQRModal(student)}
+                    />
+                    <div>
+                      <div className="font-bold text-neutral-100 text-base">{student.name}</div>
+                      <div className="text-xs font-mono text-orange-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                        <span className="font-bold">{student.id}</span>
+                        <span className="text-neutral-500">·</span>
+                        <span className="text-neutral-400">{student.enrollmentId}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Mobile Fee Status Dropdown */}
+                  <select
+                    value={student.paymentStatus}
+                    onChange={e => handleTableFeeStatusChange(student, e.target.value as PaymentStatus)}
+                    aria-label={`Fee Status for ${student.name}`}
+                    className={`text-xs font-bold px-2.5 py-1.5 rounded-lg border cursor-pointer focus:outline-none transition-all ${
+                      student.paymentStatus === 'paid'
+                        ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50'
+                        : student.paymentStatus === 'partially_paid'
+                        ? 'bg-amber-500/20 text-amber-400 border-amber-500/50'
+                        : 'bg-rose-500/20 text-rose-400 border-rose-500/50'
+                    }`}
+                  >
+                    <option value="paid" className="bg-neutral-900 text-emerald-400">✓ Paid</option>
+                    <option value="unpaid" className="bg-neutral-900 text-rose-400">✕ Unpaid</option>
+                    {student.paymentStatus === 'partially_paid' && (
+                      <option value="partially_paid" className="bg-neutral-900 text-amber-400">⏳ Partial</option>
+                    )}
+                  </select>
+                </div>
+
+                <div className="text-xs text-neutral-300 space-y-1.5 bg-neutral-950/60 p-3 rounded-lg border border-neutral-800/80">
+                  <div className="flex items-center justify-between">
+                    <span className="text-neutral-400">Course:</span>
+                    <span className="text-neutral-100 font-semibold">{student.enrolledCourseName}</span>
+                  </div>
+                  <div className="flex items-center justify-between font-mono">
+                    <span className="text-neutral-400">Enrolled:</span>
+                    <span className="text-neutral-200">{student.enrollmentDate}</span>
+                  </div>
+                  <div className="flex items-center justify-between font-mono pt-1 border-t border-neutral-800/80">
+                    <span className="text-neutral-400">Fee Paid:</span>
+                    <span className="font-bold text-emerald-400">₹{paid.toLocaleString('en-IN')} / ₹{totalFee.toLocaleString('en-IN')}</span>
+                  </div>
+                  {balance > 0 && (
+                    <div className="flex items-center justify-between font-mono text-amber-400 font-bold">
+                      <span>Balance Due:</span>
+                      <span>₹{balance.toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
+                  <div className="text-neutral-400 font-mono text-[11px] truncate pt-1 border-t border-neutral-800/80 flex items-center justify-between">
+                    <span>+91 {student.phone}</span>
+                    <span className="truncate max-w-[150px]">{student.email}</span>
                   </div>
                 </div>
 
-                {/* Mobile Fee Status Dropdown */}
-                <select
-                  value={student.paymentStatus}
-                  onChange={e => handleTableFeeStatusChange(student, e.target.value as PaymentStatus)}
-                  aria-label={`Fee Status for ${student.name}`}
-                  className={`text-xs font-bold px-2.5 py-1 rounded-lg border cursor-pointer focus:outline-none transition-all ${
-                    student.paymentStatus === 'paid'
-                      ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/40'
-                      : student.paymentStatus === 'partially_paid'
-                      ? 'bg-amber-500/15 text-amber-400 border-amber-500/40'
-                      : 'bg-rose-500/15 text-rose-400 border-rose-500/40'
-                  }`}
-                >
-                  <option value="paid" className="bg-neutral-900 text-emerald-400">✓ Paid</option>
-                  <option value="unpaid" className="bg-neutral-900 text-rose-400">✕ Unpaid</option>
-                  {student.paymentStatus === 'partially_paid' && (
-                    <option value="partially_paid" className="bg-neutral-900 text-amber-400">⏳ Partial</option>
-                  )}
-                </select>
-              </div>
+                {/* Mobile Actions: QR Pass, PDF, Doc Download, Invoice, Edit, Delete */}
+                <div className="flex items-center justify-between gap-1.5 pt-2 border-t border-neutral-800/80 flex-wrap">
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => handleOpenQRModal(student)}
+                      className="px-2.5 py-1 text-xs font-bold text-orange-400 hover:text-orange-300 bg-orange-500/15 hover:bg-orange-500/25 border border-orange-500/30 rounded-lg flex items-center gap-1 transition-colors cursor-pointer"
+                      title="View & Enlarge Digital QR Pass"
+                    >
+                      <QrCode className="w-3.5 h-3.5 text-orange-400" />
+                      <span>QR</span>
+                    </button>
+                    <button
+                      onClick={() => handleDownloadStudentQRPdf(student)}
+                      className="px-2.5 py-1 text-xs font-bold text-white bg-orange-600 hover:bg-orange-500 rounded-lg flex items-center gap-1 transition-colors shadow-sm cursor-pointer"
+                      title="Download Student QR Pass as PDF file"
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                      <span>PDF</span>
+                    </button>
+                  </div>
 
-              <div className="text-xs text-neutral-400 space-y-1">
-                <div>Course: <span className="text-neutral-200 font-medium">{student.enrolledCourseName}</span></div>
-                <div className="flex items-center justify-between font-mono">
-                  <span>Enrolled: {student.enrollmentDate}</span>
-                  <span>Paid: <strong className="text-neutral-100 font-bold">₹{student.totalPaid.toLocaleString('en-IN')}</strong> / ₹{student.agreedFee.toLocaleString('en-IN')}</span>
-                </div>
-                <div className="text-neutral-400 font-mono text-[11px] truncate">
-                  +91 {student.phone} · {student.email}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <button
+                      onClick={() => handleDownloadStudentInvoiceDoc(student)}
+                      className="px-2.5 py-1 text-xs text-blue-300 hover:text-white bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                      title="Download Invoice (.doc format)"
+                    >
+                      <Download className="w-3.5 h-3.5 text-blue-400" />
+                      <span>.doc</span>
+                    </button>
+                    <button
+                      onClick={() => onGenerateInvoiceForStudent(student)}
+                      className="px-2.5 py-1 text-xs text-neutral-300 hover:text-emerald-400 bg-neutral-800 hover:bg-neutral-700 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Receipt className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Invoice</span>
+                    </button>
+                    <button
+                      onClick={() => openEditModal(student)}
+                      className="px-2.5 py-1 text-xs text-neutral-300 hover:text-blue-400 bg-neutral-800 hover:bg-neutral-700 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Edit3 className="w-3.5 h-3.5 text-blue-400" />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      onClick={() => handleInitiateDelete(student)}
+                      className="px-2.5 py-1 text-xs font-semibold text-rose-300 hover:text-rose-100 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/30 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                      <span>Delete</span>
+                    </button>
+                  </div>
                 </div>
               </div>
-
-              {/* Mobile Actions: Doc Download, Invoice, Edit, Delete */}
-              <div className="flex items-center justify-end gap-1.5 pt-2.5 border-t border-neutral-800/80 flex-wrap">
-                <button
-                  onClick={() => handleDownloadStudentInvoiceDoc(student)}
-                  className="px-2.5 py-1 text-xs text-blue-300 hover:text-white bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
-                  title="Download Invoice (.doc format)"
-                >
-                  <Download className="w-3.5 h-3.5 text-blue-400" />
-                  <span>.doc</span>
-                </button>
-                <button
-                  onClick={() => onGenerateInvoiceForStudent(student)}
-                  className="px-2.5 py-1 text-xs text-neutral-300 hover:text-emerald-400 bg-neutral-800 hover:bg-neutral-700 rounded-lg flex items-center gap-1.5 transition-colors"
-                >
-                  <Receipt className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Invoice</span>
-                </button>
-                <button
-                  onClick={() => openEditModal(student)}
-                  className="px-2.5 py-1 text-xs text-neutral-300 hover:text-blue-400 bg-neutral-800 hover:bg-neutral-700 rounded-lg flex items-center gap-1.5 transition-colors"
-                >
-                  <Edit3 className="w-3.5 h-3.5 text-blue-400" />
-                  <span>Edit</span>
-                </button>
-                <button
-                  onClick={() => handleInitiateDelete(student)}
-                  className="px-2.5 py-1 text-xs font-semibold text-rose-300 hover:text-rose-100 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/30 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
-                >
-                  <Trash2 className="w-3.5 h-3.5 text-rose-400" />
-                  <span>Delete</span>
-                </button>
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
@@ -943,6 +1198,17 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
             `Successfully imported ${count} students from Excel! Student IDs, Enrollment Numbers, and Invoices generated.`
           );
           setTimeout(() => setImportSuccessMsg(null), 8000);
+        }}
+      />
+
+      {/* Individual Student Admission QR Pass Modal */}
+      <StudentQRModal
+        student={selectedQRStudent}
+        course={courses.find(c => c.id === selectedQRStudent?.enrolledCourseId)}
+        isOpen={isQRModalOpen}
+        onClose={() => {
+          setIsQRModalOpen(false);
+          setSelectedQRStudent(null);
         }}
       />
     </div>

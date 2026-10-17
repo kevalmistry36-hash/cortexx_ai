@@ -106,3 +106,16 @@ export interface BannerAdConfig {
   showPrice: boolean;
   showUrl: boolean;
 }
+
+export interface CertificateRecord {
+  id: string; // e.g. COR-CERT-2026-0001
+  studentId: string;
+  studentName: string;
+  courseName: string;
+  startDate: string;
+  endDate: string;
+  issueDate: string;
+  verificationCode: string; // e.g. COR-VERIFY-XXXX
+  createdAt: string;
+}
+

@@ -1,8 +1,8 @@
 import React from 'react';
 import { CortexxLogo } from './CortexxLogo';
-import { Lock, Settings, Sparkles, LayoutDashboard, Users, BookOpen, Receipt, Sun, Moon } from 'lucide-react';
+import { Lock, Settings, Sparkles, LayoutDashboard, Users, BookOpen, Receipt, Sun, Moon, Award } from 'lucide-react';
 
-export type NavView = 'dashboard' | 'students' | 'courses' | 'invoices' | 'ad-studio';
+export type NavView = 'dashboard' | 'students' | 'courses' | 'invoices' | 'ad-studio' | 'certificates';
 
 interface NavbarProps {
   activeView: NavView;
@@ -28,6 +28,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'students', label: 'Students', icon: <Users className="w-5 h-5 md:w-3.5 md:h-3.5" /> },
     { id: 'courses', label: 'Courses', icon: <BookOpen className="w-5 h-5 md:w-3.5 md:h-3.5" /> },
     { id: 'invoices', label: 'Invoices', icon: <Receipt className="w-5 h-5 md:w-3.5 md:h-3.5" /> },
+    { id: 'certificates', label: 'Certificates', icon: <Award className="w-5 h-5 md:w-3.5 md:h-3.5 text-amber-400" /> },
     { id: 'ad-studio', label: 'Banner Studio', icon: <Sparkles className="w-5 h-5 md:w-3.5 md:h-3.5 text-orange-400" /> },
   ];
 

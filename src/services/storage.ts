@@ -1,4 +1,4 @@
-import { Student, Course, Invoice, PaymentReceipt, PaymentMethod, PaymentStatus } from '../types';
+import { Student, Course, Invoice, PaymentReceipt, PaymentMethod, PaymentStatus, CertificateRecord } from '../types';
 import { INITIAL_COURSES, INITIAL_STUDENTS, INITIAL_INVOICES, INITIAL_RECEIPTS } from '../constants/initialData';
 
 const STORAGE_KEYS = {
@@ -6,6 +6,7 @@ const STORAGE_KEYS = {
   STUDENTS: 'cortexx_students_v1',
   INVOICES: 'cortexx_invoices_v1',
   RECEIPTS: 'cortexx_receipts_v1',
+  CERTIFICATES: 'cortexx_certificates_v1',
   DEACTIVATED_STUDENTS: 'cortexx_deactivated_students_v1',
   ADMIN_PIN: 'cortexx_admin_pin_v1',
   SUPABASE_CONFIG: 'cortexx_supabase_config_v1',
@@ -344,6 +345,43 @@ export function deleteStudent(studentId: string, deleteAssociatedFinancials: boo
   }
 
   emitChange();
+}
+
+// ----------------- Certificates -----------------
+export function getCertificates(): CertificateRecord[] {
+  if (typeof window === 'undefined') return [];
+  const raw = localStorage.getItem(STORAGE_KEYS.CERTIFICATES);
+  if (!raw) return [];
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
+}
+
+export function saveCertificate(cert: CertificateRecord): void {
+  const certs = getCertificates();
+  const index = certs.findIndex(c => c.id === cert.id || (c.studentId === cert.studentId && c.courseName === cert.courseName));
+  if (index >= 0) {
+    certs[index] = cert;
+  } else {
+    certs.unshift(cert);
+  }
+  localStorage.setItem(STORAGE_KEYS.CERTIFICATES, JSON.stringify(certs));
+  emitChange();
+}
+
+export function deleteCertificate(id: string): void {
+  const certs = getCertificates().filter(c => c.id !== id);
+  localStorage.setItem(STORAGE_KEYS.CERTIFICATES, JSON.stringify(certs));
+  emitChange();
+}
+
+export function getNextCertificateNumber(): string {
+  const certs = getCertificates();
+  const year = new Date().getFullYear();
+  const num = certs.length + 1;
+  return `COR-CERT-${year}-${num.toString().padStart(4, '0')}`;
 }
 
 // ----------------- Deactivated Students Status -----------------

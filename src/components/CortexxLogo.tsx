@@ -4,7 +4,8 @@ interface CortexxLogoProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'hero';
   showTagline?: boolean;
   showText?: boolean;
-  inverted?: boolean; // For light invoice printing
+  inverted?: boolean; // For light background/certificate/invoice printing
+  mode?: 'light' | 'dark';
   className?: string;
 }
 
@@ -13,12 +14,15 @@ export const CortexxLogo: React.FC<CortexxLogoProps> = ({
   showTagline = true,
   showText = true,
   inverted = false,
+  mode,
   className = '',
 }) => {
+  const isLight = mode === 'light' || inverted;
+
   const sizeMap = {
     xs: { icon: 24, text: 'text-sm', tag: 'text-[8px]', gap: 'gap-2' },
-    sm: { icon: 32, text: 'text-base', tag: 'text-[9px]', gap: 'gap-2.5' },
-    md: { icon: 42, text: 'text-xl', tag: 'text-[10px]', gap: 'gap-3' },
+    sm: { icon: 34, text: 'text-base', tag: 'text-[9.5px]', gap: 'gap-2.5' },
+    md: { icon: 44, text: 'text-xl', tag: 'text-[10.5px]', gap: 'gap-3' },
     lg: { icon: 54, text: 'text-2xl', tag: 'text-xs', gap: 'gap-3.5' },
     xl: { icon: 68, text: 'text-3xl', tag: 'text-sm', gap: 'gap-4' },
     hero: { icon: 84, text: 'text-4xl', tag: 'text-base', gap: 'gap-5' },
@@ -35,7 +39,7 @@ export const CortexxLogo: React.FC<CortexxLogoProps> = ({
         viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="shrink-0 drop-shadow-md"
+        className="shrink-0 drop-shadow-sm"
         aria-hidden="true"
       >
         <defs>
@@ -46,8 +50,8 @@ export const CortexxLogo: React.FC<CortexxLogoProps> = ({
           </linearGradient>
 
           <linearGradient id="cortexxDarkCircuit" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={inverted ? "#374151" : "#2E3440"} />
-            <stop offset="100%" stopColor={inverted ? "#111827" : "#12141A"} />
+            <stop offset="0%" stopColor={isLight ? "#1e293b" : "#2E3440"} />
+            <stop offset="100%" stopColor={isLight ? "#0f172a" : "#12141A"} />
           </linearGradient>
 
           <filter id="cortexxGlowEffect" x="-20%" y="-20%" width="140%" height="140%">
@@ -57,7 +61,7 @@ export const CortexxLogo: React.FC<CortexxLogoProps> = ({
         </defs>
 
         {/* Ambient Synaptic Glow */}
-        <circle cx="50" cy="50" r="38" fill="url(#cortexxOrangeGlow)" opacity="0.15" filter="url(#cortexxGlowEffect)" />
+        <circle cx="50" cy="50" r="38" fill="url(#cortexxOrangeGlow)" opacity={isLight ? 0.22 : 0.15} filter="url(#cortexxGlowEffect)" />
 
         {/* LEFT HEMISPHERE - Vibrant Glowing Circuit (Orange) */}
         <g>
@@ -65,15 +69,15 @@ export const CortexxLogo: React.FC<CortexxLogoProps> = ({
           <path
             d="M 48 18 C 36 18 20 28 20 44 C 20 54 26 62 26 70 C 26 78 36 84 48 84 Z"
             fill="url(#cortexxOrangeGlow)"
-            stroke="#FFE082"
-            strokeWidth="0.8"
+            stroke={isLight ? "#ea580c" : "#FFE082"}
+            strokeWidth="1.2"
           />
           {/* Left Brain Circuit Traces */}
-          <path d="M 48 26 L 36 26 L 30 32 L 25 32" stroke="#FFF7ED" strokeWidth="1.8" strokeLinecap="round" />
-          <path d="M 48 38 L 38 38 L 32 44 L 23 44" stroke="#FFF7ED" strokeWidth="1.8" strokeLinecap="round" />
-          <path d="M 48 50 L 32 50 L 28 56 L 24 64" stroke="#FFF7ED" strokeWidth="1.8" strokeLinecap="round" />
-          <path d="M 48 62 L 38 62 L 32 68 L 30 76" stroke="#FFF7ED" strokeWidth="1.8" strokeLinecap="round" />
-          <path d="M 48 74 L 40 74 L 38 78" stroke="#FFF7ED" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M 48 26 L 36 26 L 30 32 L 25 32" stroke="#FFF7ED" strokeWidth="2" strokeLinecap="round" />
+          <path d="M 48 38 L 38 38 L 32 44 L 23 44" stroke="#FFF7ED" strokeWidth="2" strokeLinecap="round" />
+          <path d="M 48 50 L 32 50 L 28 56 L 24 64" stroke="#FFF7ED" strokeWidth="2" strokeLinecap="round" />
+          <path d="M 48 62 L 38 62 L 32 68 L 30 76" stroke="#FFF7ED" strokeWidth="2" strokeLinecap="round" />
+          <path d="M 48 74 L 40 74 L 38 78" stroke="#FFF7ED" strokeWidth="2" strokeLinecap="round" />
 
           {/* Glowing synaptic circuit nodes */}
           <circle cx="25" cy="32" r="2.4" fill="#FFFFFF" />
@@ -89,20 +93,20 @@ export const CortexxLogo: React.FC<CortexxLogoProps> = ({
           <path
             d="M 52 18 C 64 18 80 28 80 44 C 80 54 74 62 74 70 C 74 78 64 84 52 84 Z"
             fill="url(#cortexxDarkCircuit)"
-            stroke={inverted ? "#6B7280" : "#4B5563"}
-            strokeWidth="0.8"
+            stroke={isLight ? "#0f172a" : "#4B5563"}
+            strokeWidth="1.2"
           />
           {/* Right Circuit Traces */}
-          <path d="M 52 26 L 64 26 L 70 32 L 75 32" stroke={inverted ? "#9CA3AF" : "#60A5FA"} strokeWidth="1.8" strokeLinecap="round" opacity="0.8" />
-          <path d="M 52 38 L 62 38 L 68 44 L 77 44" stroke={inverted ? "#9CA3AF" : "#FF6A00"} strokeWidth="1.8" strokeLinecap="round" opacity="0.9" />
-          <path d="M 52 50 L 68 50 L 72 56 L 76 64" stroke={inverted ? "#9CA3AF" : "#60A5FA"} strokeWidth="1.8" strokeLinecap="round" opacity="0.8" />
-          <path d="M 52 62 L 62 62 L 68 68 L 70 76" stroke={inverted ? "#9CA3AF" : "#FF6A00"} strokeWidth="1.8" strokeLinecap="round" opacity="0.9" />
-          <path d="M 52 74 L 60 74 L 62 78" stroke={inverted ? "#9CA3AF" : "#60A5FA"} strokeWidth="1.8" strokeLinecap="round" opacity="0.8" />
+          <path d="M 52 26 L 64 26 L 70 32 L 75 32" stroke={isLight ? "#cbd5e1" : "#60A5FA"} strokeWidth="1.8" strokeLinecap="round" opacity="0.9" />
+          <path d="M 52 38 L 62 38 L 68 44 L 77 44" stroke={isLight ? "#fb923c" : "#FF6A00"} strokeWidth="1.8" strokeLinecap="round" opacity="0.95" />
+          <path d="M 52 50 L 68 50 L 72 56 L 76 64" stroke={isLight ? "#cbd5e1" : "#60A5FA"} strokeWidth="1.8" strokeLinecap="round" opacity="0.9" />
+          <path d="M 52 62 L 62 62 L 68 68 L 70 76" stroke={isLight ? "#fb923c" : "#FF6A00"} strokeWidth="1.8" strokeLinecap="round" opacity="0.95" />
+          <path d="M 52 74 L 60 74 L 62 78" stroke={isLight ? "#cbd5e1" : "#60A5FA"} strokeWidth="1.8" strokeLinecap="round" opacity="0.9" />
 
           {/* Right hemisphere nodes */}
-          <circle cx="75" cy="32" r="2.2" fill={inverted ? "#4B5563" : "#93C5FD"} />
+          <circle cx="75" cy="32" r="2.2" fill={isLight ? "#f8fafc" : "#93C5FD"} />
           <circle cx="77" cy="44" r="2.5" fill="#FF8800" />
-          <circle cx="76" cy="64" r="2.2" fill={inverted ? "#4B5563" : "#93C5FD"} />
+          <circle cx="76" cy="64" r="2.2" fill={isLight ? "#f8fafc" : "#93C5FD"} />
           <circle cx="70" cy="76" r="2.2" fill="#FF8800" />
         </g>
 
@@ -112,17 +116,17 @@ export const CortexxLogo: React.FC<CortexxLogoProps> = ({
         <circle cx="50" cy="50" r="2.8" fill="#FF6A00" />
       </svg>
 
-      {/* Brand Wordmark & Tagline */}
+      {/* Brand Wordmark & Tagline: High-contrast Dark Black for Light Mode */}
       {showText && (
-        <div className="flex flex-col">
-          <div className={`font-extrabold tracking-tight leading-none ${currentSize.text} cortexx-ai-heading`}>
-            <span className={inverted ? 'text-black' : 'text-neutral-100'}>Cortexx</span>{' '}
-            <span className={inverted ? 'text-black' : 'text-[#FF6A00] drop-shadow-sm'}>AI</span>
+        <div className="flex flex-col text-left">
+          <div className={`font-black tracking-tight leading-none ${currentSize.text}`}>
+            <span className={isLight ? 'text-black font-black' : 'text-neutral-100 font-extrabold'}>Cortexx</span>{' '}
+            <span className={isLight ? 'text-black font-black' : 'text-[#FF6A00] font-extrabold drop-shadow-sm'}>AI</span>
           </div>
           {showTagline && (
             <span
-              className={`font-semibold tracking-[0.16em] uppercase mt-1 leading-none ${currentSize.tag} ${
-                inverted ? 'text-neutral-700' : 'text-neutral-400'
+              className={`font-bold tracking-[0.16em] uppercase mt-1 leading-none ${currentSize.tag} ${
+                isLight ? 'text-neutral-900 font-extrabold' : 'text-neutral-400 font-semibold'
               }`}
             >
               Where Thinking Meets Technology

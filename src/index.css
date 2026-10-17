@@ -147,6 +147,23 @@ html.light textarea:focus {
   border-color: #ea580c !important;
   box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.2) !important;
 }
+/* Table Header & Cell Legibility in Light Mode */
+html.light thead,
+html[data-theme="light"] thead {
+  background-color: #f1f5f9 !important;
+  border-bottom: 2px solid #cbd5e1 !important;
+}
+
+html.light thead th,
+html[data-theme="light"] thead th {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+html.light tbody tr,
+html[data-theme="light"] tbody tr {
+  border-bottom: 1px solid #e2e8f0 !important;
+}
 
 /* Table Hover in Light Mode */
 html.light tr:hover {
