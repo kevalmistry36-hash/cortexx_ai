@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Invoice, PaymentReceipt, Student, Course, PaymentMethod, PaymentStatus } from '../types';
 import { getNextInvoiceNumber, saveInvoice, recordPayment, deleteInvoice, deleteReceipt, getDeactivatedStudents, isStudentDeactivated, toggleStudentDeactivated } from '../services/storage';
-import { Search, Plus, Receipt, IndianRupee, Download, Share2, Printer, CheckCircle, Clock, AlertCircle, Mail, Check, Trash2, Eye, FileText, X, UserX, UserCheck, Ban } from 'lucide-react';
+import { Search, Plus, Receipt, IndianRupee, Download, Share2, Printer, CheckCircle, Clock, AlertCircle, Mail, Check, Trash2, Eye, FileText, X, UserX, UserCheck, Ban, Phone, BookOpen, Calendar } from 'lucide-react';
 import { INSTITUTE_PROFILE } from '../constants/initialData';
 import { downloadInvoiceAsPdf, downloadReceiptAsPdf } from '../utils/pdfExport';
 import { sendInvoiceEmail as dispatchInvoiceEmailSmtp, sendReceiptEmail as dispatchReceiptEmailSmtp, getSmtpConfig } from '../services/emailService';
@@ -621,7 +621,8 @@ Accounts Office, Cortexx AI Institute`;
       {/* Main Ledger Table */}
       {activeTab === 'invoices' ? (
         <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
+          {/* Desktop Invoices Table */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-sm text-neutral-300">
               <thead className="bg-neutral-900/90 text-xs uppercase tracking-wider text-neutral-400 font-semibold border-b border-neutral-800">
                 <tr>
@@ -799,116 +800,163 @@ Accounts Office, Cortexx AI Institute`;
             </table>
           </div>
 
-          {/* Mobile Invoices Cards List */}
+          {/* Mobile Invoices Cards List (Vertical Layout) */}
           <div className="md:hidden divide-y divide-neutral-800 bg-neutral-900/40">
             {filteredInvoices.map(inv => (
-              <div key={inv.invoiceNumber} className="p-4 space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <span className="font-mono text-xs font-bold text-orange-400">{inv.invoiceNumber}</span>
-                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                      <span
-                        className={`font-bold text-base ${
-                          checkIsStudentDeactivated(inv.studentId, inv.studentName)
-                            ? 'line-through text-neutral-500 decoration-rose-500/60 opacity-80'
-                            : 'text-neutral-100'
-                        }`}
-                      >
-                        {inv.studentName}
-                      </span>
-                      {checkIsStudentDeactivated(inv.studentId, inv.studentName) && (
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold rounded bg-rose-500/15 text-rose-400 border border-rose-500/30 uppercase tracking-wider">
-                          <UserX className="w-3 h-3 text-rose-400 shrink-0" />
-                          <span>Deactivated</span>
-                        </span>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => handleToggleStudentDeactivation(inv.studentId, inv.studentName)}
-                        title={
-                          checkIsStudentDeactivated(inv.studentId, inv.studentName)
-                            ? `Reactivate "${inv.studentName}"`
-                            : `Put "${inv.studentName}" into Deactive mode`
-                        }
-                        className={`p-1 rounded cursor-pointer ${
-                          checkIsStudentDeactivated(inv.studentId, inv.studentName)
-                            ? 'text-rose-400 bg-rose-500/15 border border-rose-500/30'
-                            : 'text-neutral-400 hover:text-rose-400'
-                        }`}
-                      >
-                        {checkIsStudentDeactivated(inv.studentId, inv.studentName) ? (
-                          <UserCheck className="w-3.5 h-3.5" />
-                        ) : (
-                          <UserX className="w-3.5 h-3.5" />
-                        )}
-                      </button>
-                    </div>
-                    <div className="text-xs text-neutral-400">{inv.courseName}</div>
+              <div key={inv.invoiceNumber} className="p-4 space-y-3 hover:bg-neutral-900/60 transition-colors">
+                {/* Vertical Header: Invoice #, Date, Status */}
+                <div className="flex items-center justify-between gap-2 border-b border-neutral-800/80 pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/30">
+                      {inv.invoiceNumber}
+                    </span>
+                    <span className="text-[11px] font-mono text-neutral-400 flex items-center gap-1">
+                      <Calendar className="w-3 h-3 text-neutral-500" />
+                      {inv.invoiceDate}
+                    </span>
                   </div>
                   <span
                     className={`px-2 py-0.5 text-xs font-bold rounded ${
                       inv.paymentStatus === 'paid'
-                        ? 'bg-emerald-500/20 text-emerald-400'
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                         : inv.paymentStatus === 'partially_paid'
-                        ? 'bg-amber-500/20 text-amber-400'
-                        : 'bg-rose-500/20 text-rose-400'
+                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                        : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
                     }`}
                   >
-                    {inv.paymentStatus === 'paid' ? 'Paid' : inv.paymentStatus === 'partially_paid' ? 'Partial' : 'Unpaid'}
+                    {inv.paymentStatus === 'paid' ? '✓ Paid' : inv.paymentStatus === 'partially_paid' ? '⏳ Partial' : '✕ Unpaid'}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between text-xs font-mono text-neutral-300 bg-neutral-950/60 p-2.5 rounded-lg border border-neutral-800">
-                  <div>Date: {inv.invoiceDate}</div>
-                  <div>
-                    Paid: <strong className="text-emerald-400">₹{inv.amountPaid.toLocaleString('en-IN')}</strong> / ₹{inv.totalPayable.toLocaleString('en-IN')}
+                {/* Vertical Student & Contact Details */}
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span
+                      className={`font-bold text-base ${
+                        checkIsStudentDeactivated(inv.studentId, inv.studentName)
+                          ? 'line-through text-neutral-500 decoration-rose-500/60 opacity-80'
+                          : 'text-neutral-100'
+                      }`}
+                    >
+                      {inv.studentName}
+                    </span>
+                    {checkIsStudentDeactivated(inv.studentId, inv.studentName) && (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold rounded bg-rose-500/15 text-rose-400 border border-rose-500/30 uppercase tracking-wider">
+                        <UserX className="w-3 h-3 text-rose-400 shrink-0" />
+                        <span>Deactivated</span>
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleToggleStudentDeactivation(inv.studentId, inv.studentName)}
+                      title={
+                        checkIsStudentDeactivated(inv.studentId, inv.studentName)
+                          ? `Reactivate "${inv.studentName}"`
+                          : `Put "${inv.studentName}" into Deactive mode`
+                      }
+                      className={`p-1 rounded cursor-pointer ${
+                        checkIsStudentDeactivated(inv.studentId, inv.studentName)
+                          ? 'text-rose-400 bg-rose-500/15 border border-rose-500/30'
+                          : 'text-neutral-400 hover:text-rose-400'
+                      }`}
+                    >
+                      {checkIsStudentDeactivated(inv.studentId, inv.studentName) ? (
+                        <UserCheck className="w-3.5 h-3.5" />
+                      ) : (
+                        <UserX className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  </div>
+                  {inv.studentPhone && (
+                    <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-300">
+                      <Phone className="w-3 h-3 text-neutral-400 shrink-0" />
+                      <span>+91 {inv.studentPhone}</span>
+                    </div>
+                  )}
+                  {inv.studentEmail && (
+                    <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-400">
+                      <Mail className="w-3 h-3 text-neutral-500 shrink-0" />
+                      <span className="truncate max-w-[240px]">{inv.studentEmail}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Vertical Course Curriculum */}
+                <div className="p-2.5 bg-neutral-950/70 rounded-xl border border-neutral-800/80 space-y-1">
+                  <div className="text-xs font-semibold text-neutral-200">{inv.courseName}</div>
+                  <div className="text-[11px] text-neutral-400 flex items-center gap-1">
+                    <BookOpen className="w-3 h-3 text-orange-400" />
+                    <span>{inv.courseDuration || 'Practical AI Course'}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-1.5 pt-2 flex-wrap">
+                {/* Vertical Financial Details Breakdown */}
+                <div className="p-3 bg-neutral-950/80 rounded-xl border border-neutral-800/80 space-y-1.5 font-mono text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-neutral-400 font-sans">Total Fee Payable:</span>
+                    <span className="text-neutral-200 font-bold">₹{inv.totalPayable.toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-neutral-400 font-sans">Total Amount Paid:</span>
+                    <span className="font-extrabold text-emerald-400">+₹{inv.amountPaid.toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="flex items-center justify-between pt-1 border-t border-neutral-800/80">
+                    <span className="text-neutral-400 font-sans">Total Due / Balance:</span>
+                    {inv.remainingBalance > 0 ? (
+                      <span className="font-bold text-red-400 bg-red-500/15 px-2 py-0.5 rounded border border-red-500/40">
+                        ₹{inv.remainingBalance.toLocaleString('en-IN')}
+                      </span>
+                    ) : (
+                      <span className="text-emerald-400 font-semibold">₹0 ✓ Cleared</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Vertical Action Buttons */}
+                <div className="flex items-center justify-end gap-1.5 pt-1 border-t border-neutral-800/80 flex-wrap">
                   {inv.remainingBalance > 0 && (
                     <button
                       onClick={() => openRecordPaymentModal(inv)}
-                      className="px-2.5 py-1 text-xs font-semibold bg-emerald-500/20 text-emerald-400 rounded-lg"
+                      className="px-3 py-1.5 text-xs font-bold bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/30 rounded-lg cursor-pointer"
                     >
-                      + Pay
+                      + Record Payment
                     </button>
                   )}
                   <button
                     onClick={() => onOpenInvoiceModal(inv)}
-                    className="px-2.5 py-1 text-xs text-neutral-300 hover:text-white bg-neutral-800 rounded-lg flex items-center gap-1"
+                    className="px-2.5 py-1.5 text-xs text-neutral-300 hover:text-white bg-neutral-800 hover:bg-neutral-700 rounded-lg flex items-center gap-1 cursor-pointer"
                   >
                     <Eye className="w-3.5 h-3.5" />
                     <span>View</span>
                   </button>
                   <button
                     onClick={() => handleDownloadInvoicePdf(inv)}
-                    className="px-2.5 py-1 text-xs font-bold text-orange-300 hover:text-white bg-orange-500/20 border border-orange-500/30 rounded-lg flex items-center gap-1 cursor-pointer"
+                    className="px-2.5 py-1.5 text-xs font-bold text-orange-300 hover:text-white bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/30 rounded-lg flex items-center gap-1 cursor-pointer"
                     title="Download Invoice as PDF"
                   >
-                    <Download className="w-3.5 h-3.5" />
+                    <Download className="w-3.5 h-3.5 text-orange-400" />
                     <span>PDF</span>
                   </button>
                   <button
                     onClick={() => shareOnWhatsApp(inv)}
-                    className="p-1.5 text-emerald-400 bg-emerald-500/10 rounded-lg"
-                    title="WhatsApp"
+                    className="p-1.5 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg cursor-pointer"
+                    title="Share on WhatsApp"
                   >
                     <Share2 className="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={() => sendInvoiceEmail(inv)}
-                    className="p-1.5 text-sky-400 bg-sky-500/10 rounded-lg"
-                    title="Email"
+                    className="p-1.5 text-sky-400 bg-sky-500/10 hover:bg-sky-500/20 rounded-lg cursor-pointer"
+                    title="Email Invoice"
                   >
                     <Mail className="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={() => setInvoiceToDelete(inv)}
-                    className="px-2.5 py-1 text-xs font-semibold text-rose-300 bg-rose-500/20 border border-rose-500/30 rounded-lg flex items-center gap-1 cursor-pointer"
+                    className="p-1.5 text-rose-400 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/30 rounded-lg cursor-pointer"
+                    title="Delete Invoice"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                    <span>Delete</span>
                   </button>
                 </div>
               </div>

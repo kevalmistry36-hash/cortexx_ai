@@ -137,53 +137,60 @@ Cortexx AI Institute
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md overflow-y-auto animate-fadeIn">
       <div className="relative w-full max-w-3xl my-auto">
         {/* Floating Action Bar (Hidden on print) */}
-        <div className="sticky top-2 z-20 flex items-center justify-between p-3 mb-3 bg-neutral-900/95 border border-neutral-800 rounded-xl shadow-xl no-print">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono font-bold text-orange-400">{invoice.invoiceNumber}</span>
-            <span className="text-neutral-600">·</span>
-            <span className="text-xs text-neutral-300 font-medium">{invoice.studentName}</span>
+        <div className="sticky top-2 z-20 flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-3 mb-3 bg-neutral-900/95 border border-neutral-800 rounded-xl shadow-xl no-print gap-2.5">
+          <div className="flex items-center justify-between sm:justify-start gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono font-bold text-orange-400">{invoice.invoiceNumber}</span>
+              <span className="text-neutral-600">·</span>
+              <span className="text-xs text-neutral-300 font-medium truncate max-w-[190px]">{invoice.studentName}</span>
+            </div>
+            <button
+              onClick={onClose}
+              className="sm:hidden p-1.5 text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800 rounded-lg transition-colors cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-1.5 sm:gap-2 flex-wrap">
             <button
               onClick={handleEmailShare}
               disabled={isSendingEmail}
               title={`Email Invoice directly to ${invoice.studentEmail}`}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer disabled:opacity-50"
             >
               <Mail className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{isSendingEmail ? 'Sending...' : 'Email'}</span>
+              <span>{isSendingEmail ? 'Sending...' : 'Email'}</span>
             </button>
 
             <button
               onClick={handleWhatsAppShare}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer"
             >
               <Share2 className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">WhatsApp</span>
+              <span>WhatsApp</span>
             </button>
 
             <button
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+              className="hidden xs:flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Print</span>
+              <span>Print</span>
             </button>
-
 
             <button
               onClick={handleDownloadPdf}
               disabled={isGeneratingPdf}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-md"
+              className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-md"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>{isGeneratingPdf ? 'Generating PDF...' : 'Download PDF'}</span>
+              <span>{isGeneratingPdf ? 'Generating...' : 'PDF'}</span>
             </button>
 
             <button
               onClick={onClose}
-              className="p-1.5 text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800 rounded-lg transition-colors ml-1 cursor-pointer"
+              className="hidden sm:inline-flex p-1.5 text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800 rounded-lg transition-colors ml-1 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -203,11 +210,11 @@ Cortexx AI Institute
         {/* High-Fidelity A4 White Paper Canvas with 100% Solid Black Fonts */}
         <div
           ref={printRef}
-          className="a4-print-container bg-white text-black rounded-lg shadow-2xl p-8 sm:p-12 font-sans select-text border-2 border-black"
+          className="a4-print-container bg-white text-black rounded-lg shadow-2xl p-5 sm:p-12 font-sans select-text border-2 border-black"
           style={{ minHeight: '297mm', color: '#000000' }}
         >
           {/* Header Row: Cortexx Logo & Invoice Title */}
-          <div className="flex items-start justify-between border-b-2 border-black pb-6">
+          <div className="flex flex-col sm:flex-row items-start justify-between border-b-2 border-black pb-6 gap-4">
             <div>
               <CortexxLogo size="md" showTagline={true} inverted={true} />
               <div className="mt-3 text-xs text-black space-y-0.5 font-medium">
@@ -217,7 +224,7 @@ Cortexx AI Institute
               </div>
             </div>
 
-            <div className="text-right">
+            <div className="text-left sm:text-right">
               <div className="text-2xl font-black tracking-tight uppercase text-black font-mono">
                 Tax Invoice
               </div>
@@ -244,8 +251,8 @@ Cortexx AI Institute
             </div>
           </div>
 
-          {/* Student & Course Billing Info */}
-          <div className="grid grid-cols-2 gap-8 my-6 py-4 bg-white rounded-lg p-5 border-2 border-black">
+          {/* Student & Course Billing Info (Vertical Stack on Mobile) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-8 my-6 py-4 bg-white rounded-lg p-4 sm:p-5 border-2 border-black">
             <div>
               <div className="text-[11px] font-bold uppercase tracking-wider text-black border-b border-black/30 pb-1">
                 Billed To (Student)
@@ -259,7 +266,7 @@ Cortexx AI Institute
               </div>
             </div>
 
-            <div className="text-right sm:text-left">
+            <div className="text-left">
               <div className="text-[11px] font-bold uppercase tracking-wider text-black border-b border-black/30 pb-1">
                 Course Program Details
               </div>
@@ -274,37 +281,39 @@ Cortexx AI Institute
           </div>
 
           {/* Itemized Table */}
-          <table className="w-full text-left text-xs my-6 border-collapse border-2 border-black">
-            <thead>
-              <tr className="border-b-2 border-black text-black font-bold uppercase tracking-wider bg-neutral-100">
-                <th className="py-2.5 px-3 border-r border-black">#</th>
-                <th className="py-2.5 px-3 border-r border-black">Item Description</th>
-                <th className="py-2.5 px-3 text-center border-r border-black">Duration</th>
-                <th className="py-2.5 px-3 text-right">Fee (INR)</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-black">
-              <tr>
-                <td className="py-4 px-3 font-mono font-bold text-black border-r border-black">01</td>
-                <td className="py-4 px-3 border-r border-black">
-                  <div className="font-bold text-black text-sm">{invoice.courseName}</div>
-                  <div className="text-black text-[11px] mt-0.5">
-                    10 Practical Modules · AI Tools, Agents, Automation & Real-World Projects
-                  </div>
-                </td>
-                <td className="py-4 px-3 text-center font-mono text-black font-medium border-r border-black">
-                  {invoice.courseDuration}
-                </td>
-                <td className="py-4 px-3 text-right font-mono font-bold text-black text-sm">
-                  ₹{invoice.courseFee.toLocaleString('en-IN')}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="overflow-x-auto my-6">
+            <table className="w-full text-left text-xs border-collapse border-2 border-black min-w-[500px]">
+              <thead>
+                <tr className="border-b-2 border-black text-black font-bold uppercase tracking-wider bg-neutral-100">
+                  <th className="py-2.5 px-3 border-r border-black">#</th>
+                  <th className="py-2.5 px-3 border-r border-black">Item Description</th>
+                  <th className="py-2.5 px-3 text-center border-r border-black">Duration</th>
+                  <th className="py-2.5 px-3 text-right">Fee (INR)</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-black">
+                <tr>
+                  <td className="py-4 px-3 font-mono font-bold text-black border-r border-black">01</td>
+                  <td className="py-4 px-3 border-r border-black">
+                    <div className="font-bold text-black text-sm">{invoice.courseName}</div>
+                    <div className="text-black text-[11px] mt-0.5">
+                      10 Practical Modules · AI Tools, Agents, Automation & Real-World Projects
+                    </div>
+                  </td>
+                  <td className="py-4 px-3 text-center font-mono text-black font-medium border-r border-black">
+                    {invoice.courseDuration}
+                  </td>
+                  <td className="py-4 px-3 text-right font-mono font-bold text-black text-sm">
+                    ₹{invoice.courseFee.toLocaleString('en-IN')}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-          {/* Financial Calculation Breakdown Ledger */}
-          <div className="flex justify-end my-6">
-            <div className="w-80 space-y-2 text-xs font-mono border-2 border-black p-4 rounded-lg bg-white">
+          {/* Financial Calculation Breakdown Ledger (Full width on mobile, right-aligned on desktop) */}
+          <div className="flex justify-start sm:justify-end my-6">
+            <div className="w-full sm:w-80 space-y-2 text-xs font-mono border-2 border-black p-4 rounded-lg bg-white">
               <div className="flex justify-between text-black font-medium">
                 <span>Standard Tuition Fee:</span>
                 <span className="font-bold">₹{invoice.courseFee.toLocaleString('en-IN')}</span>
@@ -334,8 +343,8 @@ Cortexx AI Institute
             </div>
           </div>
 
-          {/* Payment Terms & Instructions */}
-          <div className="grid grid-cols-2 gap-6 pt-6 border-t-2 border-black text-xs text-black">
+          {/* Payment Terms & Instructions (Vertical on Mobile) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6 border-t-2 border-black text-xs text-black">
             <div>
               <div className="font-bold uppercase tracking-wider text-black text-[11px] border-b border-black/30 pb-1">
                 Payment Instructions & UPI
@@ -354,7 +363,7 @@ Cortexx AI Institute
               )}
             </div>
 
-            <div className="text-right flex flex-col justify-end items-end">
+            <div className="text-left sm:text-right flex flex-col justify-end items-start sm:items-end pt-4 sm:pt-0">
               <div className="w-44 border-b-2 border-black mb-2"></div>
               <div className="font-bold text-black text-xs uppercase tracking-wider">Authorized Signatory</div>
               <div className="text-[11px] text-black font-semibold">Cortexx AI Institute</div>

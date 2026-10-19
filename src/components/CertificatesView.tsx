@@ -306,30 +306,30 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
 
       {/* CERTIFICATE WIZARD CONTAINER */}
       <div className="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-5 sm:p-6 shadow-md space-y-6">
-        <div className="flex items-center justify-between pb-4 border-b border-neutral-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-neutral-800 gap-3">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-amber-400" />
+            <Sparkles className="w-5 h-5 text-amber-400 shrink-0" />
             <h2 className="text-base font-extrabold text-neutral-100">Certificate Generation Wizard</h2>
           </div>
-          <div className="flex items-center gap-2 text-xs font-mono">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 sm:gap-2 text-xs font-mono">
             <span
-              className={`px-2.5 py-1 rounded-lg font-bold ${
+              className={`px-2.5 py-1.5 rounded-lg font-bold text-center sm:text-left ${
                 wizardStep === 1 ? 'bg-amber-500 text-neutral-950' : 'bg-neutral-800 text-neutral-400'
               }`}
             >
               Step 1: Course & Dates
             </span>
-            <span className="text-neutral-600">→</span>
+            <span className="hidden sm:inline text-neutral-600">→</span>
             <span
-              className={`px-2.5 py-1 rounded-lg font-bold ${
+              className={`px-2.5 py-1.5 rounded-lg font-bold text-center sm:text-left ${
                 wizardStep === 2 ? 'bg-amber-500 text-neutral-950' : 'bg-neutral-800 text-neutral-400'
               }`}
             >
               Step 2: Select Students ({selectedStudentIds.length})
             </span>
-            <span className="text-neutral-600">→</span>
+            <span className="hidden sm:inline text-neutral-600">→</span>
             <span
-              className={`px-2.5 py-1 rounded-lg font-bold ${
+              className={`px-2.5 py-1.5 rounded-lg font-bold text-center sm:text-left ${
                 wizardStep === 3 ? 'bg-amber-500 text-neutral-950' : 'bg-neutral-800 text-neutral-400'
               }`}
             >
@@ -395,11 +395,11 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               </div>
             </div>
 
-            <div className="flex justify-end pt-3">
+            <div className="flex flex-col sm:flex-row justify-end pt-3">
               <button
                 type="button"
                 onClick={() => setWizardStep(2)}
-                className="flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-neutral-950 font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
+                className="w-full sm:w-auto justify-center flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-neutral-950 font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
               >
                 <span>Next: Select Students</span>
                 <ArrowRight className="w-4 h-4" />
@@ -418,7 +418,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               <button
                 type="button"
                 onClick={handleSelectAllStudents}
-                className="px-3 py-1.5 text-xs font-semibold bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-lg transition-colors cursor-pointer"
+                className="px-3 py-1.5 text-xs font-semibold bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-lg transition-colors cursor-pointer text-center"
               >
                 {selectedStudentIds.length === students.length ? 'Deselect All' : 'Select All Students'}
               </button>
@@ -434,13 +434,13 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                     <div
                       key={student.id}
                       onClick={() => handleToggleSelectStudent(student.id)}
-                      className={`flex items-center justify-between p-3 rounded-xl transition-colors cursor-pointer ${
+                      className={`flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl transition-colors cursor-pointer gap-2 ${
                         isSelected ? 'bg-amber-500/10 border border-amber-500/30' : 'hover:bg-neutral-900/60'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <div
-                          className={`w-5 h-5 rounded flex items-center justify-center border ${
+                          className={`w-5 h-5 rounded flex items-center justify-center border shrink-0 ${
                             isSelected
                               ? 'bg-amber-500 border-amber-600 text-neutral-950 font-bold text-xs'
                               : 'border-neutral-700 bg-neutral-900'
@@ -448,25 +448,27 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                         >
                           {isSelected ? '✓' : ''}
                         </div>
-                        <div>
-                          <div className="font-bold text-neutral-100 text-sm">{student.name}</div>
-                          <div className="text-xs font-mono text-neutral-400">
+                        <div className="min-w-0">
+                          <div className="font-bold text-neutral-100 text-sm truncate">{student.name}</div>
+                          <div className="text-xs font-mono text-neutral-400 truncate">
                             {student.id} · {student.enrolledCourseName}
                           </div>
                         </div>
                       </div>
-                      <div className="text-xs font-mono text-neutral-400">+91 {student.phone}</div>
+                      <div className="text-xs font-mono text-neutral-400 sm:text-right pl-8 sm:pl-0">
+                        +91 {student.phone}
+                      </div>
                     </div>
                   );
                 })
               )}
             </div>
 
-            <div className="flex items-center justify-between pt-3">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-3">
               <button
                 type="button"
                 onClick={() => setWizardStep(1)}
-                className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-xl transition-colors cursor-pointer"
+                className="w-full sm:w-auto justify-center flex items-center gap-2 px-4 py-2.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-xl transition-colors cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back</span>
@@ -482,7 +484,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                   }
                   setWizardStep(3);
                 }}
-                className="flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-neutral-950 font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
+                className="w-full sm:w-auto justify-center flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-neutral-950 font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
               >
                 <span>Review & Generate ({selectedStudentIds.length})</span>
                 <ArrowRight className="w-4 h-4" />
@@ -494,33 +496,33 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
         {/* STEP 3 */}
         {wizardStep === 3 && (
           <div className="space-y-4 animate-fadeIn">
-            <div className="p-4 bg-neutral-950 border border-neutral-800 rounded-xl space-y-2 text-xs font-mono">
+            <div className="p-4 bg-neutral-950 border border-neutral-800 rounded-xl space-y-2.5 text-xs font-mono">
               <div className="text-neutral-400 font-sans font-bold text-sm mb-2">Review Certificate Batch:</div>
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-0.5 sm:gap-2">
                 <span className="text-neutral-400">Course Curriculum:</span>
                 <span className="text-amber-400 font-bold text-sm">{activeCourseName}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-0.5 sm:gap-2">
                 <span className="text-neutral-400">Duration Period:</span>
                 <span className="text-neutral-200">
                   {startDate} to {endDate}
                 </span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-0.5 sm:gap-2">
                 <span className="text-neutral-400">Selected Recipients:</span>
                 <span className="text-emerald-400 font-bold">{selectedStudentIds.length} Student(s)</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-0.5 sm:gap-2">
                 <span className="text-neutral-400">Signatories:</span>
                 <span className="text-neutral-300">Keval Gajjar (Founder & CEO), Hiren Raval, Shweta Malaviya</span>
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-3">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-3">
               <button
                 type="button"
                 onClick={() => setWizardStep(2)}
-                className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-xl transition-colors cursor-pointer"
+                className="w-full sm:w-auto justify-center flex items-center gap-2 px-4 py-2.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-xl transition-colors cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back</span>
@@ -529,7 +531,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               <button
                 type="button"
                 onClick={handleGenerateCertificates}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-neutral-950 font-black text-sm rounded-xl shadow-lg transition-all cursor-pointer"
+                className="w-full sm:w-auto justify-center flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-neutral-950 font-black text-sm rounded-xl shadow-lg transition-all cursor-pointer"
               >
                 <Award className="w-4 h-4" />
                 <span>Generate Certificates</span>
@@ -561,7 +563,8 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
           </div>
         </div>
 
-        <div className="bg-neutral-900/60 border border-neutral-800 rounded-2xl overflow-hidden shadow-sm">
+        {/* Desktop Table View of Issued Certificates */}
+        <div className="hidden md:block bg-neutral-900/60 border border-neutral-800 rounded-2xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-neutral-300 border-collapse">
               <thead className="bg-neutral-900 text-xs uppercase tracking-wider text-neutral-300 font-bold border-b border-neutral-700/80">
@@ -639,7 +642,6 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                             )}
                           </button>
 
-
                           {/* Delete / Revoke Action */}
                           <button
                             onClick={() => {
@@ -661,6 +663,103 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               </tbody>
             </table>
           </div>
+        </div>
+
+        {/* Mobile Issued Certificates Cards (Vertical Layout for Phone Screens) */}
+        <div className="md:hidden space-y-3">
+          {filteredCertificates.length === 0 ? (
+            <div className="bg-neutral-900/60 border border-neutral-800 rounded-2xl p-8 text-center text-neutral-500">
+              <Award className="w-8 h-8 mx-auto text-neutral-600 mb-2 opacity-50" />
+              <p className="text-sm">No certificates generated yet. Use the Wizard above to create batch certificates.</p>
+            </div>
+          ) : (
+            filteredCertificates.map(cert => (
+              <div
+                key={cert.id}
+                className="bg-neutral-900/90 border border-neutral-800 rounded-xl p-4 space-y-3 shadow-sm hover:border-neutral-700 transition-colors"
+              >
+                {/* Vertical Header: Cert ID & Date */}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="space-y-0.5">
+                    <div className="font-mono text-xs font-bold text-amber-400">{cert.id}</div>
+                    <div className="text-[11px] font-mono text-neutral-400">Code: {cert.verificationCode}</div>
+                  </div>
+                  <span className="text-[11px] font-mono text-neutral-400 bg-neutral-950 px-2 py-1 rounded border border-neutral-800 shrink-0">
+                    {cert.issueDate}
+                  </span>
+                </div>
+
+                {/* Vertical Student Information Block */}
+                <div className="p-3 bg-neutral-950/70 rounded-xl border border-neutral-800/80 space-y-1">
+                  <div className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">
+                    Student Recipient
+                  </div>
+                  <div className="text-base font-bold text-neutral-100">{cert.studentName}</div>
+                  <div className="text-xs font-mono text-neutral-400">Student ID: {cert.studentId}</div>
+                </div>
+
+                {/* Vertical Course Curriculum Block */}
+                <div className="p-3 bg-neutral-950/70 rounded-xl border border-neutral-800/80 space-y-1">
+                  <div className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">
+                    Course Curriculum
+                  </div>
+                  <div className="text-sm font-semibold text-neutral-200">{cert.courseName}</div>
+                  <div className="text-xs font-mono text-neutral-400 flex items-center gap-1.5 pt-0.5">
+                    <Calendar className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    <span>{cert.startDate} to {cert.endDate}</span>
+                  </div>
+                </div>
+
+                {/* Online QR Verification Link */}
+                <div>
+                  <a
+                    href={`https://cortexxai-app.vercel.app/?verify=${cert.verificationCode}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-mono font-semibold transition-colors"
+                  >
+                    <QrCode className="w-4 h-4" />
+                    <span>Verify Credential Online</span>
+                  </a>
+                </div>
+
+                {/* Vertical Action Buttons */}
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-neutral-800/80">
+                  <button
+                    onClick={() => handleOpenPreview(cert)}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-neutral-200 hover:text-white bg-neutral-800 hover:bg-neutral-700 rounded-lg transition-colors cursor-pointer"
+                  >
+                    <Eye className="w-4 h-4 text-amber-400" />
+                    <span>Preview</span>
+                  </button>
+                  <button
+                    onClick={() => handleDownloadDirectPdf(cert)}
+                    disabled={downloadingCertId === cert.id}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold text-neutral-950 bg-amber-500 hover:bg-amber-400 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    {downloadingCertId === cert.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-neutral-950" />
+                    ) : (
+                      <FileDown className="w-4 h-4" />
+                    )}
+                    <span>PDF</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      deleteCertificate(cert.id);
+                      setCertificates(getCertificates());
+                      setNotification(`Deleted certificate ${cert.id}`);
+                      setTimeout(() => setNotification(null), 3000);
+                    }}
+                    className="p-2 text-rose-400 hover:text-rose-200 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 rounded-lg transition-colors cursor-pointer"
+                    title="Revoke / Delete Certificate"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

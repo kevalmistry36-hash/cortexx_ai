@@ -483,8 +483,8 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
         </div>
       </div>
 
-      {/* Students Data Grid / Table */}
-      <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl overflow-hidden shadow-sm">
+      {/* Students Data Grid / Table (Desktop Only) */}
+      <div className="hidden md:block bg-neutral-900/60 border border-neutral-800 rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-neutral-300 border-collapse">
             <thead className="bg-neutral-900 text-xs uppercase tracking-wider text-neutral-300 font-bold border-b border-neutral-700/80">
