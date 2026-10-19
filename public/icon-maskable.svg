@@ -1,75 +1,316 @@
-<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
   <defs>
-    <radialGradient id="maskableBgGlow" cx="50%" cy="50%" r="60%">
-      <stop offset="0%" stop-color="#1f1812" />
-      <stop offset="70%" stop-color="#0c0d12" />
-      <stop offset="100%" stop-color="#08080b" />
+    <!-- Dark textured background radial gradient -->
+    <radialGradient id="bgGlow" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stopColor="#1e1814" />
+      <stop offset="40%" stopColor="#12100e" />
+      <stop offset="80%" stopColor="#0a0908" />
+      <stop offset="100%" stopColor="#050505" />
     </radialGradient>
 
-    <linearGradient id="cortexxOrangeGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FFAA00" />
-      <stop offset="50%" stop-color="#FF6A00" />
-      <stop offset="100%" stop-color="#DD3B00" />
+    <!-- Orange brain glowing gradient -->
+    <linearGradient id="brainOrangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#FFAA00" />
+      <stop offset="45%" stopColor="#FF7300" />
+      <stop offset="85%" stopColor="#DD3800" />
+      <stop offset="100%" stopColor="#A82400" />
     </linearGradient>
 
-    <linearGradient id="cortexxDarkCircuit" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#2E3440" />
-      <stop offset="100%" stop-color="#12141A" />
+    <!-- Dark metallic hemisphere gradient -->
+    <linearGradient id="brainDarkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#2a2420" />
+      <stop offset="40%" stopColor="#1e1916" />
+      <stop offset="80%" stopColor="#14110f" />
+      <stop offset="100%" stopColor="#0d0b0a" />
     </linearGradient>
 
-    <filter id="cortexxGlowEffect" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="14" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    <!-- Central horizontal lens flare gradient -->
+    <linearGradient id="flareHorizontal" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stopColor="#FFAA00" stopOpacity="0" />
+      <stop offset="35%" stopColor="#FF8800" stopOpacity="0.4" />
+      <stop offset="48%" stopColor="#FFE8A3" stopOpacity="0.9" />
+      <stop offset="50%" stopColor="#FFFFFF" stopOpacity="1" />
+      <stop offset="52%" stopColor="#FFE8A3" stopOpacity="0.9" />
+      <stop offset="65%" stopColor="#FF8800" stopOpacity="0.4" />
+      <stop offset="100%" stopColor="#FFAA00" stopOpacity="0" />
+    </linearGradient>
+
+    <!-- Vertical soft flare -->
+    <linearGradient id="flareVertical" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stopColor="#FFAA00" stopOpacity="0" />
+      <stop offset="40%" stopColor="#FF7700" stopOpacity="0.3" />
+      <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.9" />
+      <stop offset="60%" stopColor="#FF7700" stopOpacity="0.3" />
+      <stop offset="100%" stopColor="#FFAA00" stopOpacity="0" />
+    </linearGradient>
+
+    <!-- Radial flare burst -->
+    <radialGradient id="centerBurst" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stopColor="#FFFFFF" />
+      <stop offset="25%" stopColor="#FFF2B2" />
+      <stop offset="55%" stopColor="#FF7700" stopOpacity="0.8" />
+      <stop offset="100%" stopColor="#FF4400" stopOpacity="0" />
+    </radialGradient>
+
+    <!-- Metallic Silver Chrome text gradient -->
+    <linearGradient id="silverChrome" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stopColor="#FFFFFF" />
+      <stop offset="30%" stopColor="#F3F4F6" />
+      <stop offset="50%" stopColor="#E5E7EB" />
+      <stop offset="70%" stopColor="#9CA3AF" />
+      <stop offset="100%" stopColor="#D1D5DB" />
+    </linearGradient>
+
+    <!-- Vibrant Orange AI text gradient -->
+    <linearGradient id="orangeChrome" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stopColor="#FFC34D" />
+      <stop offset="35%" stopColor="#FF9400" />
+      <stop offset="75%" stopColor="#FF5500" />
+      <stop offset="100%" stopColor="#CC3700" />
+    </linearGradient>
+
+    <!-- Node Glow Filter -->
+    <filter id="orangeHalo" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="intenseGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="textDropShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.9" />
     </filter>
   </defs>
 
-  <!-- Full-bleed background for maskable icon (safe zone inside central 80%) -->
-  <rect width="512" height="512" fill="url(#maskableBgGlow)" />
+  <!-- Background Base Canvas -->
+  <rect width="500" height="500" fill="url(#bgGlow)" rx="24" />
 
-  <!-- Ambient Glow in safe zone -->
-  <circle cx="256" cy="256" r="140" fill="url(#cortexxOrangeGlow)" opacity="0.28" filter="url(#cortexxGlowEffect)" />
+  <!-- Subtle Texture Pattern Overlay -->
+  <g opacity="0.06">
+    <pattern id="leatherTexture" width="6" height="6" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="0.8" fill="#FFFFFF" />
+      <circle cx="4.5" cy="4.5" r="0.8" fill="#FFFFFF" />
+      <circle cx="4.5" cy="1.5" r="0.5" fill="#000000" />
+      <circle cx="1.5" cy="4.5" r="0.5" fill="#000000" />
+    </pattern>
+    <rect width="500" height="500" fill="url(#leatherTexture)" rx="24" />
+  </g>
 
-  <!-- Scaled Brain Group with 15% safe padding (scale 3.5, centered: translate 81, 81) -->
-  <g transform="translate(81, 81) scale(3.5)">
-    <!-- LEFT HEMISPHERE -->
-    <g>
-      <path
-        d="M 48 18 C 36 18 20 28 20 44 C 20 54 26 62 26 70 C 26 78 36 84 48 84 Z"
-        fill="url(#cortexxOrangeGlow)"
-        stroke="#FFE082"
-        stroke-width="1.2"
-      />
-      <path d="M 48 26 L 36 26 L 30 32 L 25 32" stroke="#FFF7ED" stroke-width="2" stroke-linecap="round" />
-      <path d="M 48 38 L 38 38 L 32 44 L 23 44" stroke="#FFF7ED" stroke-width="2" stroke-linecap="round" />
-      <path d="M 48 50 L 32 50 L 28 56 L 24 64" stroke="#FFF7ED" stroke-width="2" stroke-linecap="round" />
-      <path d="M 48 62 L 38 62 L 32 68 L 30 76" stroke="#FFF7ED" stroke-width="2" stroke-linecap="round" />
-      <path d="M 48 74 L 40 74 L 38 78" stroke="#FFF7ED" stroke-width="2" stroke-linecap="round" />
+  <!-- Ambient Warm Backlight Glow behind the Brain -->
+  <circle cx="250" cy="195" r="140" fill="#FF5500" opacity="0.18" filter="url(#intenseGlow)" />
+  <circle cx="250" cy="195" r="80" fill="#FFAA00" opacity="0.25" filter="url(#intenseGlow)" />
 
-      <circle cx="25" cy="32" r="2.5" fill="#FFFFFF" />
-      <circle cx="23" cy="44" r="2.5" fill="#FFFFFF" />
-      <circle cx="24" cy="64" r="2.5" fill="#FFFFFF" />
-      <circle cx="30" cy="76" r="2.5" fill="#FFFFFF" />
-      <circle cx="35" cy="50" r="2.2" fill="#FFE082" />
+  <!-- ==================== RADIATING CIRCUIT TRACES (OUTER) ==================== -->
+  <g stroke="#FF7700" stroke-width="2" stroke-linecap="round" opacity="0.85">
+    <!-- Top & Diagonal Traces -->
+    <path d="M 215 115 L 210 90 L 195 75" />
+    <path d="M 235 110 L 235 80" />
+    <path d="M 265 110 L 265 80" />
+    <path d="M 285 115 L 290 90 L 305 75" />
+    <path d="M 180 130 L 160 110 L 145 110" />
+    <path d="M 320 130 L 340 110 L 355 110" />
+
+    <!-- Left Radial Traces -->
+    <path d="M 160 160 L 130 155 L 115 140" />
+    <path d="M 150 185 L 120 185" />
+    <path d="M 150 205 L 125 210 L 105 225" />
+    <path d="M 158 230 L 135 240 L 125 260" />
+    <path d="M 175 255 L 155 275 L 140 280" />
+    <path d="M 200 275 L 190 295 L 175 305" />
+
+    <!-- Right Radial Traces -->
+    <path d="M 340 160 L 370 155 L 385 140" />
+    <path d="M 350 185 L 380 185" />
+    <path d="M 350 205 L 375 210 L 395 225" />
+    <path d="M 342 230 L 365 240 L 375 260" />
+    <path d="M 325 255 L 345 275 L 360 280" />
+    <path d="M 300 275 L 310 295 L 325 305" />
+
+    <!-- Bottom Traces -->
+    <path d="M 230 285 L 225 305 L 210 315" />
+    <path d="M 270 285 L 275 305 L 290 315" />
+  </g>
+
+  <!-- Glowing Outer Node Pads -->
+  <g fill="#FFAA00" filter="url(#orangeHalo)">
+    <!-- Top Nodes -->
+    <circle cx="195" cy="75" r="4.5" />
+    <circle cx="235" cy="80" r="4" />
+    <circle cx="265" cy="80" r="4" />
+    <circle cx="305" cy="75" r="4.5" />
+    <circle cx="145" cy="110" r="4" />
+    <circle cx="355" cy="110" r="4" />
+
+    <!-- Left Nodes -->
+    <circle cx="115" cy="140" r="4" />
+    <circle cx="120" cy="185" r="4.5" />
+    <circle cx="105" cy="225" r="4" />
+    <circle cx="125" cy="260" r="4.5" />
+    <circle cx="140" cy="280" r="4" />
+    <circle cx="175" cy="305" r="4" />
+
+    <!-- Right Nodes -->
+    <circle cx="385" cy="140" r="4" />
+    <circle cx="380" cy="185" r="4.5" />
+    <circle cx="395" cy="225" r="4" />
+    <circle cx="375" cy="260" r="4.5" />
+    <circle cx="360" cy="280" r="4" />
+    <circle cx="325" cy="305" r="4" />
+
+    <!-- Bottom Nodes -->
+    <circle cx="210" cy="315" r="4" />
+    <circle cx="290" cy="315" r="4" />
+
+    <!-- Accent Micro Spark Particles -->
+    <circle cx="130" cy="100" r="2" opacity="0.6" />
+    <circle cx="370" cy="100" r="2" opacity="0.6" />
+    <circle cx="95" cy="180" r="2" opacity="0.7" />
+    <circle cx="405" cy="180" r="2" opacity="0.7" />
+    <circle cx="100" cy="250" r="2" opacity="0.6" />
+    <circle cx="400" cy="250" r="2" opacity="0.6" />
+  </g>
+
+  <!-- ==================== DUAL-HEMISPHERE AI BRAIN ==================== -->
+
+  <!-- LEFT BRAIN HEMISPHERE (Golden Orange Circuit) -->
+  <g id="leftHemisphere">
+    <!-- Outer Cortex Outline / Base Silhouette -->
+    <path d="M 245 110 
+             C 215 108 190 120 175 140 
+             C 155 165 155 195 160 215 
+             C 152 235 162 260 180 275 
+             C 200 290 225 292 245 288 
+             Z"
+          fill="url(#brainOrangeGrad)"
+          stroke="#FF9900"
+          stroke-width="3"
+          stroke-linejoin="round"
+          filter="url(#orangeHalo)"
+    />
+
+    <!-- Deep Circuit Grooves / Convolutions in Left Brain -->
+    <g fill="none" stroke="#681800" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 242 125 C 215 125 195 135 188 150 C 182 162 195 172 210 172 L 235 172" />
+      <path d="M 166 185 C 172 175 190 185 200 188 C 215 192 230 185 240 185" />
+      <path d="M 168 220 C 180 220 195 210 205 210 C 220 210 230 222 242 222" />
+      <path d="M 175 250 C 185 245 200 248 212 240 C 225 232 232 242 242 245" />
+      <path d="M 195 272 C 210 272 225 265 240 268" />
     </g>
 
-    <!-- RIGHT HEMISPHERE -->
-    <g>
-      <path
-        d="M 52 18 C 64 18 80 28 80 44 C 80 54 74 62 74 70 C 74 78 64 84 52 84 Z"
-        fill="url(#cortexxDarkCircuit)"
-        stroke="#4B5563"
-        stroke-width="1.2"
-      />
-      <path d="M 52 26 L 64 26 L 70 32 L 75 32" stroke="#60A5FA" stroke-width="1.8" stroke-linecap="round" opacity="0.95" />
-      <path d="M 52 38 L 62 38 L 68 44 L 77 44" stroke="#FF6A00" stroke-width="1.8" stroke-linecap="round" opacity="0.95" />
-      <path d="M 52 50 L 68 50 L 72 56 L 76 64" stroke="#60A5FA" stroke-width="1.8" stroke-linecap="round" opacity="0.95" />
-      <path d="M 52 62 L 62 62 L 68 68 L 70 76" stroke="#FF6A00" stroke-width="1.8" stroke-linecap="round" opacity="0.95" />
-      <path d="M 52 74 L 60 74 L 62 78" stroke="#60A5FA" stroke-width="1.8" stroke-linecap="round" opacity="0.95" />
-
-      <circle cx="75" cy="32" r="2.3" fill="#93C5FD" />
-      <circle cx="77" cy="44" r="2.6" fill="#FF8800" />
-      <circle cx="76" cy="64" r="2.3" fill="#93C5FD" />
-      <circle cx="70" cy="76" r="2.3" fill="#FF8800" />
+    <!-- Glowing Tech Circuit Inlays (Yellow-Gold on Left Brain) -->
+    <g fill="none" stroke="#FFEBAA" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 242 135 L 218 135 L 205 146 L 195 146" />
+      <path d="M 242 155 L 225 155 L 212 165 L 180 165" />
+      <path d="M 242 178 L 220 178 L 208 190 L 178 190" />
+      <path d="M 242 200 L 215 200 L 202 212 L 175 212" />
+      <path d="M 242 232 L 222 232 L 210 244 L 188 244" />
+      <path d="M 242 255 L 228 255 L 218 262 L 205 262" />
     </g>
+
+    <!-- Embedded Left Nodes -->
+    <g fill="#FFFFFF" filter="url(#orangeHalo)">
+      <circle cx="195" cy="146" r="3.2" />
+      <circle cx="180" cy="165" r="3.2" />
+      <circle cx="178" cy="190" r="3.2" />
+      <circle cx="175" cy="212" r="3.2" />
+      <circle cx="188" cy="244" r="3.2" />
+      <circle cx="205" cy="262" r="3" />
+      <circle cx="218" cy="135" r="2.8" fill="#FFF2B2" />
+      <circle cx="215" cy="200" r="2.8" fill="#FFF2B2" />
+    </g>
+  </g>
+
+  <!-- RIGHT BRAIN HEMISPHERE (Dark Gunmetal Bronze Circuit) -->
+  <g id="rightHemisphere">
+    <!-- Outer Cortex Outline / Base Silhouette -->
+    <path d="M 255 110 
+             C 285 108 310 120 325 140 
+             C 345 165 345 195 340 215 
+             C 348 235 338 260 320 275 
+             C 300 290 275 292 255 288 
+             Z"
+          fill="url(#brainDarkGrad)"
+          stroke="#42352c"
+          stroke-width="3"
+          stroke-linejoin="round"
+    />
+
+    <!-- Deep Circuit Grooves on Right Brain -->
+    <g fill="none" stroke="#0e0c0b" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 258 125 C 285 125 305 135 312 150 C 318 162 305 172 290 172 L 265 172" />
+      <path d="M 334 185 C 328 175 310 185 300 188 C 285 192 270 185 260 185" />
+      <path d="M 332 220 C 320 220 305 210 295 210 C 280 210 270 222 258 222" />
+      <path d="M 325 250 C 315 245 300 248 288 240 C 275 232 268 242 258 245" />
+      <path d="M 305 272 C 290 272 275 265 260 268" />
+    </g>
+
+    <!-- Subtle Metallic Circuit Traces on Right Hemisphere -->
+    <g fill="none" stroke="#8c6a4e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85">
+      <path d="M 258 135 L 282 135 L 295 146 L 305 146" />
+      <path d="M 258 155 L 275 155 L 288 165 L 320 165" />
+      <path d="M 258 178 L 280 178 L 292 190 L 322 190" />
+      <path d="M 258 200 L 285 200 L 298 212 L 325 212" />
+      <path d="M 258 232 L 278 232 L 290 244 L 312 244" />
+      <path d="M 258 255 L 272 255 L 282 262 L 295 262" />
+    </g>
+
+    <!-- Glowing Amber Node Accents on Right Hemisphere -->
+    <g fill="#FFAA00" filter="url(#orangeHalo)">
+      <circle cx="305" cy="146" r="3.2" />
+      <circle cx="320" cy="165" r="3.2" />
+      <circle cx="322" cy="190" r="3.2" />
+      <circle cx="325" cy="212" r="3.2" />
+      <circle cx="312" cy="244" r="3.2" />
+      <circle cx="295" cy="262" r="3" />
+      <circle cx="282" cy="135" r="2.8" />
+      <circle cx="285" cy="200" r="2.8" />
+    </g>
+  </g>
+
+  <!-- Central Fissure Shadow Division -->
+  <line x1="250" y1="108" x2="250" y2="290" stroke="#0a0807" stroke-width="4" />
+
+  <!-- ==================== CENTRAL RADIANT LENS FLARE BURST ==================== -->
+  <!-- Horizontal Flare Beam across the center -->
+  <ellipse cx="250" cy="195" rx="140" ry="4" fill="url(#flareHorizontal)" filter="url(#intenseGlow)" />
+  <ellipse cx="250" cy="195" rx="80" ry="2" fill="#FFFFFF" opacity="0.95" />
+
+  <!-- Vertical Subtle Flare -->
+  <ellipse cx="250" cy="195" rx="3" ry="50" fill="url(#flareVertical)" opacity="0.75" />
+
+  <!-- Brilliant Center Starburst -->
+  <circle cx="250" cy="195" r="22" fill="url(#centerBurst)" filter="url(#intenseGlow)" />
+  <circle cx="250" cy="195" r="9" fill="#FFF8DB" filter="url(#orangeHalo)" />
+  <circle cx="250" cy="195" r="4.5" fill="#FFFFFF" />
+
+  <!-- ==================== BRAND TYPOGRAPHY ==================== -->
+  <!-- Wordmark Container -->
+  <g transform="translate(0, 320)">
+    <!-- "Cortexx AI" Main Logo Title -->
+    <g filter="url(#textDropShadow)">
+      <!-- Cortexx (Beveled Metallic Silver Chrome) -->
+      <text x="75" y="68" font-family="'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="52" font-weight="800" letter-spacing="-0.03em" fill="url(#silverChrome)">
+        Cortexx
+      </text>
+
+      <!-- AI (Bold Radiant Neon Orange) -->
+      <text x="338" y="68" font-family="'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="52" font-weight="900" letter-spacing="-0.02em" fill="url(#orangeChrome)" filter="url(#orangeHalo)">
+        AI
+      </text>
+    </g>
+
+    <!-- Subtitle: "WHERE THINKING MEETS TECHNOLOGY" -->
+    <text x="250" y="105" text-anchor="middle" font-family="'Plus Jakarta Sans', 'JetBrains Mono', monospace, sans-serif" font-size="13.5" font-weight="700" letter-spacing="0.22em" fill="#A1A1AA" opacity="0.95">
+      WHERE THINKING MEETS TECHNOLOGY
+    </text>
   </g>
 </svg>

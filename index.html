@@ -3,6 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Suppress Vite WebSocket HMR disconnect errors in AI Studio iframe environment
+      window.addEventListener('error', function (event) {
+        if (event && event.message && (event.message.includes('WebSocket') || event.message.includes('vite'))) {
+          event.stopImmediatePropagation();
+        }
+      });
+      window.addEventListener('unhandledrejection', function (event) {
+        if (event && event.reason && String(event.reason).includes('WebSocket')) {
+          event.stopImmediatePropagation();
+        }
+      });
+    </script>
     <title>Cortexx AI Institute & Ad Studio</title>
     <meta name="description" content="Streamlined institute management and banner ad studio for Cortexx AI to manage courses, students, invoices, receipts, and multi-format advertising campaigns." />
     <meta property="og:title" content="Cortexx AI Institute & Ad Studio" />
