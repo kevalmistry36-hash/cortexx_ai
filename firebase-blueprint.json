@@ -1,0 +1,136 @@
+{
+  "entities": {
+    "Course": {
+      "title": "Course",
+      "description": "Represents an educational course offered by the institute.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "duration": { "type": "string" },
+        "mode": { "type": "string" },
+        "fee": { "type": "number" },
+        "certificateIncluded": { "type": "boolean" },
+        "modules": { "type": "array" },
+        "description": { "type": "string" },
+        "isArchived": { "type": "boolean" }
+      },
+      "required": ["id", "name", "duration", "fee"]
+    },
+    "Student": {
+      "title": "Student",
+      "description": "Represents a student enrolled at the institute.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "enrolledCourseId": { "type": "string" },
+        "enrolledCourseName": { "type": "string" },
+        "enrollmentId": { "type": "string" },
+        "enrollmentDate": { "type": "string" },
+        "agreedFee": { "type": "number" },
+        "totalPaid": { "type": "number" },
+        "paymentStatus": { "type": "string" },
+        "paymentMethod": { "type": "string" },
+        "isDeactivated": { "type": "boolean" },
+        "status": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "name", "enrolledCourseName", "agreedFee", "paymentStatus"]
+    },
+    "Invoice": {
+      "title": "Invoice",
+      "description": "Represents an invoice issued to a student for course enrolment fees.",
+      "type": "object",
+      "properties": {
+        "invoiceNumber": { "type": "string" },
+        "invoiceDate": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "studentPhone": { "type": "string" },
+        "studentEmail": { "type": "string" },
+        "enrollmentId": { "type": "string" },
+        "courseName": { "type": "string" },
+        "courseDuration": { "type": "string" },
+        "courseFee": { "type": "number" },
+        "discount": { "type": "number" },
+        "totalPayable": { "type": "number" },
+        "amountPaid": { "type": "number" },
+        "remainingBalance": { "type": "number" },
+        "paymentMethod": { "type": "string" },
+        "paymentStatus": { "type": "string" },
+        "isStudentDeactivated": { "type": "boolean" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["invoiceNumber", "studentId", "studentName", "courseName", "totalPayable", "paymentStatus"]
+    },
+    "Receipt": {
+      "title": "Receipt",
+      "description": "Represents a payment receipt recorded for student course payments.",
+      "type": "object",
+      "properties": {
+        "receiptNumber": { "type": "string" },
+        "invoiceNumber": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "paymentDate": { "type": "string" },
+        "amountReceived": { "type": "number" },
+        "paymentMethod": { "type": "string" },
+        "remainingBalanceAfter": { "type": "number" },
+        "transactionRef": { "type": "string" },
+        "isStudentDeactivated": { "type": "boolean" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["receiptNumber", "invoiceNumber", "studentId", "studentName", "paymentDate", "amountReceived"]
+    },
+    "Certificate": {
+      "title": "Certificate",
+      "description": "Represents a verifiable completion certificate issued to a student.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "courseName": { "type": "string" },
+        "courseMode": { "type": "string" },
+        "courseDuration": { "type": "string" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "issueDate": { "type": "string" },
+        "certificateNumber": { "type": "string" },
+        "verificationCode": { "type": "string" },
+        "signatories": { "type": "array" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "studentName", "courseName", "startDate", "endDate", "issueDate", "verificationCode"]
+    }
+  },
+  "firestore": {
+    "/courses/{courseId}": {
+      "schema": "Course",
+      "description": "Collection of courses offered by the institute."
+    },
+    "/students/{studentId}": {
+      "schema": "Student",
+      "description": "Collection of enrolled student profiles and fee tracking records."
+    },
+    "/invoices/{invoiceNumber}": {
+      "schema": "Invoice",
+      "description": "Collection of financial invoices generated for admissions and fee billing."
+    },
+    "/receipts/{receiptNumber}": {
+      "schema": "Receipt",
+      "description": "Collection of payment receipts issued for received student fee transactions."
+    },
+    "/certificates/{certificateId}": {
+      "schema": "Certificate",
+      "description": "Collection of issued student completion certificates verifiable globally across any device."
+    }
+  }
+}

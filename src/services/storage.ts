@@ -1,16 +1,17 @@
 import { Student, Course, Invoice, PaymentReceipt, PaymentMethod, PaymentStatus, CertificateRecord } from '../types';
 import { INITIAL_COURSES, INITIAL_STUDENTS, INITIAL_INVOICES, INITIAL_RECEIPTS } from '../constants/initialData';
 import {
-  syncCourseToSupabase,
-  deleteCourseFromSupabase,
-  syncStudentToSupabase,
-  deleteStudentFromSupabase,
-  syncInvoiceToSupabase,
-  deleteInvoiceFromSupabase,
-  syncReceiptToSupabase,
-  deleteReceiptFromSupabase,
-  syncCertificateToSupabase,
-} from './supabase';
+  syncCourseToFirebase,
+  deleteCourseFromFirebase,
+  syncStudentToFirebase,
+  deleteStudentFromFirebase,
+  syncInvoiceToFirebase,
+  deleteInvoiceFromFirebase,
+  syncReceiptToFirebase,
+  deleteReceiptFromFirebase,
+  syncCertificateToFirebase,
+  deleteCertificateFromFirebase,
+} from './firebase';
 
 const STORAGE_KEYS = {
   COURSES: 'cortexx_courses_v1',
@@ -20,7 +21,6 @@ const STORAGE_KEYS = {
   CERTIFICATES: 'cortexx_certificates_v1',
   DEACTIVATED_STUDENTS: 'cortexx_deactivated_students_v1',
   ADMIN_PIN: 'cortexx_admin_pin_v1',
-  SUPABASE_CONFIG: 'cortexx_supabase_config_v1',
 };
 
 const DB_EVENT = 'cortexx-db-change';
@@ -96,7 +96,7 @@ export function saveCourse(course: Course): Course {
   }
   localStorage.setItem(STORAGE_KEYS.COURSES, JSON.stringify(courses));
   emitChange();
-  syncCourseToSupabase(course).catch(() => {});
+  syncCourseToFirebase(course).catch(() => {});
   return course;
 }
 
@@ -104,27 +104,19 @@ export function deleteCourse(courseId: string) {
   const courses = getCourses().filter(c => c.id !== courseId);
   localStorage.setItem(STORAGE_KEYS.COURSES, JSON.stringify(courses));
   emitChange();
-  deleteCourseFromSupabase(courseId).catch(() => {});
+  deleteCourseFromFirebase(courseId).catch(() => {});
 }
 
 // ----------------- Students -----------------
-const DUMMY_STUDENT_IDS = new Set(['COR-STU-2026-0001', 'COR-STU-2026-0002', 'COR-STU-2026-0003']);
-const DUMMY_STUDENT_NAMES = new Set(['aarav sharma', 'pooja patel', 'rohan mehta']);
-
 export function getStudents(): Student[] {
-  if (typeof window === 'undefined') return [];
+  if (typeof window === 'undefined') return INITIAL_STUDENTS;
   const raw = localStorage.getItem(STORAGE_KEYS.STUDENTS);
   if (!raw) {
-    return [];
+    localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(INITIAL_STUDENTS));
+    return INITIAL_STUDENTS;
   }
   try {
     let students: Student[] = JSON.parse(raw);
-    // Purge legacy dummy mock students
-    const originalCount = students.length;
-    students = students.filter(
-      s => !DUMMY_STUDENT_IDS.has(s.id) && !DUMMY_STUDENT_NAMES.has((s.name || '').trim().toLowerCase())
-    );
-
     const hasLegacyCourse = students.some(s => s.enrolledCourseId === 'course-ai-agents-02');
     if (hasLegacyCourse) {
       students = students.map(s => {
@@ -138,17 +130,13 @@ export function getStudents(): Student[] {
         }
         return s;
       });
-    }
-
-    if (students.length !== originalCount || hasLegacyCourse) {
       localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(students));
     }
     return students;
   } catch {
-    return [];
+    return INITIAL_STUDENTS;
   }
 }
-
 
 export function getNextStudentId(): string {
   const students = getStudents();
@@ -209,7 +197,7 @@ export function saveStudent(student: Student): Student {
       paymentStatus: student.paymentStatus,
     };
     localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
-    syncInvoiceToSupabase(invoices[invIndex]).catch(() => {});
+    syncInvoiceToFirebase(invoices[invIndex]).catch(() => {});
   } else {
     // Generate invoice for newly admitted student so financial books are completely accurate
     const invNumber = getNextInvoiceNumber();
@@ -235,7 +223,7 @@ export function saveStudent(student: Student): Student {
     };
     invoices.unshift(newInv);
     localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
-    syncInvoiceToSupabase(newInv).catch(() => {});
+    syncInvoiceToFirebase(newInv).catch(() => {});
 
     if (paid > 0) {
       const receipts = getReceipts();
@@ -255,12 +243,12 @@ export function saveStudent(student: Student): Student {
       };
       receipts.unshift(newRec);
       localStorage.setItem(STORAGE_KEYS.RECEIPTS, JSON.stringify(receipts));
-      syncReceiptToSupabase(newRec).catch(() => {});
+      syncReceiptToFirebase(newRec).catch(() => {});
     }
   }
 
   emitChange();
-  syncStudentToSupabase(student).catch(() => {});
+  syncStudentToFirebase(student).catch(() => {});
   return student;
 }
 
@@ -307,7 +295,7 @@ export function updateStudentFeeStatus(
       paymentStatus: newStatus,
     };
     localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
-    syncInvoiceToSupabase(invoices[invIndex]).catch(() => {});
+    syncInvoiceToFirebase(invoices[invIndex]).catch(() => {});
   } else {
     const invNumber = getNextInvoiceNumber();
     const newInv: Invoice = {
@@ -332,7 +320,7 @@ export function updateStudentFeeStatus(
     };
     invoices.unshift(newInv);
     localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
-    syncInvoiceToSupabase(newInv).catch(() => {});
+    syncInvoiceToFirebase(newInv).catch(() => {});
   }
 
   // Sync receipts if needed
@@ -356,35 +344,35 @@ export function updateStudentFeeStatus(
       };
       receipts.unshift(newRec);
       localStorage.setItem(STORAGE_KEYS.RECEIPTS, JSON.stringify(receipts));
-      syncReceiptToSupabase(newRec).catch(() => {});
+      syncReceiptToFirebase(newRec).catch(() => {});
     }
   } else if (newStatus === 'unpaid') {
     const toDelete = receipts.filter(r => r.studentId === studentId);
     const filtered = receipts.filter(r => r.studentId !== studentId);
     localStorage.setItem(STORAGE_KEYS.RECEIPTS, JSON.stringify(filtered));
-    toDelete.forEach(r => deleteReceiptFromSupabase(r.receiptNumber).catch(() => {}));
+    toDelete.forEach(r => deleteReceiptFromFirebase(r.receiptNumber).catch(() => {}));
   }
 
   emitChange();
-  syncStudentToSupabase(updated).catch(() => {});
+  syncStudentToFirebase(updated).catch(() => {});
   return updated;
 }
 
 export function deleteStudent(studentId: string, deleteAssociatedFinancials: boolean = true) {
   const students = getStudents().filter(s => s.id !== studentId);
   localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(students));
-  deleteStudentFromSupabase(studentId).catch(() => {});
+  deleteStudentFromFirebase(studentId).catch(() => {});
 
   if (deleteAssociatedFinancials) {
     const invsToDelete = getInvoices().filter(i => i.studentId === studentId);
     const invoices = getInvoices().filter(i => i.studentId !== studentId);
     localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
-    invsToDelete.forEach(i => deleteInvoiceFromSupabase(i.invoiceNumber).catch(() => {}));
+    invsToDelete.forEach(i => deleteInvoiceFromFirebase(i.invoiceNumber).catch(() => {}));
 
     const recsToDelete = getReceipts().filter(r => r.studentId === studentId);
     const receipts = getReceipts().filter(r => r.studentId !== studentId);
     localStorage.setItem(STORAGE_KEYS.RECEIPTS, JSON.stringify(receipts));
-    recsToDelete.forEach(r => deleteReceiptFromSupabase(r.receiptNumber).catch(() => {}));
+    recsToDelete.forEach(r => deleteReceiptFromFirebase(r.receiptNumber).catch(() => {}));
   }
 
   emitChange();
@@ -396,20 +384,11 @@ export function getCertificates(): CertificateRecord[] {
   const raw = localStorage.getItem(STORAGE_KEYS.CERTIFICATES);
   if (!raw) return [];
   try {
-    let certs: CertificateRecord[] = JSON.parse(raw);
-    const originalCount = certs.length;
-    certs = certs.filter(
-      c => !DUMMY_STUDENT_IDS.has(c.studentId) && !DUMMY_STUDENT_NAMES.has((c.studentName || '').trim().toLowerCase())
-    );
-    if (certs.length !== originalCount) {
-      localStorage.setItem(STORAGE_KEYS.CERTIFICATES, JSON.stringify(certs));
-    }
-    return certs;
+    return JSON.parse(raw);
   } catch {
     return [];
   }
 }
-
 
 export function saveCertificate(cert: CertificateRecord): void {
   const certs = getCertificates();
@@ -421,21 +400,14 @@ export function saveCertificate(cert: CertificateRecord): void {
   }
   localStorage.setItem(STORAGE_KEYS.CERTIFICATES, JSON.stringify(certs));
   emitChange();
-
-  // Background sync to Supabase Realtime Cloud Database
-  import('./supabase')
-    .then(mod => {
-      mod.syncCertificateToSupabase(cert).catch(err => {
-        console.warn('Background Supabase certificate sync notice:', err);
-      });
-    })
-    .catch(() => {});
+  syncCertificateToFirebase(cert).catch(() => {});
 }
 
 export function deleteCertificate(id: string): void {
   const certs = getCertificates().filter(c => c.id !== id);
   localStorage.setItem(STORAGE_KEYS.CERTIFICATES, JSON.stringify(certs));
   emitChange();
+  deleteCertificateFromFirebase(id).catch(() => {});
 }
 
 export function getNextCertificateNumber(): string {
@@ -727,21 +699,15 @@ export function bulkSaveStudents(items: BulkStudentInput[]): {
 }
 
 // ----------------- Invoices -----------------
-const DUMMY_INVOICE_NUMBERS = new Set(['COR-INV-2026-0001', 'COR-INV-2026-0002', 'COR-INV-2026-0003']);
-
 export function getInvoices(): Invoice[] {
-  if (typeof window === 'undefined') return [];
+  if (typeof window === 'undefined') return INITIAL_INVOICES;
   const raw = localStorage.getItem(STORAGE_KEYS.INVOICES);
   if (!raw) {
-    return [];
+    localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(INITIAL_INVOICES));
+    return INITIAL_INVOICES;
   }
   try {
     let invoices: Invoice[] = JSON.parse(raw);
-    const originalCount = invoices.length;
-    invoices = invoices.filter(
-      i => !DUMMY_INVOICE_NUMBERS.has(i.invoiceNumber) && !DUMMY_STUDENT_NAMES.has((i.studentName || '').trim().toLowerCase())
-    );
-
     const hasLegacyCourse = invoices.some(i => i.courseName === 'Autonomous AI Agents & Workflows' || i.courseDuration.toLowerCase().includes('6 week'));
     if (hasLegacyCourse) {
       invoices = invoices.map(i => {
@@ -757,14 +723,11 @@ export function getInvoices(): Invoice[] {
         }
         return i;
       });
-    }
-
-    if (invoices.length !== originalCount || hasLegacyCourse) {
       localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
     }
     return invoices;
   } catch {
-    return [];
+    return INITIAL_INVOICES;
   }
 }
 
@@ -804,7 +767,7 @@ export function saveInvoice(invoice: Invoice): Invoice {
   }
 
   emitChange();
-  syncInvoiceToSupabase(invoice).catch(() => {});
+  syncInvoiceToFirebase(invoice).catch(() => {});
   return invoice;
 }
 
@@ -812,33 +775,23 @@ export function deleteInvoice(invoiceNumber: string) {
   const invoices = getInvoices().filter(i => i.invoiceNumber !== invoiceNumber);
   localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
   emitChange();
-  deleteInvoiceFromSupabase(invoiceNumber).catch(() => {});
+  deleteInvoiceFromFirebase(invoiceNumber).catch(() => {});
 }
 
 // ----------------- Receipts -----------------
-const DUMMY_RECEIPT_NUMBERS = new Set(['COR-REC-2026-0001', 'COR-REC-2026-0002']);
-
 export function getReceipts(): PaymentReceipt[] {
-  if (typeof window === 'undefined') return [];
+  if (typeof window === 'undefined') return INITIAL_RECEIPTS;
   const raw = localStorage.getItem(STORAGE_KEYS.RECEIPTS);
   if (!raw) {
-    return [];
+    localStorage.setItem(STORAGE_KEYS.RECEIPTS, JSON.stringify(INITIAL_RECEIPTS));
+    return INITIAL_RECEIPTS;
   }
   try {
-    let receipts: PaymentReceipt[] = JSON.parse(raw);
-    const originalCount = receipts.length;
-    receipts = receipts.filter(
-      r => !DUMMY_RECEIPT_NUMBERS.has(r.receiptNumber) && !DUMMY_STUDENT_NAMES.has((r.studentName || '').trim().toLowerCase())
-    );
-    if (receipts.length !== originalCount) {
-      localStorage.setItem(STORAGE_KEYS.RECEIPTS, JSON.stringify(receipts));
-    }
-    return receipts;
+    return JSON.parse(raw);
   } catch {
-    return [];
+    return INITIAL_RECEIPTS;
   }
 }
-
 
 export function getNextReceiptNumber(): string {
   const receipts = getReceipts();
@@ -859,7 +812,7 @@ export function saveReceipt(receipt: PaymentReceipt): PaymentReceipt {
   receipts.unshift(receipt);
   localStorage.setItem(STORAGE_KEYS.RECEIPTS, JSON.stringify(receipts));
   emitChange();
-  syncReceiptToSupabase(receipt).catch(() => {});
+  syncReceiptToFirebase(receipt).catch(() => {});
   return receipt;
 }
 
@@ -867,7 +820,7 @@ export function deleteReceipt(receiptNumber: string) {
   const receipts = getReceipts().filter(r => r.receiptNumber !== receiptNumber);
   localStorage.setItem(STORAGE_KEYS.RECEIPTS, JSON.stringify(receipts));
   emitChange();
-  deleteReceiptFromSupabase(receiptNumber).catch(() => {});
+  deleteReceiptFromFirebase(receiptNumber).catch(() => {});
 }
 
 // ----------------- Payment Recording Logic -----------------
@@ -902,7 +855,7 @@ export function recordPayment(params: {
 
   invoices[invIndex] = invoice;
   localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
-  syncInvoiceToSupabase(invoice).catch(() => {});
+  syncInvoiceToFirebase(invoice).catch(() => {});
 
   // Update corresponding student
   const students = getStudents();
@@ -911,7 +864,7 @@ export function recordPayment(params: {
     students[studentIndex].totalPaid = newAmountPaid;
     students[studentIndex].paymentStatus = newStatus;
     localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(students));
-    syncStudentToSupabase(students[studentIndex]).catch(() => {});
+    syncStudentToFirebase(students[studentIndex]).catch(() => {});
   }
 
   // Create payment receipt
@@ -971,29 +924,6 @@ export function verifyAdminPin(enteredPin: string): boolean {
   return enteredPin === currentPin;
 }
 
-// ----------------- Supabase Config -----------------
-export interface SupabaseConfig {
-  url: string;
-  anonKey: string;
-  autoSync: boolean;
-}
-
-export function getSupabaseConfig(): SupabaseConfig {
-  if (typeof window === 'undefined') return { url: '', anonKey: '', autoSync: false };
-  const raw = localStorage.getItem(STORAGE_KEYS.SUPABASE_CONFIG);
-  if (!raw) return { url: '', anonKey: '', autoSync: false };
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return { url: '', anonKey: '', autoSync: false };
-  }
-}
-
-export function saveSupabaseConfig(config: SupabaseConfig) {
-  localStorage.setItem(STORAGE_KEYS.SUPABASE_CONFIG, JSON.stringify(config));
-  emitChange();
-}
-
 // ----------------- Backup & Restore -----------------
 export function exportDataJson(): string {
   const data = {
@@ -1040,138 +970,3 @@ export function resetToDefaults() {
   emitChange();
 }
 
-export function generateSupabaseSqlSchema(): string {
-  return `-- Cortexx AI Institute Realtime Cloud Database Schema
--- Execute this script in Supabase SQL Editor (https://supabase.com/dashboard/project/_/sql)
-
--- 1. Courses Table
-CREATE TABLE IF NOT EXISTS public.courses (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  duration TEXT NOT NULL,
-  mode TEXT NOT NULL DEFAULT '100% Online',
-  fee NUMERIC NOT NULL,
-  certificate_included BOOLEAN DEFAULT true,
-  modules JSONB NOT NULL DEFAULT '[]'::jsonb,
-  description TEXT,
-  is_archived BOOLEAN DEFAULT false,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 2. Students Table
-CREATE TABLE IF NOT EXISTS public.students (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  phone TEXT NOT NULL,
-  email TEXT NOT NULL,
-  enrolled_course_id TEXT,
-  enrolled_course_name TEXT NOT NULL,
-  enrollment_id TEXT NOT NULL,
-  enrollment_date DATE,
-  agreed_fee NUMERIC NOT NULL DEFAULT 5000,
-  total_paid NUMERIC NOT NULL DEFAULT 0,
-  payment_status TEXT NOT NULL CHECK (payment_status IN ('unpaid', 'partially_paid', 'paid')),
-  payment_method TEXT DEFAULT 'UPI',
-  is_deactivated BOOLEAN DEFAULT false,
-  status TEXT DEFAULT 'active',
-  notes TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 3. Invoices Table
-CREATE TABLE IF NOT EXISTS public.invoices (
-  invoice_number TEXT PRIMARY KEY,
-  invoice_date DATE NOT NULL,
-  student_id TEXT NOT NULL,
-  student_name TEXT NOT NULL,
-  student_phone TEXT,
-  student_email TEXT,
-  enrollment_id TEXT,
-  course_name TEXT NOT NULL,
-  course_duration TEXT NOT NULL,
-  course_fee NUMERIC NOT NULL,
-  discount NUMERIC DEFAULT 0,
-  total_payable NUMERIC NOT NULL,
-  amount_paid NUMERIC NOT NULL DEFAULT 0,
-  remaining_balance NUMERIC NOT NULL DEFAULT 0,
-  payment_method TEXT NOT NULL,
-  payment_status TEXT NOT NULL,
-  is_student_deactivated BOOLEAN DEFAULT false,
-  notes TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 4. Receipts Table
-CREATE TABLE IF NOT EXISTS public.receipts (
-  receipt_number TEXT PRIMARY KEY,
-  invoice_number TEXT NOT NULL,
-  student_id TEXT NOT NULL,
-  student_name TEXT NOT NULL,
-  payment_date DATE NOT NULL,
-  amount_received NUMERIC NOT NULL,
-  payment_method TEXT NOT NULL,
-  remaining_balance_after NUMERIC NOT NULL DEFAULT 0,
-  transaction_ref TEXT,
-  is_student_deactivated BOOLEAN DEFAULT false,
-  notes TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 5. Certificates Table (Synced in Realtime for Instant Multi-Device Authenticity Verification)
-CREATE TABLE IF NOT EXISTS public.certificates (
-  id TEXT PRIMARY KEY,
-  student_id TEXT NOT NULL,
-  student_name TEXT NOT NULL,
-  course_name TEXT NOT NULL,
-  course_mode TEXT DEFAULT '100% Online',
-  course_duration TEXT DEFAULT '1 Month',
-  start_date DATE NOT NULL,
-  end_date DATE NOT NULL,
-  issue_date DATE NOT NULL,
-  certificate_number TEXT NOT NULL UNIQUE,
-  verification_code TEXT NOT NULL UNIQUE,
-  signatories JSONB DEFAULT '[]'::jsonb,
-  status TEXT DEFAULT 'issued',
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Indices for instant lookups & verification searches
-CREATE INDEX IF NOT EXISTS idx_certificates_verification_code ON public.certificates(verification_code);
-CREATE INDEX IF NOT EXISTS idx_certificates_cert_number ON public.certificates(certificate_number);
-CREATE INDEX IF NOT EXISTS idx_certificates_student_name ON public.certificates(student_name);
-CREATE INDEX IF NOT EXISTS idx_students_enrollment_id ON public.students(enrollment_id);
-CREATE INDEX IF NOT EXISTS idx_invoices_student_id ON public.invoices(student_id);
-CREATE INDEX IF NOT EXISTS idx_receipts_invoice_number ON public.receipts(invoice_number);
-
--- Enable Row Level Security (RLS) on all tables
-ALTER TABLE public.courses ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.students ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.invoices ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.receipts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.certificates ENABLE ROW LEVEL SECURITY;
-
--- Allow public read & write access with Anon Key
-CREATE POLICY "Allow anon read courses" ON public.courses FOR SELECT USING (true);
-CREATE POLICY "Allow anon write courses" ON public.courses FOR ALL USING (true) WITH CHECK (true);
-
-CREATE POLICY "Allow anon read students" ON public.students FOR SELECT USING (true);
-CREATE POLICY "Allow anon write students" ON public.students FOR ALL USING (true) WITH CHECK (true);
-
-CREATE POLICY "Allow anon read invoices" ON public.invoices FOR SELECT USING (true);
-CREATE POLICY "Allow anon write invoices" ON public.invoices FOR ALL USING (true) WITH CHECK (true);
-
-CREATE POLICY "Allow anon read receipts" ON public.receipts FOR SELECT USING (true);
-CREATE POLICY "Allow anon write receipts" ON public.receipts FOR ALL USING (true) WITH CHECK (true);
-
-CREATE POLICY "Allow anon read certificates" ON public.certificates FOR SELECT USING (true);
-CREATE POLICY "Allow anon write certificates" ON public.certificates FOR ALL USING (true) WITH CHECK (true);
-
--- Enable Realtime publication for all tables across devices
-ALTER PUBLICATION supabase_realtime ADD TABLE public.courses, public.students, public.invoices, public.receipts, public.certificates;
-`;
-}

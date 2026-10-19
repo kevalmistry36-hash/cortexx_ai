@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CertificateRecord, Student } from '../types';
 import { getCertificates, getStudents, isAdminAuthenticated, setAdminAuthenticated } from '../services/storage';
-import { verifyCertificateFromCloud, subscribeToCertificatesRealtime } from '../services/supabase';
+import { verifyCertificateFromCloud, subscribeToCertificatesRealtime } from '../services/firebase';
 import { CortexxOfficialSeal } from './CortexxOfficialSeal';
 import { CortexxLogo } from './CortexxLogo';
 import { AdminLockModal } from './AdminLockModal';

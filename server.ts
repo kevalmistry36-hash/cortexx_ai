@@ -1,5 +1,4 @@
 import express from 'express';
-import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -10,77 +9,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-const CONFIG_FILE = path.join(__dirname, 'supabase-config.json');
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.json());
 
-// In-memory / file-based Supabase config cache
-function readServerSupabaseConfig() {
-  const envUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '';
-  const envKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '';
-
-  let fileUrl = '';
-  let fileKey = '';
-
-  try {
-    if (fs.existsSync(CONFIG_FILE)) {
-      const raw = fs.readFileSync(CONFIG_FILE, 'utf-8');
-      const parsed = JSON.parse(raw);
-      fileUrl = parsed.url || '';
-      fileKey = parsed.anonKey || '';
-    }
-  } catch (err) {
-    console.error('Error reading supabase-config.json:', err);
-  }
-
-  const url = (envUrl || fileUrl || '').trim();
-  const anonKey = (envKey || fileKey || '').trim();
-
-  return {
-    url,
-    anonKey,
-    isConfigured: !!(url && anonKey),
-  };
-}
-
-function writeServerSupabaseConfig(url: string, anonKey: string) {
-  const data = {
-    url: (url || '').trim(),
-    anonKey: (anonKey || '').trim(),
-    updatedAt: new Date().toISOString(),
-  };
-
-  fs.writeFileSync(CONFIG_FILE, JSON.stringify(data, null, 2), 'utf-8');
-  process.env.VITE_SUPABASE_URL = data.url;
-  process.env.VITE_SUPABASE_ANON_KEY = data.anonKey;
-  return data;
-}
-
 // API Routes
-app.get('/api/supabase-config', (_req, res) => {
-  const config = readServerSupabaseConfig();
-  res.json(config);
-});
-
-app.post('/api/supabase-config', (req, res) => {
-  const { url, anonKey } = req.body || {};
-  const saved = writeServerSupabaseConfig(url || '', anonKey || '');
-  res.json({
-    success: true,
-    url: saved.url,
-    anonKey: saved.anonKey,
-    isConfigured: !!(saved.url && saved.anonKey),
-    message: 'Supabase configuration saved and broadcast to all connected devices.',
-  });
-});
-
 app.get('/api/health', (_req, res) => {
-  const config = readServerSupabaseConfig();
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    supabaseConfigured: config.isConfigured,
+    cloudDatabase: 'Firebase Firestore',
   });
 });
 

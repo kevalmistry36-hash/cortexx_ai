@@ -10,9 +10,9 @@ import {
   setAdminAuthenticated,
 } from './services/storage';
 import {
-  fetchAndSyncAllDataFromSupabase,
-  subscribeToAllSupabaseRealtime,
-} from './services/supabase';
+  fetchAndSyncAllDataFromFirebase,
+  subscribeToAllFirebaseRealtime,
+} from './services/firebase';
 import { Navbar, NavView } from './components/Navbar';
 import { DashboardView } from './components/DashboardView';
 import { StudentsView } from './components/StudentsView';
@@ -102,13 +102,13 @@ export default function App() {
       reloadData();
     });
 
-    // 1. Initial Cloud Boot Sync: Fetch all Students, Courses, Invoices, Receipts, and Certificates from Supabase
-    fetchAndSyncAllDataFromSupabase()
+    // 1. Initial Cloud Boot Sync: Fetch all Students, Courses, Invoices, Receipts, and Certificates from Firebase Firestore
+    fetchAndSyncAllDataFromFirebase()
       .then(() => reloadData())
-      .catch(err => console.warn('Supabase initial sync note:', err));
+      .catch(err => console.warn('Firebase initial sync note:', err));
 
-    // 2. Realtime Subscription: Listen for changes across all tables in real-time
-    const unsubscribeRealtime = subscribeToAllSupabaseRealtime(() => {
+    // 2. Realtime Subscription: Listen for changes across all Firestore collections in real-time
+    const unsubscribeRealtime = subscribeToAllFirebaseRealtime(() => {
       reloadData();
     });
 

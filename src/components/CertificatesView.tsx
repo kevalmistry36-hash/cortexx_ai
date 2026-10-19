@@ -11,12 +11,10 @@ import { CortexxLogo } from './CortexxLogo';
 import { CortexxOfficialSeal } from './CortexxOfficialSeal';
 import QRCode from 'qrcode';
 import {
-  fetchAndSyncAllCertificatesFromSupabase,
+  fetchAndSyncAllCertificatesFromFirebase,
   subscribeToCertificatesRealtime,
-  pushAllLocalCertificatesToSupabase,
-  syncCertificateToSupabase,
-  isSupabaseConfigured,
-} from '../services/supabase';
+  pushAllLocalCertificatesToFirebase,
+} from '../services/firebase';
 import {
   Award,
   CheckCircle2,
@@ -80,8 +78,8 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
   useEffect(() => {
     setCertificates(getCertificates());
 
-    // Fetch latest from Supabase Realtime DB across all devices
-    fetchAndSyncAllCertificatesFromSupabase()
+    // Fetch latest from Firebase Firestore across all devices
+    fetchAndSyncAllCertificatesFromFirebase()
       .then(latest => {
         if (latest && latest.length > 0) {
           setCertificates(latest);

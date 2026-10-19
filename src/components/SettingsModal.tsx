@@ -1,20 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   getAdminPin,
   setAdminPin,
   exportDataJson,
   importDataJson,
   resetToDefaults,
-  generateSupabaseSqlSchema,
 } from '../services/storage';
 import {
-  testSupabaseConnection,
-  pushAllLocalDataToSupabase,
-  fetchAndSyncAllDataFromSupabase,
-  saveSupabaseCredentialsToServer,
-  getActiveSupabaseCredentials,
-  fetchServerSupabaseConfig,
-} from '../services/supabase';
+  testFirebaseConnection,
+  pushAllLocalDataToFirebase,
+  fetchAndSyncAllDataFromFirebase,
+} from '../services/firebase';
 import {
   KeyRound,
   Download,
@@ -30,7 +26,6 @@ import {
   Wifi,
   ArrowDownCircle,
   ArrowUpCircle,
-  Globe,
 } from 'lucide-react';
 
 interface SettingsModalProps {
@@ -44,25 +39,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const [newPin, setNewPin] = useState('');
   const [pinMessage, setPinMessage] = useState<{ text: string; error?: boolean } | null>(null);
 
-  // Supabase state
-  const activeCreds = getActiveSupabaseCredentials();
-  const [supabaseUrl, setSupabaseUrl] = useState(activeCreds.url);
-  const [supabaseKey, setSupabaseKey] = useState(activeCreds.anonKey);
-  const [copiedSchema, setCopiedSchema] = useState(false);
-  const [supabaseStatus, setSupabaseStatus] = useState<string | null>(null);
+  // Firebase Realtime Cloud state
+  const [firebaseStatus, setFirebaseStatus] = useState<string | null>(null);
   const [isTesting, setIsTesting] = useState(false);
   const [isSyncingAll, setIsSyncingAll] = useState(false);
   const [isPullingAll, setIsPullingAll] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      fetchServerSupabaseConfig().then(creds => {
-        if (creds.url) setSupabaseUrl(creds.url);
-        if (creds.anonKey) setSupabaseKey(creds.anonKey);
-      });
-    }
-  }, [isOpen]);
-
 
   // Backup state
   const [importText, setImportText] = useState('');
@@ -124,28 +105,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     reader.readAsText(file);
   };
 
-  const handleSaveSupabase = async () => {
-    setIsTesting(true);
-    setSupabaseStatus(null);
-    try {
-      const res = await saveSupabaseCredentialsToServer(supabaseUrl.trim(), supabaseKey.trim());
-      setSupabaseStatus(res.message);
-    } catch (err: any) {
-      setSupabaseStatus(`Save error: ${err.message}`);
-    } finally {
-      setIsTesting(false);
-    }
-  };
-
-
   const handleTestConnection = async () => {
     setIsTesting(true);
-    setSupabaseStatus(null);
+    setFirebaseStatus(null);
     try {
-      const res = await testSupabaseConnection(supabaseUrl.trim(), supabaseKey.trim());
-      setSupabaseStatus(res.message);
+      const res = await testFirebaseConnection();
+      setFirebaseStatus(res.message);
     } catch (err: any) {
-      setSupabaseStatus(`Connection error: ${err.message}`);
+      setFirebaseStatus(`Connection error: ${err.message}`);
     } finally {
       setIsTesting(false);
     }
@@ -153,18 +120,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
 
   const handleSyncAllNow = async () => {
     setIsSyncingAll(true);
-    setSupabaseStatus(null);
+    setFirebaseStatus(null);
     try {
-      const res = await pushAllLocalDataToSupabase();
+      const res = await pushAllLocalDataToFirebase();
       if (res.error) {
-        setSupabaseStatus(`Sync failed: ${res.error}`);
+        setFirebaseStatus(`Sync failed: ${res.error}`);
       } else {
-        setSupabaseStatus(
-          `Successfully synced to Supabase: ${res.studentsCount} students, ${res.coursesCount} courses, ${res.invoicesCount} invoices, ${res.receiptsCount} receipts, and ${res.certificatesCount} certificates!`
+        setFirebaseStatus(
+          `Successfully migrated & synced to Firebase Firestore: ${res.studentsCount} students, ${res.coursesCount} courses, ${res.invoicesCount} invoices, ${res.receiptsCount} receipts, and ${res.certificatesCount} certificates!`
         );
       }
     } catch (err: any) {
-      setSupabaseStatus(`Sync error: ${err.message}`);
+      setFirebaseStatus(`Sync error: ${err.message}`);
     } finally {
       setIsSyncingAll(false);
     }
@@ -172,24 +139,17 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
 
   const handlePullAllNow = async () => {
     setIsPullingAll(true);
-    setSupabaseStatus(null);
+    setFirebaseStatus(null);
     try {
-      const res = await fetchAndSyncAllDataFromSupabase();
-      setSupabaseStatus(
-        `Pulled & synced ${res.students.length} students, ${res.courses.length} courses, ${res.invoices.length} invoices, ${res.receipts.length} receipts, and ${res.certificates.length} certificates from Supabase Cloud!`
+      const res = await fetchAndSyncAllDataFromFirebase();
+      setFirebaseStatus(
+        `Pulled & synced ${res.students.length} students, ${res.courses.length} courses, ${res.invoices.length} invoices, ${res.receipts.length} receipts, and ${res.certificates.length} certificates from Firebase Firestore Cloud!`
       );
     } catch (err: any) {
-      setSupabaseStatus(`Pull error: ${err.message}`);
+      setFirebaseStatus(`Pull error: ${err.message}`);
     } finally {
       setIsPullingAll(false);
     }
-  };
-
-  const handleCopySchema = () => {
-    const sql = generateSupabaseSqlSchema();
-    navigator.clipboard.writeText(sql);
-    setCopiedSchema(true);
-    setTimeout(() => setCopiedSchema(false), 2000);
   };
 
   const handleResetDefaults = () => {
@@ -293,90 +253,68 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           )}
         </div>
 
-        {/* 3. Supabase Cloud Sync & Realtime Persistence */}
+        {/* 3. Firebase Firestore Realtime Cloud Database */}
         <div className="bg-neutral-950 border border-neutral-800/80 rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Cloud className="w-4 h-4 text-emerald-400" />
+              <Cloud className="w-4 h-4 text-orange-400" />
               <span className="text-xs font-bold uppercase tracking-wider text-neutral-200">
-                Supabase Realtime Cloud Sync (All Data)
+                Firebase Firestore Realtime Database
               </span>
             </div>
-            <button
-              onClick={handleCopySchema}
-              className="text-[11px] text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1 cursor-pointer"
-            >
-              {copiedSchema ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-              <span>{copiedSchema ? 'SQL Copied!' : 'Copy Complete Realtime SQL Schema'}</span>
-            </button>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[11px] font-mono font-semibold">
+              <ShieldCheck className="w-3 h-3" />
+              Connected & Protected
+            </span>
           </div>
 
           <p className="text-xs text-neutral-400">
-            Records all Students, Courses, Invoices, Payment Receipts, and Certificates in Supabase Realtime so data integrity is uniform across all devices anywhere.
+            Records all Students, Courses, Invoices, Payment Receipts, and Certificates in Firebase Firestore Cloud in real-time. Data is synchronized uniformly across all devices and verified globally.
           </p>
 
-          <div className="space-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono bg-neutral-900/80 border border-neutral-800/80 p-3 rounded-lg text-neutral-300">
             <div>
-              <label className="block text-[11px] text-neutral-400 font-mono mb-0.5">Project URL</label>
-              <input
-                type="text"
-                placeholder="https://xyzcompany.supabase.co"
-                value={supabaseUrl}
-                onChange={e => setSupabaseUrl(e.target.value)}
-                className="w-full px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-lg text-xs font-mono text-neutral-200 focus:outline-none focus:border-orange-500"
-              />
+              <span className="text-neutral-500 block text-[10px] uppercase">Firebase Project ID</span>
+              <span className="text-orange-400 font-bold">clear-tiger-zd2jw</span>
             </div>
             <div>
-              <label className="block text-[11px] text-neutral-400 font-mono mb-0.5">Anon Public API Key</label>
-              <input
-                type="password"
-                placeholder="eyJhbGciOiJIUzI1NiIsIn..."
-                value={supabaseKey}
-                onChange={e => setSupabaseKey(e.target.value)}
-                className="w-full px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-lg text-xs font-mono text-neutral-200 focus:outline-none focus:border-orange-500"
-              />
+              <span className="text-neutral-500 block text-[10px] uppercase">Firestore Database</span>
+              <span className="text-neutral-200 truncate block">ai-studio-cortexxdashboard...</span>
             </div>
           </div>
 
           <div className="flex items-center gap-2 pt-1 flex-wrap">
             <button
-              onClick={handleSaveSupabase}
-              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-lg transition-colors cursor-pointer"
-            >
-              Save Credentials
-            </button>
-
-            <button
               onClick={handleTestConnection}
               disabled={isTesting}
-              className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+              className="px-3.5 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
             >
-              <Wifi className="w-3 h-3 text-emerald-400" />
+              <Wifi className="w-3.5 h-3.5 text-emerald-400" />
               <span>{isTesting ? 'Testing...' : 'Test Connection'}</span>
             </button>
 
             <button
               onClick={handleSyncAllNow}
               disabled={isSyncingAll}
-              className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+              className="px-3.5 py-1.5 bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
             >
-              <ArrowUpCircle className={`w-3.5 h-3.5 text-orange-400 ${isSyncingAll ? 'animate-spin' : ''}`} />
-              <span>{isSyncingAll ? 'Syncing...' : 'Push All Data to Cloud'}</span>
+              <ArrowUpCircle className={`w-3.5 h-3.5 ${isSyncingAll ? 'animate-spin' : ''}`} />
+              <span>{isSyncingAll ? 'Migrating...' : 'Migrate / Push All Data to Firebase'}</span>
             </button>
 
             <button
               onClick={handlePullAllNow}
               disabled={isPullingAll}
-              className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+              className="px-3.5 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <ArrowDownCircle className={`w-3.5 h-3.5 text-blue-400 ${isPullingAll ? 'animate-spin' : ''}`} />
               <span>{isPullingAll ? 'Pulling...' : 'Pull Cloud Data'}</span>
             </button>
           </div>
 
-          {supabaseStatus && (
-            <p className="text-xs text-emerald-400 font-medium bg-emerald-500/10 border border-emerald-500/20 p-2 rounded-lg">
-              {supabaseStatus}
+          {firebaseStatus && (
+            <p className="text-xs text-emerald-400 font-medium bg-emerald-500/10 border border-emerald-500/20 p-2.5 rounded-lg">
+              {firebaseStatus}
             </p>
           )}
         </div>
