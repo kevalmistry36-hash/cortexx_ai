@@ -64,22 +64,23 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
       )}
 
       {variant === 'banner' && (
-        <div className={`p-4 bg-gradient-to-r from-neutral-900 to-neutral-950 border border-orange-500/30 rounded-xl flex items-center justify-between gap-3 shadow-md ${className}`}>
-          <div className="flex items-center gap-3">
-            <img src="/pwa-192x192.png" alt="Cortexx AI" className="w-10 h-10 rounded-xl shadow-md border border-orange-500/30 shrink-0" />
+        <div className={`p-4 bg-gradient-to-r from-neutral-900 to-neutral-950 border border-orange-500/30 rounded-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 shadow-md ${className}`}>
+          <div className="flex items-start sm:items-center gap-3">
+            <img src="/pwa-192x192.png" alt="Cortexx AI" className="w-10 h-10 rounded-xl shadow-md border border-orange-500/30 shrink-0 mt-0.5 sm:mt-0" />
             <div>
               <div className="text-sm font-bold text-neutral-100 flex items-center gap-1.5">
                 <span>Install Cortexx AI App</span>
                 <span className="text-[10px] bg-orange-500/20 text-orange-400 font-mono px-1.5 py-0.5 rounded border border-orange-500/30">PWA</span>
               </div>
-              <p className="text-xs text-neutral-400">Add to your Home Screen on Android, iPhone, or Desktop for instant offline access.</p>
+              <p className="text-xs text-neutral-400 mt-0.5">Add to your Home Screen on Android, iPhone, or Desktop for instant offline access.</p>
             </div>
           </div>
           <button
             onClick={handleInstallClick}
-            className="px-3.5 py-1.5 bg-orange-500 hover:bg-orange-600 text-neutral-950 text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0 shadow"
+            className="w-full sm:w-auto px-4 py-2 bg-orange-500 hover:bg-orange-600 text-neutral-950 text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0 shadow text-center flex items-center justify-center gap-1.5"
           >
-            Install
+            <Download className="w-3.5 h-3.5 text-neutral-950" />
+            <span>Install App</span>
           </button>
         </div>
       )}

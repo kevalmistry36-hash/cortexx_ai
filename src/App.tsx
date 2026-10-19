@@ -249,6 +249,7 @@ export default function App() {
             onOpenGenerateInvoice={handleOpenGenerateInvoice}
             onNavigateToView={view => setActiveView(view)}
             onSelectInvoice={inv => setActiveInvoice(inv)}
+            theme={theme}
           />
         )}
 

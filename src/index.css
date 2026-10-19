@@ -59,6 +59,29 @@ body.light .cortexx-ai-heading span {
   color: #000000 !important;
 }
 
+/* In white theme, Dashboard KPI cards have pure black font with vivid orange indicators */
+html.light .dashboard-kpi-card,
+html[data-theme="light"] .dashboard-kpi-card,
+body.light .dashboard-kpi-card {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border-top-color: #f97316 !important; /* Vivid Orange top indicator */
+}
+
+html.light .dashboard-kpi-card span:not(.kpi-orange-badge):not(.bg-orange-500),
+html[data-theme="light"] .dashboard-kpi-card span:not(.kpi-orange-badge):not(.bg-orange-500),
+body.light .dashboard-kpi-card span:not(.kpi-orange-badge):not(.bg-orange-500) {
+  color: #000000 !important;
+}
+
+html.light .dashboard-kpi-card .kpi-orange-badge,
+html[data-theme="light"] .dashboard-kpi-card .kpi-orange-badge,
+body.light .dashboard-kpi-card .kpi-orange-badge {
+  background-color: rgba(249, 115, 22, 0.15) !important;
+  color: #ea580c !important;
+  border-color: rgba(249, 115, 22, 0.35) !important;
+}
+
 html.light nav.md\:hidden {
   background-color: rgba(255, 255, 255, 0.98) !important;
   border-top-color: #fed7aa !important;

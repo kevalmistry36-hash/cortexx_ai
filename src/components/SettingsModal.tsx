@@ -237,89 +237,128 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto animate-fadeIn">
-      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-2xl p-6 shadow-2xl space-y-5 my-auto max-h-[92vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto animate-fadeIn">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-2xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-5 my-auto max-h-[96vh] sm:max-h-[92vh] flex flex-col">
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-neutral-800 shrink-0">
-          <div>
-            <h2 className="text-lg font-bold text-neutral-100 flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-orange-400" />
-              <span>System Settings & Integrations</span>
-            </h2>
-            <p className="text-xs text-neutral-400 mt-0.5">
-              Cloud database, Direct Mail / SMTP dispatch, security access, and backups
-            </p>
+        <div className="flex items-start sm:items-center justify-between pb-3 border-b border-neutral-800 shrink-0 gap-3">
+          <div className="flex items-start gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-400 shrink-0 mt-0.5">
+              <ShieldCheck className="w-4 h-4" />
+            </div>
+            <div>
+              <h2 className="text-base sm:text-lg font-bold text-neutral-100 flex items-center gap-2 leading-tight">
+                <span>System Settings &amp; Integrations</span>
+              </h2>
+              <p className="text-xs text-neutral-400 mt-0.5">
+                Cloud database, Direct Mail / SMTP dispatch, security access, and backups
+              </p>
+            </div>
           </div>
-          <button onClick={onClose} className="text-neutral-400 hover:text-neutral-200 p-1 cursor-pointer">
+          <button onClick={onClose} className="text-neutral-400 hover:text-neutral-200 p-1.5 rounded-lg hover:bg-neutral-800 cursor-pointer shrink-0">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="flex items-center gap-1.5 p-1 bg-neutral-950 border border-neutral-800/80 rounded-xl shrink-0">
+        {/* Tab Switcher - Arranged vertically in mobile view, row in desktop view */}
+        <div className="flex flex-col sm:flex-row gap-1.5 p-1.5 bg-neutral-950 border border-neutral-800/80 rounded-xl shrink-0">
           <button
             type="button"
             onClick={() => setActiveTab('cloud')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`w-full sm:flex-1 flex items-center justify-between sm:justify-center gap-2 py-2.5 sm:py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               activeTab === 'cloud'
-                ? 'bg-neutral-800 text-neutral-100 shadow-sm border border-neutral-700/60'
-                : 'text-neutral-400 hover:text-neutral-200'
+                ? 'bg-neutral-800 text-orange-400 shadow-sm border border-orange-500/40 font-bold'
+                : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900/60'
             }`}
           >
-            <Cloud className="w-3.5 h-3.5 text-orange-400" />
-            <span>Firebase Cloud</span>
+            <div className="flex items-center gap-2">
+              <Cloud className="w-4 h-4 text-orange-400 shrink-0" />
+              <span>Firebase Cloud</span>
+            </div>
+            {activeTab === 'cloud' && (
+              <span className="sm:hidden text-[10px] font-bold px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                Active
+              </span>
+            )}
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('smtp')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`w-full sm:flex-1 flex items-center justify-between sm:justify-center gap-2 py-2.5 sm:py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               activeTab === 'smtp'
-                ? 'bg-neutral-800 text-neutral-100 shadow-sm border border-neutral-700/60'
-                : 'text-neutral-400 hover:text-neutral-200'
+                ? 'bg-neutral-800 text-sky-400 shadow-sm border border-sky-500/40 font-bold'
+                : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900/60'
             }`}
           >
-            <Mail className="w-3.5 h-3.5 text-sky-400" />
-            <span>Mail / SMTP</span>
+            <div className="flex items-center gap-2">
+              <Mail className="w-4 h-4 text-sky-400 shrink-0" />
+              <span>Mail / SMTP</span>
+            </div>
+            {activeTab === 'smtp' && (
+              <span className="sm:hidden text-[10px] font-bold px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-400 border border-sky-500/30">
+                Active
+              </span>
+            )}
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('general')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`w-full sm:flex-1 flex items-center justify-between sm:justify-center gap-2 py-2.5 sm:py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               activeTab === 'general'
-                ? 'bg-neutral-800 text-neutral-100 shadow-sm border border-neutral-700/60'
-                : 'text-neutral-400 hover:text-neutral-200'
+                ? 'bg-neutral-800 text-amber-400 shadow-sm border border-amber-500/40 font-bold'
+                : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900/60'
             }`}
           >
-            <KeyRound className="w-3.5 h-3.5 text-amber-400" />
-            <span>Admin PIN</span>
+            <div className="flex items-center gap-2">
+              <KeyRound className="w-4 h-4 text-amber-400 shrink-0" />
+              <span>Admin PIN</span>
+            </div>
+            {activeTab === 'general' && (
+              <span className="sm:hidden text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                Active
+              </span>
+            )}
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('backup')}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`w-full sm:flex-1 flex items-center justify-between sm:justify-center gap-2 py-2.5 sm:py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               activeTab === 'backup'
-                ? 'bg-neutral-800 text-neutral-100 shadow-sm border border-neutral-700/60'
-                : 'text-neutral-400 hover:text-neutral-200'
+                ? 'bg-neutral-800 text-emerald-400 shadow-sm border border-emerald-500/40 font-bold'
+                : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900/60'
             }`}
           >
-            <Database className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Backups</span>
+            <div className="flex items-center gap-2">
+              <Database className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>Backups</span>
+            </div>
+            {activeTab === 'backup' && (
+              <span className="sm:hidden text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                Active
+              </span>
+            )}
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('pwa')}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`w-full sm:flex-1 flex items-center justify-between sm:justify-center gap-2 py-2.5 sm:py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               activeTab === 'pwa'
-                ? 'bg-neutral-800 text-neutral-100 shadow-sm border border-neutral-700/60'
-                : 'text-neutral-400 hover:text-neutral-200'
+                ? 'bg-neutral-800 text-orange-400 shadow-sm border border-orange-500/40 font-bold'
+                : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900/60'
             }`}
           >
-            <Smartphone className="w-3.5 h-3.5 text-orange-400" />
-            <span>PWA &amp; App</span>
+            <div className="flex items-center gap-2">
+              <Smartphone className="w-4 h-4 text-orange-400 shrink-0" />
+              <span>PWA &amp; App</span>
+            </div>
+            {activeTab === 'pwa' && (
+              <span className="sm:hidden text-[10px] font-bold px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                Active
+              </span>
+            )}
           </button>
         </div>
 
@@ -328,16 +367,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           {/* TAB 1: CLOUD DATABASE */}
           {activeTab === 'cloud' && (
             <div className="bg-neutral-950 border border-neutral-800/80 rounded-xl p-4 space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between items-start gap-2.5 pb-2 border-b border-neutral-800/80">
                 <div className="flex items-center gap-2">
-                  <Cloud className="w-4 h-4 text-orange-400" />
+                  <Cloud className="w-4 h-4 text-orange-400 shrink-0" />
                   <span className="text-xs font-bold uppercase tracking-wider text-neutral-200">
                     Firebase Firestore Realtime Cloud Database
                   </span>
                 </div>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[11px] font-mono font-semibold">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[11px] font-mono font-semibold shrink-0">
                   <ShieldCheck className="w-3 h-3" />
-                  Active & Synced
+                  Active &amp; Synced
                 </span>
               </div>
 
@@ -355,25 +394,25 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono bg-neutral-900/80 border border-neutral-800/80 p-3 rounded-lg text-neutral-300">
+              <div className="flex flex-col sm:grid sm:grid-cols-2 gap-2.5 text-[11px] font-mono bg-neutral-900/80 border border-neutral-800/80 p-3 rounded-xl text-neutral-300">
                 <div>
                   <span className="text-neutral-500 block text-[10px] uppercase font-sans">Firebase Project ID</span>
                   <span className="text-orange-400 font-bold">clear-tiger-zd2jw</span>
                 </div>
                 <div>
                   <span className="text-neutral-500 block text-[10px] uppercase font-sans">Firestore Database</span>
-                  <span className="text-neutral-200 truncate block">ai-studio-cortexxdashboard-cbc36379-5e45...</span>
+                  <span className="text-neutral-200 break-all block">ai-studio-cortexxdashboard-cbc36379-5e45-47cd-a5c4-88e67fe2155c</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-1 flex-wrap">
+              <div className="flex flex-col sm:flex-row gap-2.5 pt-1 w-full">
                 <button
                   type="button"
                   onClick={handleTestConnection}
                   disabled={isTesting}
-                  className="px-3.5 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  className="w-full sm:w-auto px-4 py-2.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
-                  <Wifi className="w-3.5 h-3.5 text-emerald-400" />
+                  <Wifi className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span>{isTesting ? 'Testing...' : 'Test Connection'}</span>
                 </button>
 
@@ -381,9 +420,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   type="button"
                   onClick={handleSyncAllNow}
                   disabled={isSyncingAll}
-                  className="px-3.5 py-1.5 bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  className="w-full sm:w-auto px-4 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shadow-md shadow-orange-950/40"
                 >
-                  <ArrowUpCircle className={`w-3.5 h-3.5 ${isSyncingAll ? 'animate-spin' : ''}`} />
+                  <ArrowUpCircle className={`w-4 h-4 ${isSyncingAll ? 'animate-spin' : ''} shrink-0`} />
                   <span>{isSyncingAll ? 'Migrating...' : 'Migrate / Push All Local Data to Cloud'}</span>
                 </button>
 
@@ -391,9 +430,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   type="button"
                   onClick={handlePullAllNow}
                   disabled={isPullingAll}
-                  className="px-3.5 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  className="w-full sm:w-auto px-4 py-2.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
-                  <ArrowDownCircle className={`w-3.5 h-3.5 text-blue-400 ${isPullingAll ? 'animate-spin' : ''}`} />
+                  <ArrowDownCircle className={`w-4 h-4 text-blue-400 ${isPullingAll ? 'animate-spin' : ''} shrink-0`} />
                   <span>{isPullingAll ? 'Pulling...' : 'Pull Cloud Data'}</span>
                 </button>
               </div>
@@ -409,14 +448,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           {/* TAB 2: DIRECT MAIL & SMTP INTEGRATION */}
           {activeTab === 'smtp' && (
             <div className="bg-neutral-950 border border-neutral-800/80 rounded-xl p-4 space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between items-start gap-2 pb-2 border-b border-neutral-800/80">
                 <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-sky-400" />
+                  <Mail className="w-4 h-4 text-sky-400 shrink-0" />
                   <span className="text-xs font-bold uppercase tracking-wider text-neutral-200">
-                    Direct Mail & SMTP Integration
+                    Direct Mail &amp; SMTP Integration
                   </span>
                 </div>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-[11px] font-mono font-semibold">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-[11px] font-mono font-semibold shrink-0">
                   <Server className="w-3 h-3" />
                   Native Express SMTP
                 </span>
@@ -435,9 +474,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   <button
                     type="button"
                     onClick={() => handleProviderSelect('gmail')}
-                    className={`p-2 rounded-lg text-xs font-semibold border transition-all text-center cursor-pointer ${
+                    className={`p-2.5 rounded-xl text-xs font-semibold border transition-all text-center cursor-pointer ${
                       smtpConfig.provider === 'gmail'
-                        ? 'bg-sky-500/15 border-sky-500/40 text-sky-300'
+                        ? 'bg-sky-500/15 border-sky-500/40 text-sky-300 font-bold shadow-sm'
                         : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-neutral-200'
                     }`}
                   >
@@ -446,9 +485,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   <button
                     type="button"
                     onClick={() => handleProviderSelect('hostinger')}
-                    className={`p-2 rounded-lg text-xs font-semibold border transition-all text-center cursor-pointer ${
+                    className={`p-2.5 rounded-xl text-xs font-semibold border transition-all text-center cursor-pointer ${
                       smtpConfig.provider === 'hostinger'
-                        ? 'bg-sky-500/15 border-sky-500/40 text-sky-300'
+                        ? 'bg-sky-500/15 border-sky-500/40 text-sky-300 font-bold shadow-sm'
                         : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-neutral-200'
                     }`}
                   >
@@ -457,9 +496,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   <button
                     type="button"
                     onClick={() => handleProviderSelect('brevo')}
-                    className={`p-2 rounded-lg text-xs font-semibold border transition-all text-center cursor-pointer ${
+                    className={`p-2.5 rounded-xl text-xs font-semibold border transition-all text-center cursor-pointer ${
                       smtpConfig.provider === 'brevo'
-                        ? 'bg-sky-500/15 border-sky-500/40 text-sky-300'
+                        ? 'bg-sky-500/15 border-sky-500/40 text-sky-300 font-bold shadow-sm'
                         : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-neutral-200'
                     }`}
                   >
@@ -468,9 +507,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   <button
                     type="button"
                     onClick={() => handleProviderSelect('custom')}
-                    className={`p-2 rounded-lg text-xs font-semibold border transition-all text-center cursor-pointer ${
+                    className={`p-2.5 rounded-xl text-xs font-semibold border transition-all text-center cursor-pointer ${
                       smtpConfig.provider === 'custom'
-                        ? 'bg-sky-500/15 border-sky-500/40 text-sky-300'
+                        ? 'bg-sky-500/15 border-sky-500/40 text-sky-300 font-bold shadow-sm'
                         : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-neutral-200'
                     }`}
                   >
@@ -481,7 +520,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
 
               {/* SMTP Credentials Form */}
               <form onSubmit={handleSaveSmtp} className="space-y-3">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="flex flex-col sm:grid sm:grid-cols-3 gap-2.5">
                   <div className="sm:col-span-2">
                     <label className="text-[10px] text-neutral-400 uppercase font-mono block mb-1">
                       SMTP Host Server
@@ -491,7 +530,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                       placeholder="e.g. smtp.gmail.com"
                       value={smtpConfig.host}
                       onChange={e => setSmtpConfig(prev => ({ ...prev, host: e.target.value }))}
-                      className="w-full px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-lg text-xs font-mono text-neutral-100 focus:outline-none focus:border-sky-500"
+                      className="w-full px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-mono text-neutral-100 focus:outline-none focus:border-sky-500"
                     />
                   </div>
                   <div>
@@ -503,12 +542,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                       placeholder="587"
                       value={smtpConfig.port}
                       onChange={e => setSmtpConfig(prev => ({ ...prev, port: Number(e.target.value) || 587 }))}
-                      className="w-full px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-lg text-xs font-mono text-neutral-100 focus:outline-none focus:border-sky-500"
+                      className="w-full px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-mono text-neutral-100 focus:outline-none focus:border-sky-500"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="flex flex-col sm:grid sm:grid-cols-2 gap-2.5">
                   <div>
                     <label className="text-[10px] text-neutral-400 uppercase font-mono block mb-1">
                       Username / Email
@@ -518,7 +557,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                       placeholder="info.cortexx@gmail.com"
                       value={smtpConfig.user}
                       onChange={e => setSmtpConfig(prev => ({ ...prev, user: e.target.value }))}
-                      className="w-full px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-lg text-xs font-mono text-neutral-100 focus:outline-none focus:border-sky-500"
+                      className="w-full px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-mono text-neutral-100 focus:outline-none focus:border-sky-500"
                     />
                   </div>
                   <div>
@@ -531,12 +570,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                         placeholder="••••••••••••••••"
                         value={smtpConfig.pass}
                         onChange={e => setSmtpConfig(prev => ({ ...prev, pass: e.target.value }))}
-                        className="w-full px-3 py-1.5 pr-8 bg-neutral-900 border border-neutral-800 rounded-lg text-xs font-mono text-neutral-100 focus:outline-none focus:border-sky-500"
+                        className="w-full px-3 py-2 pr-9 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-mono text-neutral-100 focus:outline-none focus:border-sky-500"
                       />
                       <button
                         type="button"
                         onClick={() => setShowSmtpPassword(!showSmtpPassword)}
-                        className="absolute right-2 top-2 text-neutral-500 hover:text-neutral-300 cursor-pointer"
+                        className="absolute right-2.5 top-2.5 text-neutral-500 hover:text-neutral-300 cursor-pointer"
                       >
                         {showSmtpPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                       </button>
@@ -544,7 +583,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="flex flex-col sm:grid sm:grid-cols-2 gap-2.5">
                   <div>
                     <label className="text-[10px] text-neutral-400 uppercase font-mono block mb-1">
                       Sender Name
@@ -554,7 +593,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                       placeholder="Cortexx AI Institute"
                       value={smtpConfig.fromName}
                       onChange={e => setSmtpConfig(prev => ({ ...prev, fromName: e.target.value }))}
-                      className="w-full px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-lg text-xs text-neutral-100 focus:outline-none focus:border-sky-500"
+                      className="w-full px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-xs text-neutral-100 focus:outline-none focus:border-sky-500"
                     />
                   </div>
                   <div>
@@ -566,41 +605,40 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                       placeholder="info.cortexx@gmail.com"
                       value={smtpConfig.fromEmail}
                       onChange={e => setSmtpConfig(prev => ({ ...prev, fromEmail: e.target.value }))}
-                      className="w-full px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-lg text-xs font-mono text-neutral-100 focus:outline-none focus:border-sky-500"
+                      className="w-full px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-mono text-neutral-100 focus:outline-none focus:border-sky-500"
                     />
                   </div>
                 </div>
 
                 {smtpConfig.provider === 'gmail' && (
-                  <div className="bg-sky-500/10 border border-sky-500/20 rounded-lg p-2.5 text-[11px] text-sky-300">
+                  <div className="bg-sky-500/10 border border-sky-500/20 rounded-xl p-3 text-[11px] text-sky-300 leading-relaxed">
                     💡 <strong>Gmail Tip:</strong> Use an <strong>App Password</strong> instead of your regular password. Enable 2-Step Verification in Google Account &gt; Security &gt; App Passwords, generate a 16-character code, and paste it here.
                   </div>
                 )}
 
-                <div className="flex items-center justify-between pt-2 flex-wrap gap-2">
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="submit"
-                      className="px-4 py-1.5 bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs rounded-lg transition-colors cursor-pointer"
-                    >
-                      Save Configuration
-                    </button>
-                  </div>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-neutral-800/80">
+                  <button
+                    type="submit"
+                    className="w-full sm:w-auto px-5 py-2.5 bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-sky-950/40"
+                  >
+                    <Check className="w-4 h-4" />
+                    <span>Save Configuration</span>
+                  </button>
 
                   {/* Test Dispatch Form */}
-                  <div className="flex items-center gap-2 flex-1 max-w-sm">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto sm:max-w-md">
                     <input
                       type="email"
                       placeholder="Send test email to..."
                       value={smtpTestRecipient}
                       onChange={e => setSmtpTestRecipient(e.target.value)}
-                      className="flex-1 px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-lg text-xs font-mono text-neutral-100 focus:outline-none focus:border-sky-500"
+                      className="w-full sm:w-auto flex-1 px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-mono text-neutral-100 focus:outline-none focus:border-sky-500"
                     />
                     <button
                       type="button"
                       onClick={handleTestSmtp}
                       disabled={isTestingSmtp}
-                      className="px-3.5 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-100 font-semibold text-xs rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shrink-0"
+                      className="w-full sm:w-auto px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-100 font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 shrink-0"
                     >
                       <Send className="w-3.5 h-3.5 text-sky-400" />
                       <span>{isTestingSmtp ? 'Testing...' : 'Test SMTP'}</span>
@@ -611,7 +649,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
 
               {smtpStatus && (
                 <p
-                  className={`text-xs p-2.5 rounded-lg border font-medium ${
+                  className={`text-xs p-3 rounded-xl border font-medium ${
                     smtpStatus.error
                       ? 'text-rose-400 bg-rose-500/10 border-rose-500/20'
                       : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
@@ -625,45 +663,56 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
 
           {/* TAB 3: ADMIN PIN */}
           {activeTab === 'general' && (
-            <div className="bg-neutral-950 border border-neutral-800/80 rounded-xl p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <KeyRound className="w-4 h-4 text-orange-400" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-neutral-200">
-                    Change Admin PIN
-                  </span>
-                </div>
+            <div className="bg-neutral-950 border border-neutral-800/80 rounded-xl p-4 space-y-4">
+              <div className="flex items-center gap-2 pb-2 border-b border-neutral-800/80">
+                <KeyRound className="w-4 h-4 text-orange-400 shrink-0" />
+                <span className="text-xs font-bold uppercase tracking-wider text-neutral-200">
+                  Change Admin PIN
+                </span>
               </div>
 
               <p className="text-xs text-neutral-400">
                 The Master PIN protects administrative actions, invoice creations, and portal access. Default is <strong>1234</strong>.
               </p>
 
-              <form onSubmit={handleUpdatePin} className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <input
-                  type="password"
-                  placeholder="Current PIN"
-                  value={currentPin}
-                  onChange={e => setCurrentPin(e.target.value)}
-                  className="px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-lg text-xs font-mono text-neutral-100 focus:outline-none focus:border-orange-500"
-                />
-                <input
-                  type="password"
-                  placeholder="New PIN (4+ digits)"
-                  value={newPin}
-                  onChange={e => setNewPin(e.target.value)}
-                  className="px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-lg text-xs font-mono text-neutral-100 focus:outline-none focus:border-orange-500"
-                />
-                <button
-                  type="submit"
-                  className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-100 font-semibold text-xs rounded-lg transition-colors cursor-pointer"
-                >
-                  Update PIN
-                </button>
+              <form onSubmit={handleUpdatePin} className="flex flex-col sm:grid sm:grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] text-neutral-400 uppercase font-mono block">
+                    Current Master PIN
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="Current PIN"
+                    value={currentPin}
+                    onChange={e => setCurrentPin(e.target.value)}
+                    className="w-full px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-mono text-neutral-100 focus:outline-none focus:border-orange-500"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-neutral-400 uppercase font-mono block">
+                    New Master PIN (4+ digits)
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="New PIN (4+ digits)"
+                    value={newPin}
+                    onChange={e => setNewPin(e.target.value)}
+                    className="w-full px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-mono text-neutral-100 focus:outline-none focus:border-orange-500"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <button
+                    type="submit"
+                    className="w-full py-2.5 px-4 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-md shadow-orange-950/40"
+                  >
+                    <Check className="w-4 h-4" />
+                    <span>Update PIN</span>
+                  </button>
+                </div>
               </form>
 
               {pinMessage && (
-                <p className={`text-xs ${pinMessage.error ? 'text-rose-400' : 'text-emerald-400'}`}>
+                <p className={`text-xs p-3 rounded-xl border font-medium ${pinMessage.error ? 'text-rose-400 bg-rose-500/10 border-rose-500/20' : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'}`}>
                   {pinMessage.text}
                 </p>
               )}
@@ -672,36 +721,60 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
 
           {/* TAB 4: BACKUP & RESTORE */}
           {activeTab === 'backup' && (
-            <div className="bg-neutral-950 border border-neutral-800/80 rounded-xl p-4 space-y-3">
-              <div className="flex items-center gap-2">
-                <Database className="w-4 h-4 text-orange-400" />
+            <div className="bg-neutral-950 border border-neutral-800/80 rounded-xl p-4 space-y-4">
+              <div className="flex items-center gap-2 pb-2 border-b border-neutral-800/80">
+                <Database className="w-4 h-4 text-orange-400 shrink-0" />
                 <span className="text-xs font-bold uppercase tracking-wider text-neutral-200">
-                  Database Backup & Restore (Zero Data Loss)
+                  Database Backup &amp; Restore (Zero Data Loss)
                 </span>
               </div>
               <p className="text-xs text-neutral-400">
                 Export all courses, students, invoices, payment receipts, and certificates into a single JSON file.
               </p>
 
-              <div className="flex items-center gap-2 pt-1 flex-wrap">
+              <div className="flex flex-col sm:flex-row gap-2.5 pt-1 w-full">
                 <button
                   type="button"
                   onClick={handleExportBackup}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-100 text-xs font-bold rounded-xl transition-colors cursor-pointer"
                 >
-                  <Download className="w-3.5 h-3.5 text-orange-400" />
+                  <Download className="w-4 h-4 text-orange-400 shrink-0" />
                   <span>Download JSON Backup</span>
                 </button>
 
-                <label className="flex items-center gap-1.5 px-3.5 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold rounded-lg transition-colors cursor-pointer">
-                  <Upload className="w-3.5 h-3.5 text-blue-400" />
+                <label className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-100 text-xs font-bold rounded-xl transition-colors cursor-pointer">
+                  <Upload className="w-4 h-4 text-blue-400 shrink-0" />
                   <span>Upload Backup File</span>
                   <input type="file" accept=".json" onChange={handleFileUpload} className="hidden" />
                 </label>
               </div>
 
+              {/* Direct JSON Paste Import for zero friction on mobile */}
+              <div className="pt-3 border-t border-neutral-800/80 space-y-2">
+                <label className="text-[10px] text-neutral-400 uppercase font-mono block">
+                  Or Paste Backup JSON Data:
+                </label>
+                <textarea
+                  value={importText}
+                  onChange={e => setImportText(e.target.value)}
+                  placeholder="Paste JSON text content here..."
+                  rows={3}
+                  className="w-full px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-mono text-neutral-100 focus:outline-none focus:border-orange-500"
+                />
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <button
+                    type="button"
+                    onClick={handleImportBackup}
+                    className="w-full sm:w-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-md shadow-emerald-950/40"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Import Pasted JSON</span>
+                  </button>
+                </div>
+              </div>
+
               {importStatus && (
-                <p className={`text-xs ${importStatus.error ? 'text-rose-400' : 'text-emerald-400'}`}>
+                <p className={`text-xs p-3 rounded-xl border font-medium ${importStatus.error ? 'text-rose-400 bg-rose-500/10 border-rose-500/20' : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'}`}>
                   {importStatus.text}
                 </p>
               )}
@@ -716,10 +789,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
 
               {/* Generated Icon Assets Showcase */}
               <div className="bg-neutral-950 border border-neutral-800/80 rounded-xl p-4 space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between pb-2 border-b border-neutral-800/80">
                   <div>
                     <h3 className="text-sm font-bold text-neutral-100 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-orange-400" />
+                      <Sparkles className="w-4 h-4 text-orange-400 shrink-0" />
                       <span>Official Generated PWA &amp; Web Shortcut Icons</span>
                     </h3>
                     <p className="text-xs text-neutral-400 mt-0.5">
@@ -728,14 +801,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                <div className="flex flex-col sm:grid sm:grid-cols-3 gap-3 pt-1">
                   {/* Apple Touch Icon */}
-                  <div className="p-3 bg-neutral-900/80 border border-neutral-800 rounded-xl flex flex-col items-center text-center space-y-2">
-                    <div className="relative">
+                  <div className="p-3 bg-neutral-900/80 border border-neutral-800 rounded-xl flex items-center sm:flex-col sm:text-center gap-3 space-y-0 sm:space-y-2">
+                    <div className="relative shrink-0">
                       <img
                         src="/apple-touch-icon.png"
                         alt="Apple Touch Icon"
-                        className="w-16 h-16 rounded-2xl shadow-lg border border-neutral-700 bg-black"
+                        className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl shadow-lg border border-neutral-700 bg-black"
                       />
                       <span className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 bg-neutral-800 text-[9px] font-bold text-neutral-200 rounded border border-neutral-700">
                         iOS
@@ -749,12 +822,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   </div>
 
                   {/* Android Adaptive / Maskable Icon */}
-                  <div className="p-3 bg-neutral-900/80 border border-neutral-800 rounded-xl flex flex-col items-center text-center space-y-2">
-                    <div className="relative">
+                  <div className="p-3 bg-neutral-900/80 border border-neutral-800 rounded-xl flex items-center sm:flex-col sm:text-center gap-3 space-y-0 sm:space-y-2">
+                    <div className="relative shrink-0">
                       <img
                         src="/pwa-maskable-512x512.png"
                         alt="Android Maskable Icon"
-                        className="w-16 h-16 rounded-full shadow-lg border border-orange-500/30 bg-black"
+                        className="w-14 h-14 sm:w-16 sm:h-16 rounded-full shadow-lg border border-orange-500/30 bg-black"
                       />
                       <span className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 bg-emerald-500/20 text-[9px] font-bold text-emerald-400 rounded border border-emerald-500/30">
                         Android
@@ -768,12 +841,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   </div>
 
                   {/* Standard Web App Icon */}
-                  <div className="p-3 bg-neutral-900/80 border border-neutral-800 rounded-xl flex flex-col items-center text-center space-y-2">
-                    <div className="relative">
+                  <div className="p-3 bg-neutral-900/80 border border-neutral-800 rounded-xl flex items-center sm:flex-col sm:text-center gap-3 space-y-0 sm:space-y-2">
+                    <div className="relative shrink-0">
                       <img
                         src="/pwa-512x512.png"
                         alt="HD Web App Icon"
-                        className="w-16 h-16 rounded-2xl shadow-lg border border-orange-500/30 bg-black"
+                        className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl shadow-lg border border-orange-500/30 bg-black"
                       />
                       <span className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 bg-orange-500/20 text-[9px] font-bold text-orange-400 rounded border border-orange-500/30">
                         PWA
@@ -789,7 +862,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               </div>
 
               {/* Step-by-Step Shortcut Guides */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3">
                 {/* Apple iOS Guide */}
                 <div className="bg-neutral-950 border border-neutral-800/80 rounded-xl p-3.5 space-y-2 text-xs">
                   <div className="font-bold text-neutral-200 flex items-center gap-1.5">
@@ -826,9 +899,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               </div>
 
               {/* Manifest & Service Worker Technical Status */}
-              <div className="p-3 bg-neutral-950/80 border border-neutral-800 rounded-xl flex items-center justify-between text-xs font-mono text-neutral-400">
+              <div className="p-3 bg-neutral-950/80 border border-neutral-800 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono text-neutral-400">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
                   <span className="text-neutral-200 font-semibold font-sans">Service Worker &amp; Manifest:</span>
                   <span>Standalone Mode Active</span>
                 </div>
@@ -839,18 +912,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-3 border-t border-neutral-800 shrink-0">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-3 border-t border-neutral-800 shrink-0">
           <button
             type="button"
             onClick={handleResetDefaults}
-            className="text-xs text-neutral-500 hover:text-rose-400 transition-colors cursor-pointer"
+            className="w-full sm:w-auto text-center py-2 sm:py-0 text-xs text-neutral-500 hover:text-rose-400 transition-colors cursor-pointer"
           >
             Reset to Factory Demo Data
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold rounded-lg cursor-pointer"
+            className="w-full sm:w-auto px-6 py-2.5 sm:py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-100 text-xs font-bold rounded-xl cursor-pointer text-center"
           >
             Done
           </button>
