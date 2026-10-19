@@ -4,6 +4,8 @@ import { getNextInvoiceNumber, saveInvoice, recordPayment, deleteInvoice, delete
 import { Search, Plus, Receipt, IndianRupee, Download, Share2, Printer, CheckCircle, Clock, AlertCircle, Mail, Check, Trash2, Eye, FileText, X, UserX, UserCheck, Ban } from 'lucide-react';
 import { INSTITUTE_PROFILE } from '../constants/initialData';
 import { downloadInvoiceAsDoc, downloadReceiptAsDoc } from '../utils/docExport';
+import { downloadInvoiceAsPdf, downloadReceiptAsPdf } from '../utils/pdfExport';
+import { sendInvoiceEmail as dispatchInvoiceEmailSmtp, sendReceiptEmail as dispatchReceiptEmailSmtp, getSmtpConfig } from '../services/emailService';
 
 interface InvoicesViewProps {
   invoices: Invoice[];
@@ -239,9 +241,21 @@ export const InvoicesView: React.FC<InvoicesViewProps> = ({
     setTimeout(() => setEmailStatus(null), 5000);
   };
 
+  const handleDownloadInvoicePdf = (inv: Invoice) => {
+    downloadInvoiceAsPdf(inv);
+    setEmailStatus(`Downloaded Tax Invoice "${inv.invoiceNumber}" for ${inv.studentName} as PDF!`);
+    setTimeout(() => setEmailStatus(null), 5000);
+  };
+
   const handleDownloadInvoiceDoc = (inv: Invoice) => {
     downloadInvoiceAsDoc(inv);
     setEmailStatus(`Downloaded Invoice "${inv.invoiceNumber}" for ${inv.studentName} in Word DOC (.doc) format!`);
+    setTimeout(() => setEmailStatus(null), 5000);
+  };
+
+  const handleDownloadReceiptPdf = (rec: PaymentReceipt) => {
+    downloadReceiptAsPdf(rec);
+    setEmailStatus(`Downloaded Payment Receipt "${rec.receiptNumber}" for ${rec.studentName} as PDF!`);
     setTimeout(() => setEmailStatus(null), 5000);
   };
 
@@ -251,14 +265,30 @@ export const InvoicesView: React.FC<InvoicesViewProps> = ({
     setTimeout(() => setEmailStatus(null), 5000);
   };
 
-  // Realtime Email Invoice Dispatch
-  const sendInvoiceEmail = (inv: Invoice) => {
+  // Realtime Email Invoice Dispatch via Direct SMTP (or mailto fallback)
+  const sendInvoiceEmail = async (inv: Invoice) => {
     const studentEmail = inv.studentEmail || '';
     if (!studentEmail) {
-      alert(`No email address registered for student ${inv.studentName}.`);
+      setEmailStatus(`No email address registered for student ${inv.studentName}.`);
+      setTimeout(() => setEmailStatus(null), 4000);
       return;
     }
 
+    const smtp = getSmtpConfig();
+    if (smtp.pass && smtp.user) {
+      setEmailStatus(`Dispatching Tax Invoice ${inv.invoiceNumber} via SMTP...`);
+      try {
+        const res = await dispatchInvoiceEmailSmtp(inv, studentEmail);
+        setEmailStatus(res.message);
+        setTimeout(() => setEmailStatus(null), 5000);
+      } catch (err: any) {
+        setEmailStatus(`SMTP Dispatch Failed: ${err.message}`);
+        setTimeout(() => setEmailStatus(null), 5000);
+      }
+      return;
+    }
+
+    // Fallback if SMTP not configured yet
     const statusText = inv.paymentStatus === 'paid' ? 'PAID IN FULL' : inv.paymentStatus === 'partially_paid' ? 'PARTIALLY PAID' : 'PENDING';
     const subject = `Official Tuition Invoice: ${inv.invoiceNumber} - Cortexx AI Institute`;
     const body = `Dear ${inv.studentName},
@@ -306,8 +336,55 @@ Cortexx AI Institute
     const mailtoUrl = `mailto:${encodeURIComponent(studentEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoUrl;
 
-    setEmailStatus(`Email dispatch initiated for ${inv.studentName} (${studentEmail}) with Invoice ${inv.invoiceNumber}!`);
-    setTimeout(() => setEmailStatus(null), 4000);
+    setEmailStatus(`Mail app opened for ${studentEmail}. Configure SMTP in Settings for automatic direct delivery!`);
+    setTimeout(() => setEmailStatus(null), 5000);
+  };
+
+  // Realtime Email Receipt Dispatch via Direct SMTP
+  const sendReceiptEmail = async (rec: PaymentReceipt) => {
+    const studentEmail = rec.studentEmail || '';
+    if (!studentEmail) {
+      setEmailStatus(`No email address registered for student ${rec.studentName}.`);
+      setTimeout(() => setEmailStatus(null), 4000);
+      return;
+    }
+
+    const smtp = getSmtpConfig();
+    if (smtp.pass && smtp.user) {
+      setEmailStatus(`Dispatching Receipt ${rec.receiptNumber} via SMTP...`);
+      try {
+        const res = await dispatchReceiptEmailSmtp(rec, studentEmail);
+        setEmailStatus(res.message);
+        setTimeout(() => setEmailStatus(null), 5000);
+      } catch (err: any) {
+        setEmailStatus(`SMTP Dispatch Failed: ${err.message}`);
+        setTimeout(() => setEmailStatus(null), 5000);
+      }
+      return;
+    }
+
+    // Fallback if SMTP not configured yet
+    const subject = `Payment Receipt: ${rec.receiptNumber} - Cortexx AI Institute`;
+    const body = `Dear ${rec.studentName},
+
+Greetings from Cortexx AI Institute!
+
+We have successfully received your course installment payment:
+Receipt Number : ${rec.receiptNumber}
+Linked Invoice : ${rec.invoiceNumber}
+Amount Received: INR ${rec.amountReceived.toLocaleString('en-IN')}
+Payment Date   : ${rec.paymentDate}
+Payment Method : ${rec.paymentMethod}
+Remaining Due  : INR ${rec.remainingBalanceAfter.toLocaleString('en-IN')}
+
+Official Support: ${INSTITUTE_PROFILE.email} | +91 ${INSTITUTE_PROFILE.phone}
+
+Warm regards,
+Accounts Office, Cortexx AI Institute`;
+
+    window.location.href = `mailto:${encodeURIComponent(studentEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setEmailStatus(`Mail app opened for ${studentEmail}. Configure SMTP in Settings for automatic direct delivery!`);
+    setTimeout(() => setEmailStatus(null), 5000);
   };
 
   // WhatsApp Share Dispatch
@@ -697,11 +774,19 @@ Cortexx AI Institute
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() => handleDownloadInvoiceDoc(inv)}
-                            title="Download Invoice in Word .doc format"
-                            className="p-1.5 text-blue-400 hover:text-blue-200 hover:bg-blue-500/20 bg-blue-500/10 border border-blue-500/20 rounded-lg transition-colors cursor-pointer group"
+                            onClick={() => handleDownloadInvoicePdf(inv)}
+                            title="Download Invoice as PDF"
+                            className="p-1.5 text-orange-400 hover:text-orange-200 hover:bg-orange-500/20 bg-orange-500/10 border border-orange-500/30 rounded-lg transition-colors cursor-pointer group flex items-center gap-1"
                           >
                             <Download className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                            <span className="text-[10px] font-bold">PDF</span>
+                          </button>
+                          <button
+                            onClick={() => handleDownloadInvoiceDoc(inv)}
+                            title="Download Invoice as Word (.doc)"
+                            className="p-1.5 text-blue-400 hover:text-blue-200 hover:bg-blue-500/20 bg-blue-500/10 border border-blue-500/20 rounded-lg transition-colors cursor-pointer group"
+                          >
+                            <FileText className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => shareOnWhatsApp(inv)}
@@ -816,10 +901,18 @@ Cortexx AI Institute
                     <span>View</span>
                   </button>
                   <button
-                    onClick={() => handleDownloadInvoiceDoc(inv)}
-                    className="px-2.5 py-1 text-xs font-semibold text-blue-300 bg-blue-500/20 rounded-lg flex items-center gap-1"
+                    onClick={() => handleDownloadInvoicePdf(inv)}
+                    className="px-2.5 py-1 text-xs font-bold text-orange-300 hover:text-white bg-orange-500/20 border border-orange-500/30 rounded-lg flex items-center gap-1 cursor-pointer"
+                    title="Download Invoice as PDF"
                   >
                     <Download className="w-3.5 h-3.5" />
+                    <span>PDF</span>
+                  </button>
+                  <button
+                    onClick={() => handleDownloadInvoiceDoc(inv)}
+                    className="px-2 py-1 text-xs font-medium text-blue-300 bg-blue-500/20 rounded-lg flex items-center gap-1 cursor-pointer"
+                    title="Download Word .doc"
+                  >
                     <span>DOC</span>
                   </button>
                   <button
@@ -951,11 +1044,26 @@ Cortexx AI Institute
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() => handleDownloadReceiptDoc(rec)}
-                            title="Download Receipt in Word .doc format"
-                            className="p-1.5 text-blue-400 hover:text-blue-200 hover:bg-blue-500/20 bg-blue-500/10 border border-blue-500/20 rounded-lg transition-colors cursor-pointer group"
+                            onClick={() => handleDownloadReceiptPdf(rec)}
+                            title="Download Payment Receipt as PDF"
+                            className="p-1.5 text-emerald-400 hover:text-emerald-200 hover:bg-emerald-500/20 bg-emerald-500/10 border border-emerald-500/30 rounded-lg transition-colors cursor-pointer group flex items-center gap-1"
                           >
                             <Download className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                            <span className="text-[10px] font-bold">PDF</span>
+                          </button>
+                          <button
+                            onClick={() => handleDownloadReceiptDoc(rec)}
+                            title="Download Receipt as Word (.doc)"
+                            className="p-1.5 text-blue-400 hover:text-blue-200 hover:bg-blue-500/20 bg-blue-500/10 border border-blue-500/20 rounded-lg transition-colors cursor-pointer group"
+                          >
+                            <FileText className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => sendReceiptEmail(rec)}
+                            title={`Email Receipt to ${rec.studentEmail || rec.studentName}`}
+                            className="p-1.5 text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 rounded transition-colors cursor-pointer"
+                          >
+                            <Mail className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => setReceiptToDelete(rec)}
@@ -1039,11 +1147,27 @@ Cortexx AI Institute
                     <span>View</span>
                   </button>
                   <button
-                    onClick={() => handleDownloadReceiptDoc(rec)}
-                    className="px-2.5 py-1 text-xs font-semibold text-blue-300 bg-blue-500/20 rounded-lg flex items-center gap-1"
+                    onClick={() => handleDownloadReceiptPdf(rec)}
+                    className="px-2.5 py-1 text-xs font-bold text-emerald-300 hover:text-white bg-emerald-500/20 border border-emerald-500/30 rounded-lg flex items-center gap-1 cursor-pointer"
+                    title="Download Receipt as PDF"
                   >
                     <Download className="w-3.5 h-3.5" />
+                    <span>PDF</span>
+                  </button>
+                  <button
+                    onClick={() => handleDownloadReceiptDoc(rec)}
+                    className="px-2 py-1 text-xs font-medium text-blue-300 bg-blue-500/20 rounded-lg flex items-center gap-1 cursor-pointer"
+                    title="Download Word .doc"
+                  >
                     <span>DOC</span>
+                  </button>
+                  <button
+                    onClick={() => sendReceiptEmail(rec)}
+                    className="px-2 py-1 text-xs font-medium text-sky-300 bg-sky-500/20 rounded-lg flex items-center gap-1 cursor-pointer"
+                    title="Email Receipt to Student"
+                  >
+                    <Mail className="w-3.5 h-3.5" />
+                    <span>Email</span>
                   </button>
                   <button
                     onClick={() => setReceiptToDelete(rec)}

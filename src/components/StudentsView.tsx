@@ -4,6 +4,7 @@ import { getNextStudentId, getNextEnrollmentId, saveStudent, deleteStudent, upda
 import { Search, Plus, User, Phone, Mail, BookOpen, Trash2, Edit3, Receipt, IndianRupee, ArrowUpDown, FileSpreadsheet, CheckCircle2, RotateCcw, X, AlertTriangle, Download, FileDown, ShieldCheck, Check } from 'lucide-react';
 import { BulkStudentImportModal } from './BulkStudentImportModal';
 import { downloadInvoiceAsDoc } from '../utils/docExport';
+import { downloadInvoiceAsPdf } from '../utils/pdfExport';
 import * as XLSX from 'xlsx';
 
 interface StudentsViewProps {
@@ -152,8 +153,8 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
       saveInvoice(inv);
     }
 
-    downloadInvoiceAsDoc(inv);
-    setDeleteNotification(`Downloaded Tax Invoice "${inv.invoiceNumber}" for ${student.name} in Word (.doc) format!`);
+    downloadInvoiceAsPdf(inv);
+    setDeleteNotification(`Downloaded Tax Invoice "${inv.invoiceNumber}" for ${student.name} as PDF!`);
     setTimeout(() => setDeleteNotification(null), 5000);
   };
 
@@ -619,10 +620,11 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => handleDownloadStudentInvoiceDoc(student)}
-                            title={`Download Tax Invoice (.doc) for ${student.name}`}
-                            className="p-1.5 text-blue-400 hover:text-blue-200 hover:bg-blue-500/20 bg-blue-500/10 border border-blue-500/20 rounded-lg transition-colors cursor-pointer group"
+                            title={`Download Tax Invoice (PDF) for ${student.name}`}
+                            className="p-1.5 text-orange-400 hover:text-orange-200 hover:bg-orange-500/20 bg-orange-500/10 border border-orange-500/30 rounded-lg transition-colors cursor-pointer group flex items-center gap-1"
                           >
                             <Download className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                            <span className="text-[10px] font-bold">PDF</span>
                           </button>
                           <button
                             onClick={() => onGenerateInvoiceForStudent(student)}
@@ -742,11 +744,11 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                 <div className="flex items-center justify-end gap-1.5 pt-2 border-t border-neutral-800/80 flex-wrap">
                     <button
                       onClick={() => handleDownloadStudentInvoiceDoc(student)}
-                      className="px-2.5 py-1 text-xs text-blue-300 hover:text-white bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
-                      title="Download Invoice (.doc format)"
+                      className="px-2.5 py-1 text-xs text-orange-300 hover:text-white bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/30 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                      title="Download Invoice (PDF format)"
                     >
-                      <Download className="w-3.5 h-3.5 text-blue-400" />
-                      <span>.doc</span>
+                      <Download className="w-3.5 h-3.5 text-orange-400" />
+                      <span>PDF</span>
                     </button>
                     <button
                       onClick={() => onGenerateInvoiceForStudent(student)}

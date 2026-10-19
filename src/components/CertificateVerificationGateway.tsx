@@ -6,7 +6,6 @@ import { CortexxOfficialSeal } from './CortexxOfficialSeal';
 import { CortexxLogo } from './CortexxLogo';
 import { AdminLockModal } from './AdminLockModal';
 import { INSTITUTE_PROFILE } from '../constants/initialData';
-import { downloadCertificateDirectlyAsPdf, downloadCertificateAsDoc } from '../utils/certificateExport';
 import QRCode from 'qrcode';
 import {
   ShieldCheck,
@@ -15,9 +14,6 @@ import {
   Calendar,
   User,
   BookOpen,
-  Download,
-  FileText,
-  Printer,
   Search,
   ExternalLink,
   ArrowLeft,
@@ -41,7 +37,6 @@ export const CertificateVerificationGateway: React.FC<CertificateVerificationGat
   const [activeCode, setActiveCode] = useState(initialCode || '');
   const [certificate, setCertificate] = useState<CertificateRecord | null>(null);
   const [student, setStudent] = useState<Student | null>(null);
-  const [isExportingPdf, setIsExportingPdf] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
@@ -132,59 +127,6 @@ export const CertificateVerificationGateway: React.FC<CertificateVerificationGat
     // Update URL query string without reloading page
     const newUrl = `${window.location.pathname}?verify=${encodeURIComponent(searchCode.trim())}`;
     window.history.pushState({ path: newUrl }, '', newUrl);
-  };
-
-  const handleDownloadPdf = async () => {
-    if (!certificate) return;
-    setIsExportingPdf(true);
-    try {
-      await downloadCertificateDirectlyAsPdf(certificate, student || undefined);
-      setNotification(`Downloaded Verified PDF Certificate for ${certificate.studentName}!`);
-      setTimeout(() => setNotification(null), 4000);
-    } catch (err) {
-      console.error(err);
-      setNotification('Failed to generate PDF. Please try again.');
-      setTimeout(() => setNotification(null), 4000);
-    } finally {
-      setIsExportingPdf(false);
-    }
-  };
-
-  const handleDownloadDoc = () => {
-    if (!certificate) return;
-    const fallbackStudent: Student = student || {
-      id: certificate.studentId,
-      name: certificate.studentName,
-      phone: '9876543210',
-      email: 'student@cortexx.ai',
-      enrolledCourseId: 'course-1',
-      enrolledCourseName: certificate.courseName,
-      enrollmentId: 'COR-ENR-2026-0001',
-      enrollmentDate: certificate.startDate,
-      agreedFee: 6000,
-      totalPaid: 6000,
-      paymentStatus: 'paid',
-      createdAt: certificate.createdAt,
-    };
-    const verifyUrl = `https://cortexxai-app.vercel.app/?verify=${certificate.verificationCode}`;
-    downloadCertificateAsDoc(
-      fallbackStudent,
-      certificate,
-      {
-        startDate: certificate.startDate,
-        endDate: certificate.endDate,
-        courseName: certificate.courseName,
-        qrDataUrl,
-        verificationUrl: verifyUrl,
-      },
-      INSTITUTE_PROFILE
-    );
-    setNotification('Certificate exported as Word (.doc) document!');
-    setTimeout(() => setNotification(null), 4000);
-  };
-
-  const handlePrintCertificate = () => {
-    window.print();
   };
 
   // Protected navigation to the Institute Portal: Require PIN
@@ -413,33 +355,11 @@ export const CertificateVerificationGateway: React.FC<CertificateVerificationGat
               )}
             </div>
 
-            {/* Action Buttons: Download PDF, Word, and Print */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-neutral-800">
-              <div className="flex items-center gap-2 flex-wrap">
-                <button
-                  onClick={handleDownloadPdf}
-                  disabled={isExportingPdf}
-                  className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-neutral-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md cursor-pointer disabled:opacity-50"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>{isExportingPdf ? 'Exporting PDF...' : 'Download Verified PDF'}</span>
-                </button>
-
-                <button
-                  onClick={handleDownloadDoc}
-                  className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-xl border border-neutral-700 transition-colors cursor-pointer"
-                >
-                  <FileText className="w-4 h-4 text-blue-400" />
-                  <span>Download Word (.doc)</span>
-                </button>
-
-                <button
-                  onClick={handlePrintCertificate}
-                  className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-xl border border-neutral-700 transition-colors cursor-pointer"
-                >
-                  <Printer className="w-4 h-4 text-neutral-400" />
-                  <span>Print Certificate</span>
-                </button>
+            {/* Official Cloud Authenticity Verification Notice */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-neutral-800 text-xs">
+              <div className="flex items-center gap-2 text-emerald-400 font-mono font-medium">
+                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>Digitally Authenticated by Cortexx Cloud Registry</span>
               </div>
 
               <div className="text-xs text-neutral-400 font-mono">

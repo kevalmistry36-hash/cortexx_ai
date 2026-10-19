@@ -59,6 +59,8 @@ export interface PaymentReceipt {
   invoiceNumber: string;
   studentId: string;
   studentName: string;
+  studentEmail?: string;
+  courseName?: string;
   paymentDate: string; // YYYY-MM-DD
   amountReceived: number;
   paymentMethod: PaymentMethod;
