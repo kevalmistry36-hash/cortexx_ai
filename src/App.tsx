@@ -223,7 +223,7 @@ export default function App() {
     <div
       className={`min-h-screen ${
         theme === 'light' ? 'bg-[#fafafc] text-neutral-900' : 'bg-neutral-950 text-neutral-100'
-      } flex flex-col font-sans transition-colors duration-200`}
+      } flex flex-col font-sans transition-colors duration-200 w-full max-w-full overflow-x-hidden`}
     >
       {/* Top Bar Navigation with Theme Switcher right near Admin Lock */}
       <Navbar
@@ -236,8 +236,8 @@ export default function App() {
         onToggleTheme={handleToggleTheme}
       />
 
-      {/* Main Content Viewport */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 pb-28 md:pb-8">
+      {/* Main Content Viewport - Safely bounded to screen width with bottom spacing for mobile navbar */}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-3.5 sm:p-6 lg:p-8 pb-24 md:pb-8 overflow-x-hidden">
         {activeView === 'dashboard' && (
           <DashboardView
             students={students}

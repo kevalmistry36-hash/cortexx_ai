@@ -35,38 +35,22 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <>
-      {/* Top Header Bar */}
-      <header className="sticky top-0 z-30 bg-neutral-950/90 backdrop-blur-md border-b border-neutral-800/80 px-4 lg:px-8 py-3.5 no-print">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 md:gap-8">
-          {/* Zone 1: Brand Wordmark (Exact Logo on Mobile) */}
+      {/* Top Header Bar with Dashboard Type Color Combination */}
+      <header className={`sticky top-0 z-30 w-full max-w-full backdrop-blur-xl border-b-2 px-3 sm:px-6 lg:px-8 py-3 no-print transition-colors overflow-x-hidden ${
+        theme === 'light'
+          ? 'bg-white/95 border-b-orange-500 shadow-[0_2px_15px_rgba(249,115,22,0.12)] text-black'
+          : 'bg-neutral-950/95 border-b-orange-500/40 shadow-[0_4px_25px_rgba(0,0,0,0.6)] text-neutral-100'
+      }`}>
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4 md:gap-8">
+          {/* Zone 1: Brand Wordmark */}
           <div 
             onClick={() => onSelectView('dashboard')}
             className="cursor-pointer shrink-0 transition-opacity hover:opacity-95"
           >
-            {/* Mobile View: Exact Cortexx AI Logo */}
-            <div className="flex items-center gap-2 md:hidden">
-              <img
-                src="/cortexx-mobile-logo.svg"
-                alt="Cortexx AI"
-                className="w-10 h-10 object-contain rounded-xl border border-neutral-800/80 drop-shadow-[0_4px_12px_rgba(255,106,0,0.35)] shrink-0"
-              />
-              <div className="flex flex-col text-left">
-                <span className="font-black text-sm tracking-tight leading-none text-neutral-100">
-                  Cortexx <span className="text-[#FF6A00] font-black">AI</span>
-                </span>
-                <span className="text-[8px] font-bold text-neutral-400 tracking-wider uppercase mt-0.5">
-                  Where Thinking Meets Tech
-                </span>
-              </div>
-            </div>
-
-            {/* Desktop View */}
-            <div className="hidden md:block">
-              <CortexxLogo size="sm" showTagline={false} inverted={theme === 'light'} />
-            </div>
+            <CortexxLogo size="sm" showTagline={false} inverted={theme === 'light'} />
           </div>
 
-          {/* Zone 2: Desktop Navigation Links (Single line, quiet hover states) */}
+          {/* Zone 2: Desktop Navigation Links (Dashboard type colors) */}
           <nav className="hidden md:flex items-center gap-1.5 lg:gap-2">
             {navItems.map(item => {
               const isActive = activeView === item.id;
@@ -74,10 +58,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   key={item.id}
                   onClick={() => onSelectView(item.id)}
-                  className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs lg:text-sm font-medium rounded-lg whitespace-nowrap shrink-0 transition-colors ${
+                  className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs lg:text-sm rounded-lg whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-orange-500 text-white shadow-sm font-semibold'
-                      : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900/60'
+                      ? theme === 'light'
+                        ? 'bg-orange-500 text-white font-black shadow-md border border-orange-600'
+                        : 'bg-orange-500 text-neutral-950 font-black shadow-md shadow-orange-500/25 border border-orange-400'
+                      : theme === 'light'
+                      ? 'text-black hover:text-orange-600 hover:bg-orange-50 font-bold border border-transparent hover:border-orange-200'
+                      : 'text-neutral-300 hover:text-orange-400 hover:bg-neutral-900/90 font-semibold border border-transparent hover:border-neutral-800'
                   }`}
                 >
                   {item.icon}
@@ -96,21 +84,21 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={onToggleTheme}
                 title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to White & Orange Light Mode'}
                 aria-label="Toggle visual theme"
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 p-2 sm:px-2.5 sm:py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
                   theme === 'light'
                     ? 'bg-orange-500 text-white border-orange-600 hover:bg-orange-600 shadow-sm'
-                    : 'bg-neutral-900 text-neutral-300 border-neutral-800 hover:bg-neutral-800 hover:text-orange-400'
+                    : 'bg-neutral-900 text-neutral-200 border-neutral-800 hover:border-orange-500/40 hover:text-orange-400'
                 }`}
               >
                 {theme === 'light' ? (
                   <>
                     <Sun className="w-3.5 h-3.5 text-yellow-200 animate-pulse" />
-                    <span className="hidden sm:inline">White & Orange</span>
+                    <span className="hidden sm:inline font-bold">White & Orange</span>
                   </>
                 ) : (
                   <>
-                    <Moon className="w-3.5 h-3.5 text-neutral-400 group-hover:text-orange-400" />
-                    <span className="hidden sm:inline">Dark Theme</span>
+                    <Moon className="w-3.5 h-3.5 text-orange-400" />
+                    <span className="hidden sm:inline font-semibold">Dark Theme</span>
                   </>
                 )}
               </button>
@@ -120,24 +108,32 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={onLockAdmin}
               title={isLocked ? 'Admin system locked' : 'Lock Admin Access with PIN'}
-              className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+              className={`flex items-center gap-1.5 p-2 sm:px-2.5 sm:py-1.5 text-xs font-semibold rounded-lg border transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                 isLocked
                   ? 'bg-amber-500/15 text-amber-400 border-amber-500/40 hover:bg-amber-500/25'
-                  : 'bg-neutral-900 text-neutral-300 border-neutral-800 hover:bg-neutral-800 hover:text-neutral-100'
+                  : theme === 'light'
+                  ? 'bg-white text-black border-neutral-300 hover:border-orange-500 hover:text-orange-600 font-bold'
+                  : 'bg-neutral-900 text-neutral-200 border-neutral-800 hover:border-orange-500/40 hover:text-orange-400'
               }`}
             >
               <Lock className="w-3.5 h-3.5 text-orange-500" />
-              <span className="hidden xs:inline">{isLocked ? 'Locked' : 'Admin Lock'}</span>
+              <span className="hidden sm:inline">{isLocked ? 'Locked' : 'Admin Lock'}</span>
             </button>
 
-            {/* PWA Web App Home Screen Install Shortcut */}
-            <PWAInstallButton variant="compact" />
+            {/* PWA Web App Home Screen Install Shortcut (Hidden on mobile to save space and prevent horizontal scroll) */}
+            <div className="hidden md:flex shrink-0">
+              <PWAInstallButton variant="compact" />
+            </div>
 
             {/* System Settings & Cloud Sync Button */}
             <button
               onClick={onOpenSettings}
               title="System Settings & Database Backup"
-              className="p-1.5 sm:p-2 text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900 rounded-lg border border-transparent hover:border-neutral-800 transition-colors cursor-pointer"
+              className={`p-2 rounded-lg border transition-colors cursor-pointer ${
+                theme === 'light'
+                  ? 'text-neutral-700 hover:text-orange-600 hover:bg-orange-50 border-transparent hover:border-orange-200'
+                  : 'text-neutral-300 hover:text-orange-400 hover:bg-neutral-900 border-transparent hover:border-neutral-800'
+              }`}
             >
               <Settings className="w-4 h-4" />
             </button>
@@ -145,27 +141,50 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </header>
 
-      {/* Bottom Sticked Navigation Bar for Mobile View (Banner Studio hidden on mobile) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-neutral-950/95 backdrop-blur-xl border-t border-neutral-800/90 px-2 py-2 flex items-center justify-around no-print shadow-[0_-4px_24px_rgba(0,0,0,0.7)]">
-        {navItems
-          .filter(item => item.id !== 'ad-studio')
-          .map(item => {
-          const isActive = activeView === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => onSelectView(item.id)}
-              className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all ${
-                isActive
-                  ? 'text-orange-400 bg-orange-500/15 font-bold shadow-sm'
-                  : 'text-neutral-400 hover:text-neutral-200'
-              }`}
-            >
-              {item.icon}
-              <span className="text-[10px] tracking-tight mt-0.5 whitespace-nowrap">{item.label}</span>
-            </button>
-          );
-        })}
+      {/* Bottom Sticked Navigation Bar for Mobile View: Properly placed and fitted at bottom, matching Dashboard Color Combination */}
+      <nav className={`md:hidden fixed bottom-0 left-0 right-0 z-40 w-full max-w-full backdrop-blur-2xl border-t-2 no-print px-1 pt-1.5 pb-[max(0.6rem,env(safe-area-inset-bottom))] transition-colors shadow-[0_-8px_32px_rgba(0,0,0,0.7)] ${
+        theme === 'light'
+          ? 'bg-white/95 border-t-orange-500 text-black shadow-[0_-6px_25px_rgba(249,115,22,0.14)]'
+          : 'bg-neutral-950/95 border-t-orange-500/60 text-neutral-200'
+      }`}>
+        <div className="grid grid-cols-5 w-full items-center gap-1 max-w-full">
+          {navItems
+            .filter(item => item.id !== 'ad-studio')
+            .map(item => {
+              const isActive = activeView === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onSelectView(item.id)}
+                  className={`flex flex-col items-center justify-center py-1.5 px-0.5 rounded-xl transition-all w-full text-center group cursor-pointer ${
+                    isActive
+                      ? theme === 'light'
+                        ? 'text-orange-600 bg-orange-500/15 border border-orange-500/40 font-black shadow-sm'
+                        : 'text-orange-400 bg-orange-500/20 border border-orange-500/40 font-black shadow-sm'
+                      : theme === 'light'
+                      ? 'text-black hover:text-orange-600 hover:bg-orange-50 font-bold'
+                      : 'text-neutral-400 hover:text-orange-400 hover:bg-neutral-900/60 font-semibold'
+                  }`}
+                >
+                  <div className="relative flex items-center justify-center">
+                    {item.icon}
+                    {isActive && (
+                      <span className="absolute -top-1 -right-1 w-1.5 h-1.5 rounded-full bg-orange-500 shadow-sm shadow-orange-500 animate-pulse"></span>
+                    )}
+                  </div>
+                  <span className={`text-[10px] tracking-tight mt-1 truncate max-w-full block leading-none font-sans ${
+                    isActive
+                      ? theme === 'light'
+                        ? 'text-orange-600 font-black'
+                        : 'text-orange-400 font-black'
+                      : ''
+                  }`}>
+                    {item.label}
+                  </span>
+                </button>
+              );
+            })}
+        </div>
       </nav>
     </>
   );

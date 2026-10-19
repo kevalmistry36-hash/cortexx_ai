@@ -212,67 +212,103 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* 4 Prominent Action Buttons */}
+      {/* 4 Prominent Action Buttons with High-Contrast Hover States */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         <button
           onClick={onOpenAddStudent}
-          className="flex items-center justify-between p-4 bg-orange-600 hover:bg-orange-500 text-white rounded-xl font-semibold shadow-lg shadow-orange-950/40 transition-all group"
+          className="flex items-center justify-between p-4 bg-orange-600 hover:bg-orange-500 text-white rounded-xl font-bold shadow-lg shadow-orange-950/40 hover:shadow-orange-500/30 transition-all group cursor-pointer"
         >
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
               <Plus className="w-5 h-5 text-white" />
             </div>
             <div className="text-left">
-              <div className="text-sm font-bold leading-tight">Add Student</div>
-              <div className="text-xs text-orange-100 font-normal mt-0.5">Quick registration</div>
+              <div className="text-sm font-black leading-tight text-white">Add Student</div>
+              <div className="text-xs text-orange-100 font-semibold mt-0.5">Quick registration</div>
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 opacity-70 group-hover:translate-x-1 transition-transform" />
+          <ArrowRight className="w-4 h-4 opacity-90 group-hover:translate-x-1 transition-transform text-white" />
         </button>
 
         <button
           onClick={onOpenAddCourse}
-          className="flex items-center justify-between p-4 bg-neutral-900 hover:bg-neutral-800 text-neutral-100 border border-neutral-800 rounded-xl font-semibold transition-all group"
+          className={`flex items-center justify-between p-4 rounded-xl font-bold transition-all group cursor-pointer border ${
+            isLight
+              ? 'bg-white hover:bg-orange-50/90 border-neutral-300 hover:border-orange-500 text-black shadow-sm hover:shadow-md'
+              : 'bg-neutral-900/90 hover:bg-neutral-850 hover:border-orange-500/50 border-neutral-800 text-neutral-100 shadow-sm'
+          }`}
         >
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-neutral-800 border border-neutral-700 flex items-center justify-center text-neutral-300">
-              <BookOpen className="w-5 h-5 text-neutral-300" />
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+              isLight
+                ? 'bg-orange-100 text-orange-700 group-hover:bg-orange-500 group-hover:text-white'
+                : 'bg-neutral-800 border border-neutral-700 text-neutral-200 group-hover:bg-orange-500/20 group-hover:text-orange-400'
+            }`}>
+              <BookOpen className="w-5 h-5" />
             </div>
             <div className="text-left">
-              <div className="text-sm font-bold leading-tight">Add Course</div>
-              <div className="text-xs text-neutral-400 font-normal mt-0.5">Catalog curriculum</div>
+              <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-black group-hover:text-orange-800' : 'text-neutral-100 group-hover:text-white'}`}>
+                Add Course
+              </div>
+              <div className={`text-xs font-semibold mt-0.5 transition-colors ${isLight ? 'text-neutral-700 group-hover:text-black' : 'text-neutral-400 group-hover:text-neutral-200'}`}>
+                Catalog curriculum
+              </div>
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 text-neutral-500 group-hover:translate-x-1 transition-transform" />
+          <ArrowRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${isLight ? 'text-neutral-600 group-hover:text-orange-600' : 'text-neutral-400 group-hover:text-orange-400'}`} />
         </button>
 
         <button
           onClick={onOpenGenerateInvoice}
-          className="flex items-center justify-between p-4 bg-neutral-900 hover:bg-neutral-800 text-neutral-100 border border-neutral-800 rounded-xl font-semibold transition-all group"
+          className={`flex items-center justify-between p-4 rounded-xl font-bold transition-all group cursor-pointer border ${
+            isLight
+              ? 'bg-white hover:bg-emerald-50/80 border-neutral-300 hover:border-emerald-500 text-black shadow-sm hover:shadow-md'
+              : 'bg-neutral-900/90 hover:bg-neutral-850 hover:border-emerald-500/50 border-neutral-800 text-neutral-100 shadow-sm'
+          }`}
         >
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-neutral-800 border border-neutral-700 flex items-center justify-center text-emerald-400">
-              <Receipt className="w-5 h-5 text-emerald-400" />
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+              isLight
+                ? 'bg-emerald-100 text-emerald-800 group-hover:bg-emerald-600 group-hover:text-white'
+                : 'bg-neutral-800 border border-neutral-700 text-emerald-400 group-hover:bg-emerald-500/20 group-hover:text-emerald-300'
+            }`}>
+              <Receipt className="w-5 h-5" />
             </div>
             <div className="text-left">
-              <div className="text-sm font-bold leading-tight">Generate Invoice</div>
-              <div className="text-xs text-neutral-400 font-normal mt-0.5">PDF & WhatsApp</div>
+              <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-black group-hover:text-emerald-900' : 'text-neutral-100 group-hover:text-white'}`}>
+                Generate Invoice
+              </div>
+              <div className={`text-xs font-semibold mt-0.5 transition-colors ${isLight ? 'text-neutral-700 group-hover:text-black' : 'text-neutral-400 group-hover:text-neutral-200'}`}>
+                PDF &amp; WhatsApp
+              </div>
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 text-neutral-500 group-hover:translate-x-1 transition-transform" />
+          <ArrowRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${isLight ? 'text-neutral-600 group-hover:text-emerald-600' : 'text-neutral-400 group-hover:text-emerald-400'}`} />
         </button>
 
         <button
           onClick={() => onNavigateToView('ad-studio')}
-          className="flex items-center justify-between p-4 bg-gradient-to-r from-neutral-900 to-orange-950/40 hover:to-orange-950/60 text-neutral-100 border border-orange-500/30 rounded-xl font-semibold transition-all group"
+          className={`flex items-center justify-between p-4 rounded-xl font-bold transition-all group cursor-pointer border ${
+            isLight
+              ? 'bg-white hover:bg-orange-50/90 border-neutral-300 hover:border-orange-500 text-black shadow-sm hover:shadow-md'
+              : 'bg-gradient-to-r from-neutral-900 to-orange-950/40 hover:to-orange-950/70 border-orange-500/30 hover:border-orange-500/60 text-neutral-100 shadow-sm'
+          }`}
         >
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400">
-              <Sparkles className="w-5 h-5 text-orange-400" />
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+              isLight
+                ? 'bg-orange-100 text-orange-700 group-hover:bg-orange-500 group-hover:text-white'
+                : 'bg-orange-500/20 border border-orange-500/30 text-orange-400 group-hover:bg-orange-500/30'
+            }`}>
+              <Sparkles className="w-5 h-5" />
             </div>
             <div className="text-left">
-              <div className="text-sm font-bold leading-tight">Banner Studio</div>
-              <div className="text-xs text-neutral-400 font-normal mt-0.5">IAB & Social Ads</div>
+              <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-black group-hover:text-orange-800' : 'text-neutral-100 group-hover:text-white'}`}>
+                Banner Studio
+              </div>
+              <div className={`text-xs font-semibold mt-0.5 transition-colors ${isLight ? 'text-neutral-700 group-hover:text-black' : 'text-neutral-400 group-hover:text-neutral-200'}`}>
+                IAB &amp; Social Ads
+              </div>
             </div>
           </div>
           <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
@@ -285,12 +321,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className={`${isLight ? 'bg-white border-neutral-300 shadow-md text-black' : 'bg-neutral-900/60 border-neutral-800 text-neutral-100'} border rounded-xl p-5`}>
           <div className={`flex items-center justify-between pb-4 border-b ${isLight ? 'border-neutral-300' : 'border-neutral-800'}`}>
             <div>
-              <h2 className={`text-base font-bold ${isLight ? 'text-black' : 'text-neutral-100'}`}>Recent Invoices</h2>
-              <p className={`text-xs ${isLight ? 'text-neutral-600 font-medium' : 'text-neutral-400'}`}>Latest student billing and fee statuses</p>
+              <h2 className={`text-base font-black ${isLight ? 'text-black' : 'text-neutral-100'}`}>Recent Invoices</h2>
+              <p className={`text-xs font-semibold mt-0.5 ${isLight ? 'text-neutral-700' : 'text-neutral-400'}`}>Latest student billing and fee statuses</p>
             </div>
             <button
               onClick={() => onNavigateToView('invoices')}
-              className="text-xs text-orange-500 hover:text-orange-600 font-bold flex items-center gap-1 cursor-pointer"
+              className="text-xs text-orange-500 hover:text-orange-600 font-extrabold flex items-center gap-1 cursor-pointer hover:underline"
             >
               <span>View All</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -302,35 +338,47 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div
                 key={inv.invoiceNumber}
                 onClick={() => onSelectInvoice(inv)}
-                className={`py-3 flex items-center justify-between ${isLight ? 'hover:bg-neutral-100' : 'hover:bg-neutral-800/40'} px-2 rounded-lg cursor-pointer transition-colors`}
+                className={`py-3 px-2.5 rounded-xl cursor-pointer transition-all flex items-center justify-between group border border-transparent ${
+                  isLight
+                    ? 'hover:bg-orange-50/90 hover:border-orange-300 text-black'
+                    : 'hover:bg-orange-500/10 hover:border-orange-500/30 text-neutral-100'
+                }`}
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className={`text-sm font-bold ${isLight ? 'text-black' : 'text-neutral-200'}`}>{inv.studentName}</span>
-                    <span className={`text-xs font-mono ${isLight ? 'text-neutral-600' : 'text-neutral-500'}`}>{inv.invoiceNumber}</span>
+                    <span className={`text-sm font-black transition-colors ${isLight ? 'text-black group-hover:text-orange-950' : 'text-neutral-100 group-hover:text-white'}`}>
+                      {inv.studentName}
+                    </span>
+                    <span className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded transition-colors ${isLight ? 'bg-neutral-100 text-black group-hover:bg-orange-100' : 'bg-neutral-800 text-neutral-300 group-hover:text-neutral-100'}`}>
+                      {inv.invoiceNumber}
+                    </span>
                   </div>
-                  <div className={`text-xs ${isLight ? 'text-neutral-600' : 'text-neutral-400'} mt-0.5`}>
+                  <div className={`text-xs font-semibold mt-1 flex items-center gap-1.5 transition-colors ${isLight ? 'text-neutral-800 group-hover:text-black' : 'text-neutral-300 group-hover:text-neutral-100'}`}>
                     <span>{inv.courseName}</span>
-                    <span className={`mx-1.5 ${isLight ? 'text-neutral-400' : 'text-neutral-600'}`}>·</span>
+                    <span className={isLight ? 'text-neutral-400' : 'text-neutral-600'}>·</span>
                     <span className="font-mono">{inv.invoiceDate}</span>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <div className={`text-sm font-black font-mono ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                  <div className={`text-sm font-black font-mono transition-colors ${isLight ? 'text-black' : 'text-neutral-100 group-hover:text-white'}`}>
                     ₹{inv.totalPayable.toLocaleString('en-IN')}
                   </div>
-                  <div className="mt-0.5">
+                  <div className="mt-0.5 font-bold">
                     {inv.paymentStatus === 'paid' && (
-                      <span className={`text-[11px] font-bold font-mono ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>Paid</span>
+                      <span className={`text-[11px] font-mono px-2 py-0.5 rounded font-extrabold ${isLight ? 'text-emerald-800 bg-emerald-100' : 'text-emerald-400 bg-emerald-500/15'}`}>
+                        Paid
+                      </span>
                     )}
                     {inv.paymentStatus === 'partially_paid' && (
-                      <span className={`text-[11px] font-bold font-mono ${isLight ? 'text-amber-700' : 'text-amber-400'}`}>
+                      <span className={`text-[11px] font-mono px-2 py-0.5 rounded font-extrabold ${isLight ? 'text-amber-800 bg-amber-100' : 'text-amber-400 bg-amber-500/15'}`}>
                         Due: ₹{inv.remainingBalance.toLocaleString('en-IN')}
                       </span>
                     )}
                     {inv.paymentStatus === 'unpaid' && (
-                      <span className={`text-[11px] font-bold font-mono ${isLight ? 'text-rose-700' : 'text-rose-400'}`}>Unpaid</span>
+                      <span className={`text-[11px] font-mono px-2 py-0.5 rounded font-extrabold ${isLight ? 'text-rose-800 bg-rose-100' : 'text-rose-400 bg-rose-500/15'}`}>
+                        Unpaid
+                      </span>
                     )}
                   </div>
                 </div>
@@ -343,12 +391,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className={`${isLight ? 'bg-white border-neutral-300 shadow-md text-black' : 'bg-neutral-900/60 border-neutral-800 text-neutral-100'} border rounded-xl p-5`}>
           <div className={`flex items-center justify-between pb-4 border-b ${isLight ? 'border-neutral-300' : 'border-neutral-800'}`}>
             <div>
-              <h2 className={`text-base font-bold ${isLight ? 'text-black' : 'text-neutral-100'}`}>Recent Admissions</h2>
-              <p className={`text-xs ${isLight ? 'text-neutral-600 font-medium' : 'text-neutral-400'}`}>Newly registered students and active courses</p>
+              <h2 className={`text-base font-black ${isLight ? 'text-black' : 'text-neutral-100'}`}>Recent Admissions</h2>
+              <p className={`text-xs font-semibold mt-0.5 ${isLight ? 'text-neutral-700' : 'text-neutral-400'}`}>Newly registered students and active courses</p>
             </div>
             <button
               onClick={() => onNavigateToView('students')}
-              className="text-xs text-orange-500 hover:text-orange-600 font-bold flex items-center gap-1 cursor-pointer"
+              className="text-xs text-orange-500 hover:text-orange-600 font-extrabold flex items-center gap-1 cursor-pointer hover:underline"
             >
               <span>View Directory</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -360,28 +408,36 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div
                 key={stu.id}
                 onClick={() => onNavigateToView('students')}
-                className={`py-3 flex items-center justify-between ${isLight ? 'hover:bg-neutral-100' : 'hover:bg-neutral-800/40'} px-2 rounded-lg cursor-pointer transition-colors`}
+                className={`py-3 px-2.5 rounded-xl cursor-pointer transition-all flex items-center justify-between group border border-transparent ${
+                  isLight
+                    ? 'hover:bg-orange-50/90 hover:border-orange-300 text-black'
+                    : 'hover:bg-orange-500/10 hover:border-orange-500/30 text-neutral-100'
+                }`}
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className={`text-sm font-bold ${isLight ? 'text-black' : 'text-neutral-200'}`}>{stu.name}</span>
-                    <span className={`text-xs font-mono ${isLight ? 'text-neutral-600' : 'text-neutral-500'}`}>{stu.id}</span>
+                    <span className={`text-sm font-black transition-colors ${isLight ? 'text-black group-hover:text-orange-950' : 'text-neutral-100 group-hover:text-white'}`}>
+                      {stu.name}
+                    </span>
+                    <span className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded transition-colors ${isLight ? 'bg-neutral-100 text-black group-hover:bg-orange-100' : 'bg-neutral-800 text-neutral-300 group-hover:text-neutral-100'}`}>
+                      {stu.id}
+                    </span>
                   </div>
-                  <div className={`text-xs ${isLight ? 'text-neutral-600' : 'text-neutral-400'} mt-0.5`}>
+                  <div className={`text-xs font-semibold mt-1 flex items-center gap-1.5 transition-colors ${isLight ? 'text-neutral-800 group-hover:text-black' : 'text-neutral-300 group-hover:text-neutral-100'}`}>
                     <span>{stu.enrolledCourseName}</span>
-                    <span className={`mx-1.5 ${isLight ? 'text-neutral-400' : 'text-neutral-600'}`}>·</span>
+                    <span className={isLight ? 'text-neutral-400' : 'text-neutral-600'}>·</span>
                     <span className="font-mono">+91 {stu.phone}</span>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <div className={`text-xs font-mono ${isLight ? 'text-neutral-700' : 'text-neutral-400'}`}>
-                    Paid: <span className={`font-bold ${isLight ? 'text-black' : 'text-neutral-200'}`}>₹{stu.totalPaid.toLocaleString('en-IN')}</span> / ₹{stu.agreedFee.toLocaleString('en-IN')}
+                  <div className={`text-xs font-mono font-semibold ${isLight ? 'text-neutral-800' : 'text-neutral-300 group-hover:text-neutral-100'}`}>
+                    Paid: <span className={`font-black ${isLight ? 'text-black' : 'text-white'}`}>₹{stu.totalPaid.toLocaleString('en-IN')}</span> / ₹{stu.agreedFee.toLocaleString('en-IN')}
                   </div>
                   <div className="text-[11px] mt-0.5 font-bold">
-                    {stu.paymentStatus === 'paid' && <span className={isLight ? 'text-emerald-700' : 'text-emerald-400'}>Full</span>}
-                    {stu.paymentStatus === 'partially_paid' && <span className={isLight ? 'text-amber-700' : 'text-amber-400'}>Partial</span>}
-                    {stu.paymentStatus === 'unpaid' && <span className={isLight ? 'text-rose-700' : 'text-rose-400'}>Pending</span>}
+                    {stu.paymentStatus === 'paid' && <span className={`px-2 py-0.5 rounded font-extrabold ${isLight ? 'text-emerald-800 bg-emerald-100' : 'text-emerald-400 bg-emerald-500/15'}`}>Full</span>}
+                    {stu.paymentStatus === 'partially_paid' && <span className={`px-2 py-0.5 rounded font-extrabold ${isLight ? 'text-amber-800 bg-amber-100' : 'text-amber-400 bg-amber-500/15'}`}>Partial</span>}
+                    {stu.paymentStatus === 'unpaid' && <span className={`px-2 py-0.5 rounded font-extrabold ${isLight ? 'text-rose-800 bg-rose-100' : 'text-rose-400 bg-rose-500/15'}`}>Pending</span>}
                   </div>
                 </div>
               </div>
