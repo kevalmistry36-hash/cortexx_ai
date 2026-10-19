@@ -106,14 +106,7 @@ export const AdminLockModal: React.FC<AdminLockModalProps> = ({
           </div>
         )}
 
-        {/* Exact Cortexx AI Logo Emblem */}
-        <div className="w-48 sm:w-56 mx-auto -mb-1 transition-transform hover:scale-105 duration-300">
-          <img
-            src="/cortexx-mobile-logo.svg"
-            alt="Cortexx AI - Where Thinking Meets Technology"
-            className="w-full h-auto object-contain rounded-2xl border border-neutral-800/80 drop-shadow-[0_12px_36px_rgba(255,106,0,0.3)] shadow-2xl"
-          />
-        </div>
+        <CortexxLogo size="sm" showTagline={true} />
 
         <div className="space-y-1">
           <div className="flex items-center justify-center gap-2 text-neutral-100 font-bold text-base">

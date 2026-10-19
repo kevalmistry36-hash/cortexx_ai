@@ -38,32 +38,12 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Top Header Bar */}
       <header className="sticky top-0 z-30 bg-neutral-950/90 backdrop-blur-md border-b border-neutral-800/80 px-4 lg:px-8 py-3.5 no-print">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 md:gap-8">
-          {/* Zone 1: Brand Wordmark (Exact Logo on Mobile) */}
+          {/* Zone 1: Brand Wordmark */}
           <div 
             onClick={() => onSelectView('dashboard')}
             className="cursor-pointer shrink-0 transition-opacity hover:opacity-95"
           >
-            {/* Mobile View: Exact Cortexx AI Logo */}
-            <div className="flex items-center gap-2 md:hidden">
-              <img
-                src="/cortexx-mobile-logo.svg"
-                alt="Cortexx AI"
-                className="w-10 h-10 object-contain rounded-xl border border-neutral-800/80 drop-shadow-[0_4px_12px_rgba(255,106,0,0.35)] shrink-0"
-              />
-              <div className="flex flex-col text-left">
-                <span className="font-black text-sm tracking-tight leading-none text-neutral-100">
-                  Cortexx <span className="text-[#FF6A00] font-black">AI</span>
-                </span>
-                <span className="text-[8px] font-bold text-neutral-400 tracking-wider uppercase mt-0.5">
-                  Where Thinking Meets Tech
-                </span>
-              </div>
-            </div>
-
-            {/* Desktop View */}
-            <div className="hidden md:block">
-              <CortexxLogo size="sm" showTagline={false} inverted={theme === 'light'} />
-            </div>
+            <CortexxLogo size="sm" showTagline={false} inverted={theme === 'light'} />
           </div>
 
           {/* Zone 2: Desktop Navigation Links (Single line, quiet hover states) */}

@@ -53,28 +53,6 @@ export default function App() {
   // Protected Portal Access: App strictly requires PIN entry on initial load
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => false);
 
-  // Mobile App Opening Splash: Displays the exact Cortexx AI logo when app opens in mobile view
-  const [isMobileOpening, setIsMobileOpening] = useState<boolean>(() => {
-    try {
-      if (typeof window !== 'undefined' && window.innerWidth < 768) {
-        return !sessionStorage.getItem('cortexx_mobile_splash_shown');
-      }
-    } catch {
-      // ignore
-    }
-    return false;
-  });
-
-  useEffect(() => {
-    if (isMobileOpening) {
-      sessionStorage.setItem('cortexx_mobile_splash_shown', 'true');
-      const timer = setTimeout(() => {
-        setIsMobileOpening(false);
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [isMobileOpening]);
-
   // Modals & Overlays
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
@@ -219,28 +197,7 @@ export default function App() {
     );
   }
 
-  // 2. Mobile Opening Splash: Exact Cortexx AI Logo when app opens in mobile view
-  if (isMobileOpening) {
-    return (
-      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center p-6 bg-neutral-950 text-white select-none animate-fadeIn">
-        <div className="w-56 max-w-xs transition-transform duration-500 scale-100 animate-pulse drop-shadow-[0_16px_45px_rgba(255,106,0,0.4)]">
-          <img
-            src="/cortexx-mobile-logo.svg"
-            alt="Cortexx AI - Where Thinking Meets Technology"
-            className="w-full h-auto object-contain rounded-2xl border border-neutral-800/80 shadow-2xl"
-          />
-        </div>
-        <div className="mt-8 flex items-center gap-2.5 text-xs font-mono text-neutral-400">
-          <div className="w-2.5 h-2.5 rounded-full bg-orange-500 animate-ping" />
-          <span className="tracking-widest uppercase font-semibold text-[11px] text-neutral-300">
-            CORTEXX AI PORTAL
-          </span>
-        </div>
-      </div>
-    );
-  }
-
-  // 3. PIN-based authentication gate: App is strictly accessible only after entering Admin PIN
+  // 2. PIN-based authentication gate: App is strictly accessible only after entering Admin PIN
   if (!isAuthenticated) {
     return (
       <div className={`min-h-screen ${theme === 'light' ? 'bg-[#fafafc]' : 'bg-neutral-950'} flex flex-col font-sans`}>
