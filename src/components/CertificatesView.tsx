@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Student, Course, CertificateRecord } from '../types';
 import { getCertificates, saveCertificate, deleteCertificate, getNextCertificateNumber } from '../services/storage';
 import {
-  downloadCertificateAsDoc,
   downloadCertificateAsPdf,
   downloadCertificateDirectlyAsPdf,
   downloadBulkCertificatesAsPdf,
@@ -154,46 +153,6 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
     setTimeout(() => setNotification(null), 5000);
   };
 
-  const handleDownloadDoc = async (cert: CertificateRecord) => {
-    const student = students.find(s => s.id === cert.studentId) || {
-      id: cert.studentId,
-      name: cert.studentName,
-      phone: '9876543210',
-      email: 'student@cortexx.ai',
-      enrolledCourseId: 'course-1',
-      enrolledCourseName: cert.courseName,
-      enrollmentId: 'COR-ENR-2026-0001',
-      enrollmentDate: cert.startDate,
-      agreedFee: 6000,
-      totalPaid: 6000,
-      paymentStatus: 'paid',
-      createdAt: new Date().toISOString(),
-    };
-
-    const verifyUrl = `https://cortexxai-app.vercel.app/?verify=${cert.verificationCode}`;
-    let qrDataUrl = '';
-    try {
-      qrDataUrl = await QRCode.toDataURL(verifyUrl, { width: 150, margin: 1 });
-    } catch {
-      // fallback
-    }
-
-    downloadCertificateAsDoc(
-      student,
-      cert,
-      {
-        startDate: cert.startDate,
-        endDate: cert.endDate,
-        courseName: cert.courseName,
-        qrDataUrl,
-        verificationUrl: verifyUrl,
-      },
-      INSTITUTE_PROFILE
-    );
-
-    setNotification(`Downloaded Word (.doc) Certificate for ${cert.studentName}!`);
-    setTimeout(() => setNotification(null), 4000);
-  };
 
   // Direct PDF Download from Table Actions
   const handleDownloadDirectPdf = async (cert: CertificateRecord) => {
@@ -299,7 +258,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
             <span>Course Completion Certificates</span>
           </h1>
           <p className="text-sm text-neutral-400 mt-0.5">
-            Generate verifiable graduation credentials with QR validation, official institute seal, and instant PDF/DOCX downloads
+            Generate verifiable graduation credentials with QR validation, official institute seal, and instant PDF downloads
           </p>
         </div>
 
@@ -680,14 +639,6 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                             )}
                           </button>
 
-                          {/* Word .doc Export Action Button */}
-                          <button
-                            onClick={() => handleDownloadDoc(cert)}
-                            title="Download Word (.doc) Certificate"
-                            className="p-1.5 text-blue-400 hover:text-blue-200 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 rounded-lg transition-colors cursor-pointer"
-                          >
-                            <Download className="w-4 h-4" />
-                          </button>
 
                           {/* Delete / Revoke Action */}
                           <button
@@ -857,14 +808,6 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               </button>
 
               <div className="flex items-center gap-2.5">
-                <button
-                  onClick={() => handleDownloadDoc(previewCert.cert)}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-md transition-colors cursor-pointer"
-                >
-                  <FileText className="w-4 h-4" />
-                  <span>Download Word (.doc)</span>
-                </button>
-
                 <button
                   onClick={handleDownloadPreviewPdf}
                   disabled={isExportingPdf}

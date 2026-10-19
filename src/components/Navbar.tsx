@@ -1,5 +1,6 @@
 import React from 'react';
 import { CortexxLogo } from './CortexxLogo';
+import { PWAInstallButton } from './PWAInstallButton';
 import { Lock, Settings, Sparkles, LayoutDashboard, Users, BookOpen, Receipt, Sun, Moon, Award } from 'lucide-react';
 
 export type NavView = 'dashboard' | 'students' | 'courses' | 'invoices' | 'ad-studio' | 'certificates';
@@ -108,6 +109,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Lock className="w-3.5 h-3.5 text-orange-500" />
               <span className="hidden xs:inline">{isLocked ? 'Locked' : 'Admin Lock'}</span>
             </button>
+
+            {/* PWA Web App Home Screen Install Shortcut */}
+            <PWAInstallButton variant="compact" />
 
             {/* System Settings & Cloud Sync Button */}
             <button

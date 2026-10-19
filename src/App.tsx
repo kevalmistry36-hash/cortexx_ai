@@ -25,6 +25,7 @@ import { InvoiceModal } from './components/InvoiceModal';
 import { ReceiptModal } from './components/ReceiptModal';
 import { AdminLockModal } from './components/AdminLockModal';
 import { SettingsModal } from './components/SettingsModal';
+import { OfflineIndicator } from './components/OfflineIndicator';
 
 export default function App() {
   const [activeView, setActiveView] = useState<NavView>('dashboard');
@@ -319,6 +320,9 @@ export default function App() {
 
       {/* System Settings & Cloud Sync Modal */}
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+
+      {/* PWA Offline Indicator */}
+      <OfflineIndicator />
     </div>
   );
 }

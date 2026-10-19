@@ -2,8 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Invoice } from '../types';
 import { INSTITUTE_PROFILE } from '../constants/initialData';
 import { CortexxLogo } from './CortexxLogo';
-import { Download, Printer, Share2, X, Mail, FileText } from 'lucide-react';
-import { downloadInvoiceAsDoc } from '../utils/docExport';
+import { Download, Printer, Share2, X, Mail } from 'lucide-react';
 import { downloadInvoiceAsPdf } from '../utils/pdfExport';
 import { sendInvoiceEmail, getSmtpConfig } from '../services/emailService';
 
@@ -172,14 +171,6 @@ Cortexx AI Institute
               <span className="hidden sm:inline">Print</span>
             </button>
 
-            <button
-              onClick={() => downloadInvoiceAsDoc(invoice)}
-              title="Download Invoice as Word Document (.doc)"
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer shadow-sm"
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span>DOC</span>
-            </button>
 
             <button
               onClick={handleDownloadPdf}

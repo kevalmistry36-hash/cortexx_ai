@@ -3,7 +3,6 @@ import { Invoice, PaymentReceipt, Student, Course, PaymentMethod, PaymentStatus 
 import { getNextInvoiceNumber, saveInvoice, recordPayment, deleteInvoice, deleteReceipt, getDeactivatedStudents, isStudentDeactivated, toggleStudentDeactivated } from '../services/storage';
 import { Search, Plus, Receipt, IndianRupee, Download, Share2, Printer, CheckCircle, Clock, AlertCircle, Mail, Check, Trash2, Eye, FileText, X, UserX, UserCheck, Ban } from 'lucide-react';
 import { INSTITUTE_PROFILE } from '../constants/initialData';
-import { downloadInvoiceAsDoc, downloadReceiptAsDoc } from '../utils/docExport';
 import { downloadInvoiceAsPdf, downloadReceiptAsPdf } from '../utils/pdfExport';
 import { sendInvoiceEmail as dispatchInvoiceEmailSmtp, sendReceiptEmail as dispatchReceiptEmailSmtp, getSmtpConfig } from '../services/emailService';
 
@@ -247,23 +246,12 @@ export const InvoicesView: React.FC<InvoicesViewProps> = ({
     setTimeout(() => setEmailStatus(null), 5000);
   };
 
-  const handleDownloadInvoiceDoc = (inv: Invoice) => {
-    downloadInvoiceAsDoc(inv);
-    setEmailStatus(`Downloaded Invoice "${inv.invoiceNumber}" for ${inv.studentName} in Word DOC (.doc) format!`);
-    setTimeout(() => setEmailStatus(null), 5000);
-  };
-
   const handleDownloadReceiptPdf = (rec: PaymentReceipt) => {
     downloadReceiptAsPdf(rec);
     setEmailStatus(`Downloaded Payment Receipt "${rec.receiptNumber}" for ${rec.studentName} as PDF!`);
     setTimeout(() => setEmailStatus(null), 5000);
   };
 
-  const handleDownloadReceiptDoc = (rec: PaymentReceipt) => {
-    downloadReceiptAsDoc(rec);
-    setEmailStatus(`Downloaded Receipt "${rec.receiptNumber}" for ${rec.studentName} in Word DOC (.doc) format!`);
-    setTimeout(() => setEmailStatus(null), 5000);
-  };
 
   // Realtime Email Invoice Dispatch via Direct SMTP (or mailto fallback)
   const sendInvoiceEmail = async (inv: Invoice) => {
@@ -782,13 +770,6 @@ Accounts Office, Cortexx AI Institute`;
                             <span className="text-[10px] font-bold">PDF</span>
                           </button>
                           <button
-                            onClick={() => handleDownloadInvoiceDoc(inv)}
-                            title="Download Invoice as Word (.doc)"
-                            className="p-1.5 text-blue-400 hover:text-blue-200 hover:bg-blue-500/20 bg-blue-500/10 border border-blue-500/20 rounded-lg transition-colors cursor-pointer group"
-                          >
-                            <FileText className="w-3.5 h-3.5" />
-                          </button>
-                          <button
                             onClick={() => shareOnWhatsApp(inv)}
                             title="Share Invoice on WhatsApp"
                             className="p-1.5 text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded transition-colors cursor-pointer"
@@ -907,13 +888,6 @@ Accounts Office, Cortexx AI Institute`;
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>PDF</span>
-                  </button>
-                  <button
-                    onClick={() => handleDownloadInvoiceDoc(inv)}
-                    className="px-2 py-1 text-xs font-medium text-blue-300 bg-blue-500/20 rounded-lg flex items-center gap-1 cursor-pointer"
-                    title="Download Word .doc"
-                  >
-                    <span>DOC</span>
                   </button>
                   <button
                     onClick={() => shareOnWhatsApp(inv)}
@@ -1052,13 +1026,6 @@ Accounts Office, Cortexx AI Institute`;
                             <span className="text-[10px] font-bold">PDF</span>
                           </button>
                           <button
-                            onClick={() => handleDownloadReceiptDoc(rec)}
-                            title="Download Receipt as Word (.doc)"
-                            className="p-1.5 text-blue-400 hover:text-blue-200 hover:bg-blue-500/20 bg-blue-500/10 border border-blue-500/20 rounded-lg transition-colors cursor-pointer group"
-                          >
-                            <FileText className="w-3.5 h-3.5" />
-                          </button>
-                          <button
                             onClick={() => sendReceiptEmail(rec)}
                             title={`Email Receipt to ${rec.studentEmail || rec.studentName}`}
                             className="p-1.5 text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 rounded transition-colors cursor-pointer"
@@ -1153,13 +1120,6 @@ Accounts Office, Cortexx AI Institute`;
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>PDF</span>
-                  </button>
-                  <button
-                    onClick={() => handleDownloadReceiptDoc(rec)}
-                    className="px-2 py-1 text-xs font-medium text-blue-300 bg-blue-500/20 rounded-lg flex items-center gap-1 cursor-pointer"
-                    title="Download Word .doc"
-                  >
-                    <span>DOC</span>
                   </button>
                   <button
                     onClick={() => sendReceiptEmail(rec)}

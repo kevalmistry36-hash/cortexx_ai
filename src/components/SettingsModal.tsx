@@ -37,7 +37,10 @@ import {
   EyeOff,
   Server,
   Sparkles,
+  Smartphone,
+  ExternalLink,
 } from 'lucide-react';
+import { PWAInstallButton } from './PWAInstallButton';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -45,8 +48,8 @@ interface SettingsModalProps {
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
-  // Navigation Tabs: 'general' | 'cloud' | 'smtp' | 'backup'
-  const [activeTab, setActiveTab] = useState<'general' | 'cloud' | 'smtp' | 'backup'>('cloud');
+  // Navigation Tabs: 'general' | 'cloud' | 'smtp' | 'backup' | 'pwa'
+  const [activeTab, setActiveTab] = useState<'general' | 'cloud' | 'smtp' | 'backup' | 'pwa'>('cloud');
 
   // Admin PIN state
   const [currentPin, setCurrentPin] = useState('');
@@ -296,7 +299,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           <button
             type="button"
             onClick={() => setActiveTab('backup')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               activeTab === 'backup'
                 ? 'bg-neutral-800 text-neutral-100 shadow-sm border border-neutral-700/60'
                 : 'text-neutral-400 hover:text-neutral-200'
@@ -304,6 +307,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           >
             <Database className="w-3.5 h-3.5 text-emerald-400" />
             <span>Backups</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('pwa')}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'pwa'
+                ? 'bg-neutral-800 text-neutral-100 shadow-sm border border-neutral-700/60'
+                : 'text-neutral-400 hover:text-neutral-200'
+            }`}
+          >
+            <Smartphone className="w-3.5 h-3.5 text-orange-400" />
+            <span>PWA &amp; App</span>
           </button>
         </div>
 
@@ -689,6 +705,135 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   {importStatus.text}
                 </p>
               )}
+            </div>
+          )}
+
+          {/* TAB 5: PWA & MOBILE WEB SHORTCUT */}
+          {activeTab === 'pwa' && (
+            <div className="space-y-4">
+              {/* PWA Install Banner */}
+              <PWAInstallButton variant="banner" />
+
+              {/* Generated Icon Assets Showcase */}
+              <div className="bg-neutral-950 border border-neutral-800/80 rounded-xl p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-bold text-neutral-100 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-orange-400" />
+                      <span>Official Generated PWA &amp; Web Shortcut Icons</span>
+                    </h3>
+                    <p className="text-xs text-neutral-400 mt-0.5">
+                      High-resolution assets tailored for Apple iOS Safari, Android Adaptive Icons, and Desktop PWAs
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                  {/* Apple Touch Icon */}
+                  <div className="p-3 bg-neutral-900/80 border border-neutral-800 rounded-xl flex flex-col items-center text-center space-y-2">
+                    <div className="relative">
+                      <img
+                        src="/apple-touch-icon.png"
+                        alt="Apple Touch Icon"
+                        className="w-16 h-16 rounded-2xl shadow-lg border border-neutral-700 bg-black"
+                      />
+                      <span className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 bg-neutral-800 text-[9px] font-bold text-neutral-200 rounded border border-neutral-700">
+                        iOS
+                      </span>
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-neutral-200">Apple Touch Icon</div>
+                      <div className="text-[10px] font-mono text-neutral-400">180 × 180 PNG</div>
+                      <div className="text-[10px] text-neutral-500 mt-0.5">iPhone &amp; iPad Home Screen</div>
+                    </div>
+                  </div>
+
+                  {/* Android Adaptive / Maskable Icon */}
+                  <div className="p-3 bg-neutral-900/80 border border-neutral-800 rounded-xl flex flex-col items-center text-center space-y-2">
+                    <div className="relative">
+                      <img
+                        src="/pwa-maskable-512x512.png"
+                        alt="Android Maskable Icon"
+                        className="w-16 h-16 rounded-full shadow-lg border border-orange-500/30 bg-black"
+                      />
+                      <span className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 bg-emerald-500/20 text-[9px] font-bold text-emerald-400 rounded border border-emerald-500/30">
+                        Android
+                      </span>
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-neutral-200">Android Maskable</div>
+                      <div className="text-[10px] font-mono text-neutral-400">512 × 512 PNG</div>
+                      <div className="text-[10px] text-neutral-500 mt-0.5">Adaptive Circle / Squircle</div>
+                    </div>
+                  </div>
+
+                  {/* Standard Web App Icon */}
+                  <div className="p-3 bg-neutral-900/80 border border-neutral-800 rounded-xl flex flex-col items-center text-center space-y-2">
+                    <div className="relative">
+                      <img
+                        src="/pwa-512x512.png"
+                        alt="HD Web App Icon"
+                        className="w-16 h-16 rounded-2xl shadow-lg border border-orange-500/30 bg-black"
+                      />
+                      <span className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 bg-orange-500/20 text-[9px] font-bold text-orange-400 rounded border border-orange-500/30">
+                        PWA
+                      </span>
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-neutral-200">HD Web App Icon</div>
+                      <div className="text-[10px] font-mono text-neutral-400">512 × 512 PNG</div>
+                      <div className="text-[10px] text-neutral-500 mt-0.5">Chrome, Edge &amp; Desktop</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step-by-Step Shortcut Guides */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Apple iOS Guide */}
+                <div className="bg-neutral-950 border border-neutral-800/80 rounded-xl p-3.5 space-y-2 text-xs">
+                  <div className="font-bold text-neutral-200 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-sky-400"></span>
+                    <span>Apple iPhone / iPad (Safari)</span>
+                  </div>
+                  <ol className="space-y-1.5 text-neutral-300 list-decimal list-inside pl-0.5">
+                    <li>Open this URL in <strong>Safari</strong></li>
+                    <li>Tap the <strong>Share</strong> button (box with upward arrow)</li>
+                    <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+                    <li>Confirm name as <strong>"Cortexx AI"</strong> and tap <strong>Add</strong></li>
+                  </ol>
+                  <p className="text-[11px] text-neutral-400 pt-1 border-t border-neutral-800/80">
+                    Creates an app icon using the official Apple Touch PNG shortcut.
+                  </p>
+                </div>
+
+                {/* Android / Desktop Guide */}
+                <div className="bg-neutral-950 border border-neutral-800/80 rounded-xl p-3.5 space-y-2 text-xs">
+                  <div className="font-bold text-neutral-200 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span>Android &amp; Desktop (Chrome / Edge)</span>
+                  </div>
+                  <ol className="space-y-1.5 text-neutral-300 list-decimal list-inside pl-0.5">
+                    <li>Click the <strong>"Install App"</strong> button in top header</li>
+                    <li>Or tap the browser menu (<strong>⋮</strong>) in the top-right</li>
+                    <li>Select <strong>"Install app"</strong> or <strong>"Add to Home Screen"</strong></li>
+                    <li>Confirm installation to launch as standalone window</li>
+                  </ol>
+                  <p className="text-[11px] text-neutral-400 pt-1 border-t border-neutral-800/80">
+                    Supports offline caching, background updates, and zero browser chrome.
+                  </p>
+                </div>
+              </div>
+
+              {/* Manifest & Service Worker Technical Status */}
+              <div className="p-3 bg-neutral-950/80 border border-neutral-800 rounded-xl flex items-center justify-between text-xs font-mono text-neutral-400">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span className="text-neutral-200 font-semibold font-sans">Service Worker &amp; Manifest:</span>
+                  <span>Standalone Mode Active</span>
+                </div>
+                <span className="text-[11px] text-orange-400 font-sans">Workbox Precached</span>
+              </div>
             </div>
           )}
         </div>

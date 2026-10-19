@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Student, Course, PaymentStatus, PaymentMethod, Invoice } from '../types';
 import { getNextStudentId, getNextEnrollmentId, saveStudent, deleteStudent, updateStudentFeeStatus, getInvoices, getNextInvoiceNumber, saveInvoice } from '../services/storage';
-import { Search, Plus, User, Phone, Mail, BookOpen, Trash2, Edit3, Receipt, IndianRupee, ArrowUpDown, FileSpreadsheet, CheckCircle2, RotateCcw, X, AlertTriangle, Download, FileDown, ShieldCheck, Check } from 'lucide-react';
+import { Search, Plus, User, Phone, Mail, BookOpen, Trash2, Edit3, Receipt, IndianRupee, ArrowUpDown, FileSpreadsheet, CheckCircle2, RotateCcw, X, AlertTriangle, Download, FileDown, ShieldCheck, Check, Calendar } from 'lucide-react';
 import { BulkStudentImportModal } from './BulkStudentImportModal';
-import { downloadInvoiceAsDoc } from '../utils/docExport';
 import { downloadInvoiceAsPdf } from '../utils/pdfExport';
 import * as XLSX from 'xlsx';
 
@@ -118,7 +117,7 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
     setTimeout(() => setDeleteNotification(null), 5000);
   };
 
-  const handleDownloadStudentInvoiceDoc = (student: Student) => {
+  const handleDownloadStudentInvoicePdf = (student: Student) => {
     const allInvoices = getInvoices();
     let inv = allInvoices.find(
       i => i.studentId === student.id || i.enrollmentId === student.enrollmentId || i.studentName.toLowerCase() === student.name.toLowerCase()
@@ -490,19 +489,17 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
           <table className="w-full text-left text-sm text-neutral-300 border-collapse">
             <thead className="bg-neutral-900 text-xs uppercase tracking-wider text-neutral-300 font-bold border-b border-neutral-700/80">
               <tr>
-                <th className="py-4 px-4 font-bold text-neutral-200">Student Name</th>
-                <th className="py-4 px-4 font-bold text-neutral-200">Contact Details</th>
-                <th className="py-4 px-4 font-bold text-neutral-200">Enrolled Course</th>
-                <th className="py-4 px-4 font-bold text-neutral-200">Admission Date</th>
+                <th className="py-4 px-4 font-bold text-neutral-200">Student & Contact Details</th>
+                <th className="py-4 px-4 font-bold text-neutral-200">Course & Admission Date</th>
                 <th className="py-4 px-4 text-center font-bold text-neutral-200">Fee Status & Mode</th>
-                <th className="py-4 px-4 text-right font-bold text-neutral-200">Paid / Total / Due</th>
+                <th className="py-4 px-4 text-right font-bold text-neutral-200">Fees Payment Details</th>
                 <th className="py-4 px-4 text-right font-bold text-neutral-200">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-800/80">
               {filteredStudents.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-neutral-500">
+                  <td colSpan={5} className="py-12 text-center text-neutral-500">
                     <User className="w-8 h-8 mx-auto text-neutral-600 mb-2 opacity-50" />
                     <p className="text-sm">No students match your criteria.</p>
                   </td>
@@ -523,47 +520,52 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
 
                   return (
                     <tr key={student.id} className="hover:bg-neutral-800/40 transition-colors">
-                      {/* Student Name */}
+                      {/* Column 1: Student & Contact Details (Line 1: Name, Line 2: Phone, Line 3: Email) */}
                       <td className="py-3.5 px-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center font-bold text-orange-400 text-xs shrink-0 shadow-sm">
+                        <div className="flex items-start gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center font-bold text-orange-400 text-xs shrink-0 mt-0.5 shadow-sm">
                             {initials}
                           </div>
-                          <div>
-                            <div className="font-bold text-neutral-100 text-sm tracking-tight">{student.name}</div>
+                          <div className="min-w-0 space-y-0.5">
+                            {/* Line 1: Student Name */}
+                            <div className="font-bold text-neutral-100 text-sm tracking-tight truncate">
+                              {student.name}
+                            </div>
+                            {/* Line 2: Phone Number */}
+                            <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-300">
+                              <Phone className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+                              <span>+91 {student.phone}</span>
+                            </div>
+                            {/* Line 3: Mail ID */}
+                            <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-400">
+                              <Mail className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                              <span className="truncate max-w-[190px]" title={student.email}>{student.email}</span>
+                            </div>
                           </div>
                         </div>
                       </td>
 
-                      {/* Contact Info */}
+                      {/* Column 2: Course & Admission Date (Line 1: Course Name, Line 2: Duration, Line 3: Duration Date / Admission Date) */}
                       <td className="py-3.5 px-4">
-                        <div className="space-y-1 text-xs font-mono">
-                          <div className="flex items-center gap-2 text-neutral-200 font-semibold">
-                            <Phone className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-                            <span>+91 {student.phone}</span>
+                        <div className="space-y-0.5">
+                          {/* Line 1: Course Name */}
+                          <div className="text-neutral-100 font-bold text-sm tracking-tight">
+                            {student.enrolledCourseName}
                           </div>
-                          <div className="flex items-center gap-2 text-neutral-400">
-                            <Mail className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
-                            <span className="truncate max-w-[170px]" title={student.email}>{student.email}</span>
+                          {/* Line 2: Duration */}
+                          <div className="text-xs text-neutral-300 flex items-center gap-1.5">
+                            <BookOpen className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+                            <span>{course?.duration || '1 Month Practical'}</span>
+                          </div>
+                          {/* Line 3: Duration Date / Admission Date */}
+                          <div className="text-xs font-mono text-neutral-400 flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                            <span>{student.enrollmentDate}</span>
                           </div>
                         </div>
                       </td>
 
-                      {/* Enrolled Course */}
-                      <td className="py-3.5 px-4">
-                        <div className="text-neutral-100 font-bold text-sm">{student.enrolledCourseName}</div>
-                        <div className="text-xs text-neutral-400 flex items-center gap-1.5 mt-0.5">
-                          <BookOpen className="w-3 h-3 text-orange-400 shrink-0" />
-                          <span>{course?.duration || '1 Month Practical'}</span>
-                        </div>
-                      </td>
-
-                      {/* Admission Date */}
-                      <td className="py-3.5 px-4 font-mono text-xs font-semibold text-neutral-300">
-                        {student.enrollmentDate}
-                      </td>
-
-                      {/* Fee Status & Mode */}
+                      {/* Column 3: Fee Status & Mode */}
                       <td className="py-3.5 px-4 text-center">
                         <div className="inline-flex flex-col items-center gap-1">
                           <select
@@ -596,30 +598,42 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                         </div>
                       </td>
 
-                      {/* Fee Breakdown */}
+                      {/* Column 4: Fees Payment Details (Separate Paid & Total Due with + sign for paid and RED for due) */}
                       <td className="py-3.5 px-4 text-right font-mono text-xs">
-                        <div className="font-bold text-emerald-400 text-sm">
-                          ₹{paid.toLocaleString('en-IN')}
-                          <span className="text-neutral-400 text-xs font-normal"> / ₹{totalFee.toLocaleString('en-IN')}</span>
+                        {/* Total Paid with + sign */}
+                        <div className="flex items-center justify-end gap-1.5">
+                          <span className="text-[11px] text-neutral-400 font-sans">Paid:</span>
+                          <span className="font-extrabold text-emerald-400 text-sm tracking-tight">
+                            +₹{paid.toLocaleString('en-IN')}
+                          </span>
                         </div>
-                        <div className="mt-0.5">
+
+                        {/* Total Due with RED colour indicator */}
+                        <div className="mt-1 flex items-center justify-end">
                           {balance > 0 ? (
-                            <span className="text-[11px] font-bold text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/25">
-                              Due: ₹{balance.toLocaleString('en-IN')}
+                            <span className="text-xs font-bold text-red-400 bg-red-500/15 px-2 py-0.5 rounded border border-red-500/40 shadow-sm flex items-center gap-1">
+                              <span className="text-[10px] uppercase font-sans font-semibold text-red-300">Total Due:</span>
+                              <span className="text-red-400 font-black">₹{balance.toLocaleString('en-IN')}</span>
                             </span>
                           ) : (
-                            <span className="text-[11px] font-bold text-emerald-400">
-                              ✓ Fully Cleared
+                            <span className="text-[11px] font-semibold text-emerald-400/90 flex items-center gap-1">
+                              <span>Total Due: ₹0</span>
+                              <span className="text-[10px] text-emerald-500">✓</span>
                             </span>
                           )}
                         </div>
+
+                        {/* Total Fee Reference */}
+                        <div className="text-[10px] text-neutral-500 mt-0.5">
+                          Total: ₹{totalFee.toLocaleString('en-IN')}
+                        </div>
                       </td>
 
-                      {/* Actions */}
+                      {/* Column 5: Actions */}
                       <td className="py-3.5 px-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           <button
-                            onClick={() => handleDownloadStudentInvoiceDoc(student)}
+                            onClick={() => handleDownloadStudentInvoicePdf(student)}
                             title={`Download Tax Invoice (PDF) for ${student.name}`}
                             className="p-1.5 text-orange-400 hover:text-orange-200 hover:bg-orange-500/20 bg-orange-500/10 border border-orange-500/30 rounded-lg transition-colors cursor-pointer group flex items-center gap-1"
                           >
@@ -685,12 +699,23 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                 className="bg-neutral-900/90 border border-neutral-800 rounded-xl p-4 space-y-3.5 shadow-sm hover:border-neutral-700 transition-colors"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center font-bold text-orange-400 text-xs shrink-0">
+                  <div className="flex items-start gap-2.5 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center font-bold text-orange-400 text-xs shrink-0 mt-0.5">
                       {initials}
                     </div>
-                    <div>
-                      <div className="font-bold text-neutral-100 text-base">{student.name}</div>
+                    <div className="min-w-0 space-y-0.5">
+                      {/* Line 1: Student Name */}
+                      <div className="font-bold text-neutral-100 text-base leading-tight truncate">{student.name}</div>
+                      {/* Line 2: Phone Number */}
+                      <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-300">
+                        <Phone className="w-3 h-3 text-neutral-400 shrink-0" />
+                        <span>+91 {student.phone}</span>
+                      </div>
+                      {/* Line 3: Mail ID */}
+                      <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-400">
+                        <Mail className="w-3 h-3 text-neutral-500 shrink-0" />
+                        <span className="truncate max-w-[170px]" title={student.email}>{student.email}</span>
+                      </div>
                     </div>
                   </div>
 
@@ -699,7 +724,7 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                     value={student.paymentStatus}
                     onChange={e => handleTableFeeStatusChange(student, e.target.value as PaymentStatus)}
                     aria-label={`Fee Status for ${student.name}`}
-                    className={`text-xs font-bold px-2.5 py-1.5 rounded-lg border cursor-pointer focus:outline-none transition-all ${
+                    className={`text-xs font-bold px-2.5 py-1.5 rounded-lg border cursor-pointer focus:outline-none transition-all shrink-0 ${
                       student.paymentStatus === 'paid'
                         ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50'
                         : student.paymentStatus === 'partially_paid'
@@ -715,40 +740,54 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                   </select>
                 </div>
 
-                <div className="text-xs text-neutral-300 space-y-1.5 bg-neutral-950/60 p-3 rounded-lg border border-neutral-800/80">
-                  <div className="flex items-center justify-between">
-                    <span className="text-neutral-400">Course:</span>
-                    <span className="text-neutral-100 font-semibold">{student.enrolledCourseName}</span>
-                  </div>
-                  <div className="flex items-center justify-between font-mono">
-                    <span className="text-neutral-400">Enrolled:</span>
-                    <span className="text-neutral-200">{student.enrollmentDate}</span>
-                  </div>
-                  <div className="flex items-center justify-between font-mono pt-1 border-t border-neutral-800/80">
-                    <span className="text-neutral-400">Fee Paid:</span>
-                    <span className="font-bold text-emerald-400">₹{paid.toLocaleString('en-IN')} / ₹{totalFee.toLocaleString('en-IN')}</span>
-                  </div>
-                  {balance > 0 && (
-                    <div className="flex items-center justify-between font-mono text-amber-400 font-bold">
-                      <span>Balance Due:</span>
-                      <span>₹{balance.toLocaleString('en-IN')}</span>
+                {/* Course & Admission Details Block */}
+                <div className="text-xs text-neutral-300 space-y-2 bg-neutral-950/60 p-3 rounded-lg border border-neutral-800/80">
+                  <div className="space-y-0.5">
+                    {/* Line 1: Course Name */}
+                    <div className="text-neutral-100 font-bold text-sm tracking-tight">{student.enrolledCourseName}</div>
+                    {/* Line 2: Duration */}
+                    <div className="text-neutral-300 flex items-center gap-1.5">
+                      <BookOpen className="w-3 h-3 text-orange-400 shrink-0" />
+                      <span>{course?.duration || '1 Month Practical'}</span>
                     </div>
-                  )}
-                  <div className="text-neutral-400 font-mono text-[11px] truncate pt-1 border-t border-neutral-800/80 flex items-center justify-between">
-                    <span>+91 {student.phone}</span>
-                    <span className="truncate max-w-[150px]">{student.email}</span>
+                    {/* Line 3: Duration Date / Admission Date */}
+                    <div className="text-neutral-400 font-mono flex items-center gap-1.5">
+                      <Calendar className="w-3 h-3 text-neutral-500 shrink-0" />
+                      <span>{student.enrollmentDate}</span>
+                    </div>
+                  </div>
+
+                  {/* Fees Payment Details Block */}
+                  <div className="pt-2 border-t border-neutral-800/80 space-y-1 font-mono">
+                    <div className="flex items-center justify-between">
+                      <span className="text-neutral-400 font-sans text-xs">Total Paid:</span>
+                      <span className="font-extrabold text-emerald-400 text-sm">+₹{paid.toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-neutral-400 font-sans text-xs">Total Due:</span>
+                      {balance > 0 ? (
+                        <span className="text-xs font-bold text-red-400 bg-red-500/15 px-2 py-0.5 rounded border border-red-500/40">
+                          ₹{balance.toLocaleString('en-IN')}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-emerald-400 font-semibold">₹0 ✓</span>
+                      )}
+                    </div>
+                    <div className="text-[10px] text-neutral-500 text-right">
+                      Course Fee: ₹{totalFee.toLocaleString('en-IN')}
+                    </div>
                   </div>
                 </div>
 
-                {/* Mobile Actions: Doc Download, Invoice, Edit, Delete */}
+                {/* Mobile Actions: PDF Download, Invoice, Edit, Delete */}
                 <div className="flex items-center justify-end gap-1.5 pt-2 border-t border-neutral-800/80 flex-wrap">
                     <button
-                      onClick={() => handleDownloadStudentInvoiceDoc(student)}
+                      onClick={() => handleDownloadStudentInvoicePdf(student)}
                       className="px-2.5 py-1 text-xs text-orange-300 hover:text-white bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/30 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
                       title="Download Invoice (PDF format)"
                     >
                       <Download className="w-3.5 h-3.5 text-orange-400" />
-                      <span>PDF</span>
+                      <span className="font-bold">PDF</span>
                     </button>
                     <button
                       onClick={() => onGenerateInvoiceForStudent(student)}
