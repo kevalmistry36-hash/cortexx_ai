@@ -44,13 +44,16 @@ interface CertificatesViewProps {
   students: Student[];
   courses: Course[];
   onOpenVerificationGateway?: (code: string) => void;
+  theme?: 'light' | 'dark';
 }
 
 export const CertificatesView: React.FC<CertificatesViewProps> = ({
   students,
   courses,
   onOpenVerificationGateway,
+  theme = 'dark',
 }) => {
+  const isLight = theme === 'light';
   const [certificates, setCertificates] = useState<CertificateRecord[]>([]);
   const [wizardStep, setWizardStep] = useState<1 | 2 | 3>(1);
   const [isCloudSyncing, setIsCloudSyncing] = useState(false);
@@ -248,18 +251,56 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
       c.verificationCode.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Shared card classes - identical appearance to Dashboard
+  const kpiCardClass = isLight
+    ? 'dashboard-kpi-card bg-white border-2 border-neutral-200 border-t-4 border-t-orange-500 shadow-md hover:border-orange-500 text-black rounded-xl p-5 transition-all'
+    : 'dashboard-kpi-card bg-neutral-900 border border-neutral-800 border-t-4 border-t-orange-500 hover:border-neutral-700 text-neutral-100 rounded-xl p-5 transition-all';
+  const kpiTitleClass = isLight
+    ? 'text-xs uppercase tracking-wider font-extrabold text-black flex items-center gap-1.5'
+    : 'text-xs uppercase tracking-wider font-bold text-neutral-400 flex items-center gap-1.5';
+  const kpiNumberClass = isLight
+    ? 'text-2xl font-black text-black tracking-tight mt-1'
+    : 'text-2xl font-black text-neutral-100 tracking-tight mt-1';
+  const kpiSubtextClass = isLight
+    ? 'text-[11px] font-semibold text-neutral-700 mt-1'
+    : 'text-[11px] font-medium text-neutral-500 mt-1';
+  const kpiBadgeClass = isLight
+    ? 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 border border-orange-200'
+    : 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20';
+
   return (
     <div className="space-y-6 animate-fadeIn">
-      {/* Header & Metrics with Bulk PDF Download Button on Top */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-800">
-        <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-neutral-100 flex items-center gap-2.5">
-            <Award className="w-7 h-7 text-amber-400" />
-            <span>Course Completion Certificates</span>
-          </h1>
-          <p className="text-sm text-neutral-400 mt-0.5">
-            Generate verifiable graduation credentials with QR validation, official institute seal, and instant PDF downloads
-          </p>
+      {/* Header & Metrics - Command Center Vibe matching Dashboard */}
+      <div
+        className={`p-4 sm:p-5 rounded-2xl border transition-all ${
+          isLight
+            ? 'bg-gradient-to-r from-orange-50 via-white to-amber-50 border-neutral-200 shadow-sm'
+            : 'bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-950 border-neutral-800'
+        } flex flex-col md:flex-row md:items-center justify-between gap-4`}
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-xl sm:text-2xl shrink-0">
+            📜
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className={`text-xl sm:text-2xl font-black tracking-tight ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                Course Completion Certificates
+              </h1>
+              <span
+                className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                  isLight
+                    ? 'bg-orange-100 text-orange-800 border border-orange-300'
+                    : 'bg-orange-500/15 text-orange-400 border border-orange-500/30'
+                }`}
+              >
+                Verifiable Credentials
+              </span>
+            </div>
+            <p className={`text-xs sm:text-sm mt-0.5 font-bold ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+              Generate verifiable graduation credentials with QR validation, official institute seal, and instant PDF downloads
+            </p>
+          </div>
         </div>
 
         {/* Top Action Buttons: Bulk PDF Download & Counter */}
@@ -268,7 +309,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
             <button
               onClick={handleBulkPdfDownload}
               disabled={isBulkDownloading}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 hover:from-amber-500 hover:to-orange-500 disabled:opacity-50 text-neutral-950 font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 hover:from-amber-500 hover:to-orange-500 disabled:opacity-50 text-neutral-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-md transition-all cursor-pointer"
             >
               {isBulkDownloading ? (
                 <>
@@ -284,53 +325,128 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
             </button>
           )}
 
-          <div className="px-4 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-mono">
-            <span className="text-neutral-400">Issued Certificates: </span>
-            <span className="text-amber-400 font-bold text-sm">{certificates.length}</span>
+          <div
+            className={`px-4 py-2 rounded-xl text-xs font-mono border ${
+              isLight ? 'bg-white border-neutral-300 text-black shadow-xs' : 'bg-neutral-900 border-neutral-800 text-neutral-200'
+            }`}
+          >
+            <span className={isLight ? 'text-neutral-600' : 'text-neutral-400'}>Issued: </span>
+            <span className="text-orange-600 dark:text-orange-400 font-black text-sm">{certificates.length}</span>
           </div>
         </div>
       </div>
 
       {/* Success Notification */}
       {notification && (
-        <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-300 text-sm flex items-center justify-between animate-fadeIn">
+        <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-600 dark:text-emerald-300 text-sm flex items-center justify-between animate-fadeIn">
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-            <span className="font-medium">{notification}</span>
+            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+            <span className="font-bold">{notification}</span>
           </div>
-          <button onClick={() => setNotification(null)} className="text-neutral-400 hover:text-neutral-200 text-xs px-2 py-1">
+          <button onClick={() => setNotification(null)} className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 text-xs px-2 py-1">
             ✕
           </button>
         </div>
       )}
 
+      {/* Certificate Section KPI Cards with Emojis - Dashboard Style */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {/* KPI 1: Issued Certificates */}
+        <div className={kpiCardClass}>
+          <div className="flex items-center justify-between">
+            <div className={kpiTitleClass}>
+              <span role="img" aria-label="Certificates" className="select-none text-base">📜</span>
+              <span>Issued Certificates</span>
+            </div>
+            <span className={kpiBadgeClass}>Active</span>
+          </div>
+          <div className={kpiNumberClass}>{certificates.length}</div>
+          <div className={kpiSubtextClass}>Official Credentials</div>
+        </div>
+
+        {/* KPI 2: Eligible Candidates */}
+        <div className={kpiCardClass}>
+          <div className="flex items-center justify-between">
+            <div className={kpiTitleClass}>
+              <span role="img" aria-label="Students" className="select-none text-base">🎓</span>
+              <span>Eligible Candidates</span>
+            </div>
+            <span className={kpiBadgeClass}>Graduates</span>
+          </div>
+          <div className={kpiNumberClass}>{students.length}</div>
+          <div className={kpiSubtextClass}>Enrolled Roster</div>
+        </div>
+
+        {/* KPI 3: Certified Courses */}
+        <div className={kpiCardClass}>
+          <div className="flex items-center justify-between">
+            <div className={kpiTitleClass}>
+              <span role="img" aria-label="Programs" className="select-none text-base">📚</span>
+              <span>Certified Courses</span>
+            </div>
+            <span className={kpiBadgeClass}>Accredited</span>
+          </div>
+          <div className={kpiNumberClass}>
+            {courses.filter(c => c.certificateIncluded).length}
+          </div>
+          <div className={kpiSubtextClass}>Curriculum Aligned</div>
+        </div>
+
+        {/* KPI 4: Tamper-Proof QR */}
+        <div className={kpiCardClass}>
+          <div className="flex items-center justify-between">
+            <div className={kpiTitleClass}>
+              <span role="img" aria-label="Security" className="select-none text-base">🛡️</span>
+              <span>Tamper-Proof QR</span>
+            </div>
+            <span className={kpiBadgeClass}>Verified</span>
+          </div>
+          <div className={kpiNumberClass}>100%</div>
+          <div className={kpiSubtextClass}>Instant Scan & Authenticate</div>
+        </div>
+      </div>
+
       {/* CERTIFICATE WIZARD CONTAINER */}
-      <div className="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-5 sm:p-6 shadow-md space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-neutral-800 gap-3">
+      <div
+        className={`border rounded-2xl p-5 sm:p-6 shadow-md space-y-6 ${
+          isLight ? 'bg-white border-2 border-neutral-200 text-black' : 'bg-neutral-900/80 border border-neutral-800 text-neutral-100'
+        }`}
+      >
+        <div className={`flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b gap-3 ${
+          isLight ? 'border-neutral-200' : 'border-neutral-800'
+        }`}>
           <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-amber-400 shrink-0" />
-            <h2 className="text-base font-extrabold text-neutral-100">Certificate Generation Wizard</h2>
+            <Sparkles className="w-5 h-5 text-orange-500 shrink-0" />
+            <h2 className={`text-base font-extrabold ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+              Certificate Generation Wizard
+            </h2>
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 sm:gap-2 text-xs font-mono">
             <span
               className={`px-2.5 py-1.5 rounded-lg font-bold text-center sm:text-left ${
-                wizardStep === 1 ? 'bg-amber-500 text-neutral-950' : 'bg-neutral-800 text-neutral-400'
+                wizardStep === 1
+                  ? 'bg-orange-500 text-white'
+                  : isLight ? 'bg-neutral-100 text-neutral-600' : 'bg-neutral-800 text-neutral-400'
               }`}
             >
               Step 1: Course & Dates
             </span>
-            <span className="hidden sm:inline text-neutral-600">→</span>
+            <span className={`hidden sm:inline ${isLight ? 'text-neutral-400' : 'text-neutral-600'}`}>→</span>
             <span
               className={`px-2.5 py-1.5 rounded-lg font-bold text-center sm:text-left ${
-                wizardStep === 2 ? 'bg-amber-500 text-neutral-950' : 'bg-neutral-800 text-neutral-400'
+                wizardStep === 2
+                  ? 'bg-orange-500 text-white'
+                  : isLight ? 'bg-neutral-100 text-neutral-600' : 'bg-neutral-800 text-neutral-400'
               }`}
             >
               Step 2: Select Students ({selectedStudentIds.length})
             </span>
-            <span className="hidden sm:inline text-neutral-600">→</span>
+            <span className={`hidden sm:inline ${isLight ? 'text-neutral-400' : 'text-neutral-600'}`}>→</span>
             <span
               className={`px-2.5 py-1.5 rounded-lg font-bold text-center sm:text-left ${
-                wizardStep === 3 ? 'bg-amber-500 text-neutral-950' : 'bg-neutral-800 text-neutral-400'
+                wizardStep === 3
+                  ? 'bg-orange-500 text-white'
+                  : isLight ? 'bg-neutral-100 text-neutral-600' : 'bg-neutral-800 text-neutral-400'
               }`}
             >
               Step 3: Generate
@@ -343,12 +459,16 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
           <div className="space-y-5 animate-fadeIn">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-neutral-300">Select Curriculum Course</label>
+                <label className={`text-xs font-bold ${isLight ? 'text-black' : 'text-neutral-300'}`}>
+                  Select Curriculum Course
+                </label>
                 <select
                   value={selectedCourseId}
                   onChange={e => setSelectedCourseId(e.target.value)}
                   aria-label="Select Curriculum Course"
-                  className="w-full px-3.5 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-sm font-medium text-neutral-100 focus:outline-none focus:border-amber-500 cursor-pointer"
+                  className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-semibold focus:outline-none focus:border-orange-500 cursor-pointer ${
+                    isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-100'
+                  }`}
                 >
                   {courses.map(c => (
                     <option key={c.id} value={c.id}>
@@ -361,13 +481,15 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
 
               {selectedCourseId === 'other' && (
                 <div className="space-y-1.5 animate-fadeIn">
-                  <label className="text-xs font-semibold text-amber-400">Custom Course Title</label>
+                  <label className="text-xs font-bold text-orange-600 dark:text-orange-400">Custom Course Title</label>
                   <input
                     type="text"
                     value={customCourseName}
                     onChange={e => setCustomCourseName(e.target.value)}
                     placeholder="e.g. Advanced Generative AI & LLM Engineering"
-                    className="w-full px-3.5 py-2.5 bg-neutral-950 border border-amber-500/50 rounded-xl text-sm text-neutral-100 focus:outline-none focus:border-amber-500"
+                    className={`w-full px-3.5 py-2.5 border rounded-xl text-sm focus:outline-none focus:border-orange-500 ${
+                      isLight ? 'bg-neutral-50 border-orange-400 text-black' : 'bg-neutral-950 border-orange-500/50 text-neutral-100'
+                    }`}
                   />
                 </div>
               )}
@@ -375,22 +497,26 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-neutral-300">Course Start Date</label>
+                <label className={`text-xs font-bold ${isLight ? 'text-black' : 'text-neutral-300'}`}>Course Start Date</label>
                 <input
                   type="date"
                   value={startDate}
                   onChange={e => setStartDate(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-sm font-mono text-neutral-100 focus:outline-none focus:border-amber-500 cursor-pointer"
+                  className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-mono focus:outline-none focus:border-orange-500 cursor-pointer ${
+                    isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-100'
+                  }`}
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-neutral-300">Course End Date</label>
+                <label className={`text-xs font-bold ${isLight ? 'text-black' : 'text-neutral-300'}`}>Course End Date</label>
                 <input
                   type="date"
                   value={endDate}
                   onChange={e => setEndDate(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-sm font-mono text-neutral-100 focus:outline-none focus:border-amber-500 cursor-pointer"
+                  className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-mono focus:outline-none focus:border-orange-500 cursor-pointer ${
+                    isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-100'
+                  }`}
                 />
               </div>
             </div>
@@ -399,7 +525,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               <button
                 type="button"
                 onClick={() => setWizardStep(2)}
-                className="w-full sm:w-auto justify-center flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-neutral-950 font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
+                className="w-full sm:w-auto justify-center flex items-center gap-2 px-5 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
               >
                 <span>Next: Select Students</span>
                 <ArrowRight className="w-4 h-4" />
@@ -412,19 +538,23 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
         {wizardStep === 2 && (
           <div className="space-y-4 animate-fadeIn">
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-              <div className="text-xs text-neutral-300 font-medium">
-                Select students to issue certificates for <strong className="text-amber-400">"{activeCourseName}"</strong>:
+              <div className={`text-xs font-medium ${isLight ? 'text-black' : 'text-neutral-300'}`}>
+                Select students to issue certificates for <strong className="text-orange-600 dark:text-orange-400 font-black">"{activeCourseName}"</strong>:
               </div>
               <button
                 type="button"
                 onClick={handleSelectAllStudents}
-                className="px-3 py-1.5 text-xs font-semibold bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-lg transition-colors cursor-pointer text-center"
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer text-center ${
+                  isLight ? 'bg-neutral-100 hover:bg-neutral-200 text-black border border-neutral-300' : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-200'
+                }`}
               >
                 {selectedStudentIds.length === students.length ? 'Deselect All' : 'Select All Students'}
               </button>
             </div>
 
-            <div className="max-h-72 overflow-y-auto space-y-2 pr-1 divide-y divide-neutral-800/80 bg-neutral-950/60 p-3 rounded-xl border border-neutral-800">
+            <div className={`max-h-72 overflow-y-auto space-y-2 pr-1 divide-y p-3 rounded-xl border ${
+              isLight ? 'bg-neutral-50/70 border-neutral-300 divide-neutral-200' : 'bg-neutral-950/60 border-neutral-800 divide-neutral-800/80'
+            }`}>
               {students.length === 0 ? (
                 <div className="text-center py-8 text-neutral-500 text-xs">No students available in admission roster.</div>
               ) : (
@@ -435,27 +565,31 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                       key={student.id}
                       onClick={() => handleToggleSelectStudent(student.id)}
                       className={`flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl transition-colors cursor-pointer gap-2 ${
-                        isSelected ? 'bg-amber-500/10 border border-amber-500/30' : 'hover:bg-neutral-900/60'
+                        isSelected
+                          ? isLight ? 'bg-orange-100/70 border border-orange-400' : 'bg-orange-500/10 border border-orange-500/30'
+                          : isLight ? 'hover:bg-neutral-100' : 'hover:bg-neutral-900/60'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <div
                           className={`w-5 h-5 rounded flex items-center justify-center border shrink-0 ${
                             isSelected
-                              ? 'bg-amber-500 border-amber-600 text-neutral-950 font-bold text-xs'
-                              : 'border-neutral-700 bg-neutral-900'
+                              ? 'bg-orange-500 border-orange-600 text-white font-bold text-xs'
+                              : isLight ? 'border-neutral-300 bg-white' : 'border-neutral-700 bg-neutral-900'
                           }`}
                         >
                           {isSelected ? '✓' : ''}
                         </div>
                         <div className="min-w-0">
-                          <div className="font-bold text-neutral-100 text-sm truncate">{student.name}</div>
-                          <div className="text-xs font-mono text-neutral-400 truncate">
+                          <div className={`font-black text-sm truncate ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                            {student.name}
+                          </div>
+                          <div className={`text-xs font-mono truncate font-semibold ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
                             {student.id} · {student.enrolledCourseName}
                           </div>
                         </div>
                       </div>
-                      <div className="text-xs font-mono text-neutral-400 sm:text-right pl-8 sm:pl-0">
+                      <div className={`text-xs font-mono font-bold sm:text-right pl-8 sm:pl-0 ${isLight ? 'text-neutral-700' : 'text-neutral-400'}`}>
                         +91 {student.phone}
                       </div>
                     </div>
@@ -468,7 +602,9 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               <button
                 type="button"
                 onClick={() => setWizardStep(1)}
-                className="w-full sm:w-auto justify-center flex items-center gap-2 px-4 py-2.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-xl transition-colors cursor-pointer"
+                className={`w-full sm:w-auto justify-center flex items-center gap-2 px-4 py-2.5 font-bold text-xs rounded-xl transition-colors cursor-pointer ${
+                  isLight ? 'bg-neutral-100 hover:bg-neutral-200 text-black border border-neutral-300' : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-200'
+                }`}
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back</span>
@@ -484,7 +620,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                   }
                   setWizardStep(3);
                 }}
-                className="w-full sm:w-auto justify-center flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-neutral-950 font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
+                className="w-full sm:w-auto justify-center flex items-center gap-2 px-5 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
               >
                 <span>Review & Generate ({selectedStudentIds.length})</span>
                 <ArrowRight className="w-4 h-4" />
@@ -496,25 +632,31 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
         {/* STEP 3 */}
         {wizardStep === 3 && (
           <div className="space-y-4 animate-fadeIn">
-            <div className="p-4 bg-neutral-950 border border-neutral-800 rounded-xl space-y-2.5 text-xs font-mono">
-              <div className="text-neutral-400 font-sans font-bold text-sm mb-2">Review Certificate Batch:</div>
-              <div className="flex flex-col sm:flex-row sm:justify-between gap-0.5 sm:gap-2">
-                <span className="text-neutral-400">Course Curriculum:</span>
-                <span className="text-amber-400 font-bold text-sm">{activeCourseName}</span>
+            <div className={`p-4 border rounded-xl space-y-2.5 text-xs font-mono ${
+              isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-200'
+            }`}>
+              <div className={`font-sans font-black text-sm mb-2 ${isLight ? 'text-black' : 'text-neutral-200'}`}>
+                Review Certificate Batch:
               </div>
               <div className="flex flex-col sm:flex-row sm:justify-between gap-0.5 sm:gap-2">
-                <span className="text-neutral-400">Duration Period:</span>
-                <span className="text-neutral-200">
+                <span className={isLight ? 'text-neutral-600' : 'text-neutral-400'}>Course Curriculum:</span>
+                <span className="text-orange-600 dark:text-orange-400 font-black text-sm">{activeCourseName}</span>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-0.5 sm:gap-2">
+                <span className={isLight ? 'text-neutral-600' : 'text-neutral-400'}>Duration Period:</span>
+                <span className={`font-bold ${isLight ? 'text-black' : 'text-neutral-200'}`}>
                   {startDate} to {endDate}
                 </span>
               </div>
               <div className="flex flex-col sm:flex-row sm:justify-between gap-0.5 sm:gap-2">
-                <span className="text-neutral-400">Selected Recipients:</span>
-                <span className="text-emerald-400 font-bold">{selectedStudentIds.length} Student(s)</span>
+                <span className={isLight ? 'text-neutral-600' : 'text-neutral-400'}>Selected Recipients:</span>
+                <span className="text-emerald-700 dark:text-emerald-400 font-black">{selectedStudentIds.length} Student(s)</span>
               </div>
               <div className="flex flex-col sm:flex-row sm:justify-between gap-0.5 sm:gap-2">
-                <span className="text-neutral-400">Signatories:</span>
-                <span className="text-neutral-300">Keval Gajjar (Founder & CEO), Hiren Raval, Shweta Malaviya</span>
+                <span className={isLight ? 'text-neutral-600' : 'text-neutral-400'}>Signatories:</span>
+                <span className={`font-semibold ${isLight ? 'text-neutral-800' : 'text-neutral-300'}`}>
+                  Keval Gajjar (Founder & CEO), Hiren Raval, Shweta Malaviya
+                </span>
               </div>
             </div>
 
@@ -522,7 +664,9 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               <button
                 type="button"
                 onClick={() => setWizardStep(2)}
-                className="w-full sm:w-auto justify-center flex items-center gap-2 px-4 py-2.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-semibold text-xs rounded-xl transition-colors cursor-pointer"
+                className={`w-full sm:w-auto justify-center flex items-center gap-2 px-4 py-2.5 font-bold text-xs rounded-xl transition-colors cursor-pointer ${
+                  isLight ? 'bg-neutral-100 hover:bg-neutral-200 text-black border border-neutral-300' : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-200'
+                }`}
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back</span>
@@ -531,7 +675,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               <button
                 type="button"
                 onClick={handleGenerateCertificates}
-                className="w-full sm:w-auto justify-center flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-neutral-950 font-black text-sm rounded-xl shadow-lg transition-all cursor-pointer"
+                className="w-full sm:w-auto justify-center flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-black text-sm rounded-xl shadow-lg transition-all cursor-pointer"
               >
                 <Award className="w-4 h-4" />
                 <span>Generate Certificates</span>
@@ -542,74 +686,94 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
       </div>
 
       {/* TABLE VIEW OF ISSUED CERTIFICATES */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <h3 className="text-base font-bold text-neutral-100 flex items-center gap-2">
+          <h3 className={`text-base font-black flex items-center gap-2 ${isLight ? 'text-black' : 'text-neutral-100'}`}>
             <span>Issued Certificates Roster</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-300 font-mono">
+            <span className={`text-xs px-2.5 py-0.5 rounded-full font-mono font-bold ${
+              isLight ? 'bg-orange-100 text-orange-900 border border-orange-300' : 'bg-neutral-800 text-neutral-300'
+            }`}>
               {filteredCertificates.length}
             </span>
           </h3>
 
           <div className="relative w-full sm:w-72">
-            <Search className="w-4 h-4 text-neutral-500 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 ${isLight ? 'text-neutral-500' : 'text-neutral-400'}`} />
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search issued certificates..."
-              className="w-full pl-9 pr-3 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-xs text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-amber-500"
+              className={`w-full pl-9 pr-3 py-2 border rounded-xl text-xs focus:outline-none focus:border-orange-500 transition-colors ${
+                isLight ? 'bg-white border-neutral-300 text-black placeholder-neutral-500 shadow-xs' : 'bg-neutral-900 border-neutral-800 text-neutral-200 placeholder-neutral-500'
+              }`}
             />
           </div>
         </div>
 
         {/* Desktop Table View of Issued Certificates */}
-        <div className="hidden md:block bg-neutral-900/60 border border-neutral-800 rounded-2xl overflow-hidden shadow-sm">
+        <div className={`hidden md:block border rounded-xl overflow-hidden shadow-sm ${
+          isLight ? 'bg-white border-neutral-200/90 text-neutral-800' : 'bg-neutral-900/60 border-neutral-800 text-neutral-300'
+        }`}>
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-neutral-300 border-collapse">
-              <thead className="bg-neutral-900 text-xs uppercase tracking-wider text-neutral-300 font-bold border-b border-neutral-700/80">
+            <table className="w-full text-left text-sm border-collapse">
+              <thead className={`text-xs uppercase tracking-wider font-black border-b ${
+                isLight ? 'bg-orange-50/70 text-black border-neutral-200' : 'bg-neutral-900/90 text-neutral-200 font-bold border-neutral-800'
+              }`}>
                 <tr>
-                  <th className="py-4 px-4 font-bold text-neutral-200">Cert ID & Code</th>
-                  <th className="py-4 px-4 font-bold text-neutral-200">Student Name</th>
-                  <th className="py-4 px-4 font-bold text-neutral-200">Course Curriculum</th>
-                  <th className="py-4 px-4 font-bold text-neutral-200">Issue Date</th>
-                  <th className="py-4 px-4 text-center font-bold text-neutral-200">QR Verify Link</th>
-                  <th className="py-4 px-4 text-right font-bold text-neutral-200">Actions</th>
+                  <th className="py-4 px-4 font-black">Cert ID & Code</th>
+                  <th className="py-4 px-4 font-black">Student Name</th>
+                  <th className="py-4 px-4 font-black">Course Curriculum</th>
+                  <th className="py-4 px-4 font-black">Issue Date</th>
+                  <th className="py-4 px-4 text-center font-black">QR Verify Link</th>
+                  <th className="py-4 px-4 text-right font-black">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-800/80">
+              <tbody className={`divide-y ${isLight ? 'divide-neutral-100' : 'divide-neutral-800/80'}`}>
                 {filteredCertificates.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-12 text-center text-neutral-500">
                       <Award className="w-8 h-8 mx-auto text-neutral-600 mb-2 opacity-50" />
-                      <p className="text-sm">No certificates generated yet. Use the Wizard above to create batch certificates.</p>
+                      <p className="text-sm font-bold">No certificates generated yet. Use the Wizard above to create batch certificates.</p>
                     </td>
                   </tr>
                 ) : (
                   filteredCertificates.map(cert => (
-                    <tr key={cert.id} className="hover:bg-neutral-800/40 transition-colors">
+                    <tr key={cert.id} className="transition-colors">
                       <td className="py-3.5 px-4 font-mono text-xs">
-                        <span className="font-bold text-amber-400">{cert.id}</span>
-                        <div className="text-[10px] text-neutral-500">{cert.verificationCode}</div>
+                        <span className="font-black text-orange-600 dark:text-orange-400">{cert.id}</span>
+                        <div className={`text-[10px] font-mono font-semibold ${isLight ? 'text-neutral-500' : 'text-neutral-400'}`}>
+                          {cert.verificationCode}
+                        </div>
                       </td>
 
-                      <td className="py-3.5 px-4 font-bold text-neutral-100 text-sm">{cert.studentName}</td>
+                      <td className={`py-3.5 px-4 font-black text-sm ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                        {cert.studentName}
+                      </td>
 
-                      <td className="py-3.5 px-4 text-xs font-semibold text-neutral-200">
-                        {cert.courseName}
-                        <div className="text-[10px] text-neutral-400 font-mono font-normal">
+                      <td className="py-3.5 px-4">
+                        <div className={`text-xs font-black ${isLight ? 'text-black' : 'text-neutral-200'}`}>
+                          {cert.courseName}
+                        </div>
+                        <div className={`text-[10px] font-mono font-bold mt-0.5 ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
                           {cert.startDate} to {cert.endDate}
                         </div>
                       </td>
 
-                      <td className="py-3.5 px-4 font-mono text-xs text-neutral-300">{cert.issueDate}</td>
+                      <td className={`py-3.5 px-4 font-mono text-xs font-semibold ${isLight ? 'text-neutral-700' : 'text-neutral-300'}`}>
+                        {cert.issueDate}
+                      </td>
 
                       <td className="py-3.5 px-4 text-center">
                         <a
                           href={`https://cortexxai-app.vercel.app/?verify=${cert.verificationCode}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-mono transition-colors"
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-colors ${
+                            isLight
+                              ? 'bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100'
+                              : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20'
+                          }`}
                           title="Open public verification gateway"
                         >
                           <QrCode className="w-3.5 h-3.5" />
@@ -623,7 +787,11 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                           <button
                             onClick={() => handleOpenPreview(cert)}
                             title="Preview Certificate"
-                            className="p-1.5 text-neutral-300 hover:text-amber-400 bg-neutral-800 hover:bg-neutral-700 rounded-lg transition-colors cursor-pointer"
+                            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                              isLight
+                                ? 'text-neutral-700 hover:text-black hover:bg-neutral-100 border border-neutral-300'
+                                : 'text-neutral-300 hover:text-orange-400 bg-neutral-800 hover:bg-neutral-700'
+                            }`}
                           >
                             <Eye className="w-4 h-4" />
                           </button>
@@ -633,10 +801,10 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                             onClick={() => handleDownloadDirectPdf(cert)}
                             disabled={downloadingCertId === cert.id}
                             title="Download PDF Certificate"
-                            className="p-1.5 text-amber-400 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-lg transition-colors cursor-pointer"
+                            className="p-1.5 text-orange-600 dark:text-orange-400 hover:text-orange-800 dark:hover:text-orange-200 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 rounded-lg transition-colors cursor-pointer"
                           >
                             {downloadingCertId === cert.id ? (
-                              <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
+                              <Loader2 className="w-4 h-4 animate-spin text-orange-500" />
                             ) : (
                               <FileDown className="w-4 h-4" />
                             )}
@@ -651,7 +819,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                               setTimeout(() => setNotification(null), 3000);
                             }}
                             title="Revoke / Delete Certificate"
-                            className="p-1.5 text-rose-400 hover:text-rose-200 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 rounded-lg transition-colors cursor-pointer"
+                            className="p-1.5 text-rose-500 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-200 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 rounded-lg transition-colors cursor-pointer"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -668,44 +836,64 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
         {/* Mobile Issued Certificates Cards (Vertical Layout for Phone Screens) */}
         <div className="md:hidden space-y-3">
           {filteredCertificates.length === 0 ? (
-            <div className="bg-neutral-900/60 border border-neutral-800 rounded-2xl p-8 text-center text-neutral-500">
+            <div className={`border rounded-2xl p-8 text-center text-neutral-500 ${
+              isLight ? 'bg-white border-neutral-200 shadow-sm' : 'bg-neutral-900/60 border-neutral-800'
+            }`}>
               <Award className="w-8 h-8 mx-auto text-neutral-600 mb-2 opacity-50" />
-              <p className="text-sm">No certificates generated yet. Use the Wizard above to create batch certificates.</p>
+              <p className="text-sm font-bold">No certificates generated yet. Use the Wizard above to create batch certificates.</p>
             </div>
           ) : (
             filteredCertificates.map(cert => (
               <div
                 key={cert.id}
-                className="bg-neutral-900/90 border border-neutral-800 rounded-xl p-4 space-y-3 shadow-sm hover:border-neutral-700 transition-colors"
+                className={`border rounded-xl p-4 space-y-3 transition-colors ${
+                  isLight ? 'bg-white border-2 border-neutral-200 shadow-sm' : 'bg-neutral-900/90 border border-neutral-800'
+                }`}
               >
                 {/* Vertical Header: Cert ID & Date */}
-                <div className="flex items-start justify-between gap-2">
+                <div className={`flex items-start justify-between gap-2 border-b pb-2 ${
+                  isLight ? 'border-neutral-200' : 'border-neutral-800'
+                }`}>
                   <div className="space-y-0.5">
-                    <div className="font-mono text-xs font-bold text-amber-400">{cert.id}</div>
-                    <div className="text-[11px] font-mono text-neutral-400">Code: {cert.verificationCode}</div>
+                    <div className="font-mono text-xs font-black text-orange-600 dark:text-orange-400">{cert.id}</div>
+                    <div className={`text-[11px] font-mono font-semibold ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
+                      Code: {cert.verificationCode}
+                    </div>
                   </div>
-                  <span className="text-[11px] font-mono text-neutral-400 bg-neutral-950 px-2 py-1 rounded border border-neutral-800 shrink-0">
+                  <span className={`text-[11px] font-mono px-2 py-1 rounded border shrink-0 font-bold ${
+                    isLight ? 'bg-neutral-100 text-black border-neutral-300' : 'bg-neutral-950 text-neutral-300 border-neutral-800'
+                  }`}>
                     {cert.issueDate}
                   </span>
                 </div>
 
                 {/* Vertical Student Information Block */}
-                <div className="p-3 bg-neutral-950/70 rounded-xl border border-neutral-800/80 space-y-1">
-                  <div className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">
+                <div className={`p-3 rounded-xl border space-y-1 ${
+                  isLight ? 'bg-neutral-50 border-neutral-200' : 'bg-neutral-950/70 border-neutral-800/80'
+                }`}>
+                  <div className={`text-[10px] uppercase font-black tracking-wider ${isLight ? 'text-neutral-500' : 'text-neutral-400'}`}>
                     Student Recipient
                   </div>
-                  <div className="text-base font-bold text-neutral-100">{cert.studentName}</div>
-                  <div className="text-xs font-mono text-neutral-400">Student ID: {cert.studentId}</div>
+                  <div className={`text-base font-black ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                    {cert.studentName}
+                  </div>
+                  <div className={`text-xs font-mono font-semibold ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
+                    Student ID: {cert.studentId}
+                  </div>
                 </div>
 
                 {/* Vertical Course Curriculum Block */}
-                <div className="p-3 bg-neutral-950/70 rounded-xl border border-neutral-800/80 space-y-1">
-                  <div className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">
+                <div className={`p-3 rounded-xl border space-y-1 ${
+                  isLight ? 'bg-neutral-50 border-neutral-200' : 'bg-neutral-950/70 border-neutral-800/80'
+                }`}>
+                  <div className={`text-[10px] uppercase font-black tracking-wider ${isLight ? 'text-neutral-500' : 'text-neutral-400'}`}>
                     Course Curriculum
                   </div>
-                  <div className="text-sm font-semibold text-neutral-200">{cert.courseName}</div>
-                  <div className="text-xs font-mono text-neutral-400 flex items-center gap-1.5 pt-0.5">
-                    <Calendar className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <div className={`text-sm font-black ${isLight ? 'text-black' : 'text-neutral-200'}`}>
+                    {cert.courseName}
+                  </div>
+                  <div className={`text-xs font-mono flex items-center gap-1.5 pt-0.5 font-bold ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
+                    <Calendar className="w-3.5 h-3.5 text-orange-500 shrink-0" />
                     <span>{cert.startDate} to {cert.endDate}</span>
                   </div>
                 </div>
@@ -716,7 +904,11 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                     href={`https://cortexxai-app.vercel.app/?verify=${cert.verificationCode}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="w-full flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-mono font-semibold transition-colors"
+                    className={`w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-mono font-bold transition-colors ${
+                      isLight
+                        ? 'bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100'
+                        : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20'
+                    }`}
                   >
                     <QrCode className="w-4 h-4" />
                     <span>Verify Credential Online</span>
@@ -724,21 +916,25 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                 </div>
 
                 {/* Vertical Action Buttons */}
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-neutral-800/80">
+                <div className={`flex items-center justify-end gap-2 pt-2 border-t ${
+                  isLight ? 'border-neutral-200' : 'border-neutral-800/80'
+                }`}>
                   <button
                     onClick={() => handleOpenPreview(cert)}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-neutral-200 hover:text-white bg-neutral-800 hover:bg-neutral-700 rounded-lg transition-colors cursor-pointer"
+                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
+                      isLight ? 'bg-neutral-100 hover:bg-neutral-200 text-black border border-neutral-300' : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-200'
+                    }`}
                   >
-                    <Eye className="w-4 h-4 text-amber-400" />
+                    <Eye className="w-4 h-4 text-orange-500" />
                     <span>Preview</span>
                   </button>
                   <button
                     onClick={() => handleDownloadDirectPdf(cert)}
                     disabled={downloadingCertId === cert.id}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold text-neutral-950 bg-amber-500 hover:bg-amber-400 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-orange-600 hover:bg-orange-500 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
                   >
                     {downloadingCertId === cert.id ? (
-                      <Loader2 className="w-4 h-4 animate-spin text-neutral-950" />
+                      <Loader2 className="w-4 h-4 animate-spin text-white" />
                     ) : (
                       <FileDown className="w-4 h-4" />
                     )}
@@ -751,7 +947,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                       setNotification(`Deleted certificate ${cert.id}`);
                       setTimeout(() => setNotification(null), 3000);
                     }}
-                    className="p-2 text-rose-400 hover:text-rose-200 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 rounded-lg transition-colors cursor-pointer"
+                    className="p-2 text-rose-500 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-200 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 rounded-lg transition-colors cursor-pointer"
                     title="Revoke / Delete Certificate"
                   >
                     <Trash2 className="w-4 h-4" />

@@ -78,9 +78,9 @@ body.light .dashboard-kpi-card {
   border-top-color: #f97316 !important; /* Vivid Orange top indicator */
 }
 
-html.light .dashboard-kpi-card span:not(.kpi-orange-badge):not(.bg-orange-500),
-html[data-theme="light"] .dashboard-kpi-card span:not(.kpi-orange-badge):not(.bg-orange-500),
-body.light .dashboard-kpi-card span:not(.kpi-orange-badge):not(.bg-orange-500) {
+html.light .dashboard-kpi-card span:not(.kpi-orange-badge):not(.bg-orange-500):not(.kpi-emoji),
+html[data-theme="light"] .dashboard-kpi-card span:not(.kpi-orange-badge):not(.bg-orange-500):not(.kpi-emoji),
+body.light .dashboard-kpi-card span:not(.kpi-orange-badge):not(.bg-orange-500):not(.kpi-emoji) {
   color: #000000 !important;
 }
 

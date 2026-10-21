@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Student, Course, PaymentStatus, PaymentMethod, Invoice } from '../types';
 import { getNextStudentId, getNextEnrollmentId, saveStudent, deleteStudent, updateStudentFeeStatus, getInvoices, getNextInvoiceNumber, saveInvoice } from '../services/storage';
-import { Search, Plus, User, Phone, Mail, BookOpen, Trash2, Edit3, Receipt, IndianRupee, ArrowUpDown, FileSpreadsheet, CheckCircle2, RotateCcw, X, AlertTriangle, Download, FileDown, ShieldCheck, Check, Calendar } from 'lucide-react';
+import { Search, Plus, User, Users, Phone, Mail, BookOpen, Trash2, Edit3, Receipt, IndianRupee, ArrowUpDown, FileSpreadsheet, CheckCircle2, RotateCcw, X, AlertTriangle, Download, FileDown, ShieldCheck, Check, Calendar, Clock } from 'lucide-react';
 import { BulkStudentImportModal } from './BulkStudentImportModal';
 import { downloadInvoiceAsPdf } from '../utils/pdfExport';
 import * as XLSX from 'xlsx';
@@ -13,6 +13,7 @@ interface StudentsViewProps {
   onRecordPaymentForStudent: (student: Student) => void;
   isAddModalOpen?: boolean;
   onCloseAddModal?: () => void;
+  theme?: 'light' | 'dark';
 }
 
 export const StudentsView: React.FC<StudentsViewProps> = ({
@@ -22,7 +23,9 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
   onRecordPaymentForStudent,
   isAddModalOpen = false,
   onCloseAddModal,
+  theme = 'dark',
 }) => {
+  const isLight = theme === 'light';
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | PaymentStatus>('all');
   const [showModal, setShowModal] = useState(isAddModalOpen);
@@ -312,39 +315,77 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
     return matchesSearch && matchesStatus;
   });
 
+  // Shared card classes - identical appearance to Dashboard
+  const kpiCardClass = isLight
+    ? 'dashboard-kpi-card bg-white border-2 border-neutral-200 border-t-4 border-t-orange-500 shadow-md hover:border-orange-500 text-black rounded-xl p-5 transition-all relative overflow-hidden'
+    : 'dashboard-kpi-card bg-neutral-900/80 border border-neutral-800 border-t-4 border-t-orange-500 hover:border-neutral-700 text-neutral-100 rounded-xl p-5 transition-all relative overflow-hidden';
+
+  const kpiTitleClass = isLight
+    ? 'text-xs font-black tracking-wider uppercase text-black font-sans'
+    : 'text-xs font-bold tracking-wider uppercase text-neutral-200 font-sans';
+
+  const kpiNumberClass = isLight
+    ? 'text-2xl sm:text-3xl font-black font-sans tabular-nums text-black tracking-tight'
+    : 'text-2xl sm:text-3xl font-black font-sans tabular-nums text-white tracking-tight';
+
+  const kpiSubtextClass = isLight
+    ? 'mt-2.5 text-xs text-black font-extrabold font-sans'
+    : 'mt-2.5 text-xs text-neutral-300 font-semibold font-sans';
+
+  const kpiBadgeClass =
+    'kpi-orange-badge text-[11px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-md bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-500/30 font-sans shrink-0';
+
+  const kpiIconBoxClass =
+    'w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/35 flex items-center justify-center text-orange-600 dark:text-orange-400 shadow-sm shrink-0';
+
+  const paidCount = students.filter(s => s.paymentStatus === 'paid').length;
+  const partialCount = students.filter(s => s.paymentStatus === 'partially_paid').length;
+  const unpaidCount = students.filter(s => s.paymentStatus === 'unpaid').length;
+  const totalRevenue = students.reduce((sum, s) => sum + (s.totalPaid || 0), 0);
+
   return (
     <div className="space-y-6 animate-fadeIn">
-      {/* Header & Primary Action */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-800">
+      {/* Header & Primary Action - Matches Dashboard Command Center */}
+      <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b ${isLight ? 'border-neutral-300' : 'border-neutral-800/80'}`}>
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-neutral-100">Student Admissions</h1>
-          <p className="text-sm text-neutral-400 mt-0.5">
-            Manage registrations, enrollment IDs, fee collections & bulk spreadsheets
+          <h1 className={`text-2xl lg:text-3xl font-extrabold tracking-tight ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+            Student Admissions
+          </h1>
+          <p className={`text-sm mt-1 ${isLight ? 'text-black font-semibold' : 'text-neutral-400'}`}>
+            Cortexx AI Institute · <span className="text-orange-500 font-bold">Registrations, Enrollment IDs & Fee Ledgers</span>
           </p>
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap">
           <button
             onClick={handleExportStudentsExcel}
-            className="flex items-center justify-center gap-2 px-3.5 py-2 bg-neutral-900 hover:bg-neutral-800 text-neutral-200 hover:text-white font-semibold rounded-lg border border-neutral-700/80 shadow-sm transition-colors shrink-0 text-sm cursor-pointer"
+            className={`flex items-center justify-center gap-2 px-3.5 py-2 font-bold rounded-xl border shadow-sm transition-colors shrink-0 text-sm cursor-pointer ${
+              isLight
+                ? 'bg-white hover:bg-orange-50 text-black border-neutral-300 hover:border-orange-400'
+                : 'bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border-neutral-700/80'
+            }`}
             title="Export all student records to Excel (.xlsx)"
           >
-            <FileDown className="w-4 h-4 text-orange-400" />
+            <FileDown className="w-4 h-4 text-orange-500" />
             <span>Export Excel</span>
           </button>
 
           <button
             onClick={() => setIsBulkImportOpen(true)}
-            className="flex items-center justify-center gap-2 px-3.5 py-2 bg-neutral-900 hover:bg-neutral-800 text-neutral-200 hover:text-white font-semibold rounded-lg border border-neutral-700/80 shadow-sm transition-colors shrink-0 text-sm cursor-pointer"
+            className={`flex items-center justify-center gap-2 px-3.5 py-2 font-bold rounded-xl border shadow-sm transition-colors shrink-0 text-sm cursor-pointer ${
+              isLight
+                ? 'bg-white hover:bg-emerald-50 text-black border-neutral-300 hover:border-emerald-400'
+                : 'bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border-neutral-700/80'
+            }`}
             title="Import multiple students from Excel (.xlsx, .xls) or Google Sheets"
           >
-            <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+            <FileSpreadsheet className="w-4 h-4 text-emerald-500" />
             <span>Import Excel</span>
           </button>
 
           <button
             onClick={openAddModal}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white font-semibold rounded-lg shadow-md transition-colors shrink-0 text-sm cursor-pointer"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-black rounded-xl shadow-md transition-colors shrink-0 text-sm cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>New Admission</span>
@@ -395,40 +436,108 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
         </div>
       )}
 
-      {/* Visual Metrics & Admission Summary */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3">
-        <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl">
-          <div className="text-[11px] uppercase tracking-wider font-semibold text-neutral-400">Total Enrolled</div>
-          <div className="text-xl font-extrabold text-neutral-100 mt-1">{students.length} Students</div>
-          <div className="text-[10px] text-neutral-500 mt-0.5">Active Academic Roster</div>
-        </div>
-        <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl">
-          <div className="text-[11px] uppercase tracking-wider font-semibold text-emerald-400">Paid Fees</div>
-          <div className="text-xl font-extrabold text-emerald-400 mt-1">
-            {students.filter(s => s.paymentStatus === 'paid').length} Students
+      {/* 5 KPI Metric Cards - Identical Appearance to Dashboard Type */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        {/* KPI 1: Total Enrolled */}
+        <div className={kpiCardClass}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Total Enrolled">🎓</span>
+              <span className={kpiTitleClass}>Total Enrolled</span>
+            </div>
+            <div className={kpiIconBoxClass}>
+              <Users className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+            </div>
           </div>
-          <div className="text-[10px] text-neutral-500 mt-0.5">100% Cleared</div>
-        </div>
-        <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl">
-          <div className="text-[11px] uppercase tracking-wider font-semibold text-amber-400">Partial Payments</div>
-          <div className="text-xl font-extrabold text-amber-400 mt-1">
-            {students.filter(s => s.paymentStatus === 'partially_paid').length} Students
+          <div className="mt-3 flex items-baseline justify-between gap-2">
+            <span className={kpiNumberClass}>{students.length}</span>
+            <span className={kpiBadgeClass}>Enrolled</span>
           </div>
-          <div className="text-[10px] text-neutral-500 mt-0.5">Installment Active</div>
-        </div>
-        <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl">
-          <div className="text-[11px] uppercase tracking-wider font-semibold text-rose-400">Pending Fees</div>
-          <div className="text-xl font-extrabold text-rose-400 mt-1">
-            {students.filter(s => s.paymentStatus === 'unpaid').length} Students
+          <div className={kpiSubtextClass}>
+            <span className={isLight ? 'text-black font-extrabold' : 'text-neutral-300'}>Active Academic Roster</span>
           </div>
-          <div className="text-[10px] text-neutral-500 mt-0.5">Awaiting Payment</div>
         </div>
-        <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl col-span-2 sm:col-span-4 lg:col-span-1">
-          <div className="text-[11px] uppercase tracking-wider font-semibold text-orange-400">Collected Revenue</div>
-          <div className="text-xl font-extrabold text-neutral-100 mt-1 font-mono">
-            ₹{students.reduce((sum, s) => sum + (s.totalPaid || 0), 0).toLocaleString('en-IN')}
+
+        {/* KPI 2: Paid Fees */}
+        <div className={kpiCardClass}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Paid Fees">✅</span>
+              <span className={kpiTitleClass}>Paid Fees</span>
+            </div>
+            <div className={kpiIconBoxClass}>
+              <CheckCircle2 className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+            </div>
           </div>
-          <div className="text-[10px] text-neutral-500 mt-0.5">Total Admissions Paid</div>
+          <div className="mt-3 flex items-baseline justify-between gap-2">
+            <span className={kpiNumberClass}>{paidCount}</span>
+            <span className={kpiBadgeClass}>100% Cleared</span>
+          </div>
+          <div className={kpiSubtextClass}>
+            <span className={isLight ? 'text-black font-extrabold' : 'text-emerald-400'}>Full Fees Cleared</span>
+          </div>
+        </div>
+
+        {/* KPI 3: Partial Payments */}
+        <div className={kpiCardClass}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Partial Payments">⏳</span>
+              <span className={kpiTitleClass}>Partial Payments</span>
+            </div>
+            <div className={kpiIconBoxClass}>
+              <Clock className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline justify-between gap-2">
+            <span className={kpiNumberClass}>{partialCount}</span>
+            <span className={kpiBadgeClass}>Installments</span>
+          </div>
+          <div className={kpiSubtextClass}>
+            <span className={isLight ? 'text-black font-extrabold' : 'text-amber-400'}>Installments Active</span>
+          </div>
+        </div>
+
+        {/* KPI 4: Pending Fees */}
+        <div className={kpiCardClass}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Pending Fees">⚠️</span>
+              <span className={kpiTitleClass}>Pending Fees</span>
+            </div>
+            <div className={kpiIconBoxClass}>
+              <AlertTriangle className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline justify-between gap-2">
+            <span className={kpiNumberClass}>{unpaidCount}</span>
+            <span className={kpiBadgeClass}>Pending</span>
+          </div>
+          <div className={kpiSubtextClass}>
+            <span className={isLight ? 'text-black font-extrabold' : 'text-rose-400'}>Awaiting First Payment</span>
+          </div>
+        </div>
+
+        {/* KPI 5: Total Collection */}
+        <div className={kpiCardClass}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Total Collection">💰</span>
+              <span className={kpiTitleClass}>Total Collection</span>
+            </div>
+            <div className={kpiIconBoxClass}>
+              <IndianRupee className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline justify-between gap-1.5">
+            <span className={`text-2xl sm:text-2xl xl:text-3xl font-black font-sans tabular-nums tracking-tight ${isLight ? 'text-black' : 'text-white'}`}>
+              ₹{totalRevenue.toLocaleString('en-IN')}
+            </span>
+            <span className={kpiBadgeClass}>Collected</span>
+          </div>
+          <div className={kpiSubtextClass}>
+            <span className={isLight ? 'text-black font-extrabold' : 'text-neutral-300'}>Total Admissions Paid</span>
+          </div>
         </div>
       </div>
 
@@ -442,66 +551,84 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search by student name, phone (+91), email, or Student ID..."
-            className="w-full pl-10 pr-4 py-2 bg-neutral-900 border border-neutral-800 rounded-lg text-sm text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-orange-500 transition-colors"
+            className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm placeholder-neutral-500 focus:outline-none focus:border-orange-500 transition-colors border ${
+              isLight
+                ? 'bg-white border-neutral-300 text-black font-semibold shadow-sm'
+                : 'bg-neutral-900 border-neutral-800 text-neutral-200'
+            }`}
           />
         </div>
 
         {/* Status Filter Segmented Control */}
-        <div className="flex items-center gap-1 p-1 bg-neutral-900 border border-neutral-800 rounded-lg shrink-0">
+        <div className={`flex items-center gap-1 p-1 rounded-xl border shrink-0 ${
+          isLight ? 'bg-neutral-100 border-neutral-200' : 'bg-neutral-900 border-neutral-800'
+        }`}>
           <button
             onClick={() => setStatusFilter('all')}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-              statusFilter === 'all' ? 'bg-neutral-800 text-neutral-100 shadow-sm' : 'text-neutral-400 hover:text-neutral-200'
+            className={`px-3 py-1.5 text-xs font-black rounded-lg transition-colors ${
+              statusFilter === 'all'
+                ? isLight ? 'bg-white text-black shadow-sm' : 'bg-neutral-800 text-neutral-100 shadow-sm'
+                : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
             }`}
           >
             All ({students.length})
           </button>
           <button
             onClick={() => setStatusFilter('paid')}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-              statusFilter === 'paid' ? 'bg-emerald-500/20 text-emerald-400' : 'text-neutral-400 hover:text-neutral-200'
+            className={`px-3 py-1.5 text-xs font-black rounded-lg transition-colors ${
+              statusFilter === 'paid'
+                ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-black'
+                : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
             }`}
           >
-            Paid
+            Paid ({paidCount})
           </button>
           <button
             onClick={() => setStatusFilter('partially_paid')}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-              statusFilter === 'partially_paid' ? 'bg-amber-500/20 text-amber-400' : 'text-neutral-400 hover:text-neutral-200'
+            className={`px-3 py-1.5 text-xs font-black rounded-lg transition-colors ${
+              statusFilter === 'partially_paid'
+                ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 font-black'
+                : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
             }`}
           >
-            Partial
+            Partial ({partialCount})
           </button>
           <button
             onClick={() => setStatusFilter('unpaid')}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-              statusFilter === 'unpaid' ? 'bg-rose-500/20 text-rose-400' : 'text-neutral-400 hover:text-neutral-200'
+            className={`px-3 py-1.5 text-xs font-black rounded-lg transition-colors ${
+              statusFilter === 'unpaid'
+                ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400 font-black'
+                : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
             }`}
           >
-            Pending
+            Pending ({unpaidCount})
           </button>
         </div>
       </div>
 
-      {/* Students Data Grid / Table (Desktop Only) */}
-      <div className="hidden md:block bg-neutral-900/60 border border-neutral-800 rounded-xl overflow-hidden shadow-sm">
+      {/* Students Data Grid / Table (Desktop Only) - Dashboard Card Style */}
+      <div className={`hidden md:block border rounded-xl overflow-hidden shadow-sm ${
+        isLight ? 'bg-white border-neutral-200/90 text-neutral-800' : 'bg-neutral-900/60 border-neutral-800 text-neutral-300'
+      }`}>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-neutral-300 border-collapse">
-            <thead className="bg-neutral-900 text-xs uppercase tracking-wider text-neutral-300 font-bold border-b border-neutral-700/80">
+          <table className="w-full text-left text-sm border-collapse">
+            <thead className={`text-xs uppercase tracking-wider font-black border-b ${
+              isLight ? 'bg-orange-50/70 text-black border-neutral-200' : 'bg-neutral-900 text-neutral-200 font-bold border-neutral-700/80'
+            }`}>
               <tr>
-                <th className="py-4 px-4 font-bold text-neutral-200">Student & Contact Details</th>
-                <th className="py-4 px-4 font-bold text-neutral-200">Course & Admission Date</th>
-                <th className="py-4 px-4 text-center font-bold text-neutral-200">Fee Status & Mode</th>
-                <th className="py-4 px-4 text-right font-bold text-neutral-200">Fees Payment Details</th>
-                <th className="py-4 px-4 text-right font-bold text-neutral-200">Actions</th>
+                <th className="py-4 px-4 font-black">Student & Contact Details</th>
+                <th className="py-4 px-4 font-black">Course & Admission Date</th>
+                <th className="py-4 px-4 text-center font-black">Fee Status & Mode</th>
+                <th className="py-4 px-4 text-right font-black">Fees Payment Details</th>
+                <th className="py-4 px-4 text-right font-black">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-800/80">
+            <tbody className={`divide-y ${isLight ? 'divide-neutral-100' : 'divide-neutral-800/80'}`}>
               {filteredStudents.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-12 text-center text-neutral-500">
                     <User className="w-8 h-8 mx-auto text-neutral-600 mb-2 opacity-50" />
-                    <p className="text-sm">No students match your criteria.</p>
+                    <p className="text-sm font-bold">No students match your criteria.</p>
                   </td>
                 </tr>
               ) : (
@@ -519,47 +646,47 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                     .slice(0, 2) || 'ST';
 
                   return (
-                    <tr key={student.id} className="hover:bg-neutral-800/40 transition-colors">
-                      {/* Column 1: Student & Contact Details (Line 1: Name, Line 2: Phone, Line 3: Email) */}
+                    <tr key={student.id} className="transition-colors">
+                      {/* Column 1: Student & Contact Details */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-start gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center font-bold text-orange-400 text-xs shrink-0 mt-0.5 shadow-sm">
+                          <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center font-bold text-orange-500 text-xs shrink-0 mt-0.5 shadow-sm">
                             {initials}
                           </div>
                           <div className="min-w-0 space-y-0.5">
-                            {/* Line 1: Student Name */}
-                            <div className="font-bold text-neutral-100 text-sm tracking-tight truncate">
+                            {/* Line 1: Student Name - Bold Pure Black in light */}
+                            <div className={`font-black text-sm tracking-tight truncate ${isLight ? 'text-black' : 'text-neutral-100'}`}>
                               {student.name}
                             </div>
                             {/* Line 2: Phone Number */}
-                            <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-300">
-                              <Phone className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+                            <div className={`flex items-center gap-1.5 text-xs font-mono font-bold ${isLight ? 'text-black' : 'text-neutral-300'}`}>
+                              <Phone className="w-3.5 h-3.5 text-orange-500 shrink-0" />
                               <span>+91 {student.phone}</span>
                             </div>
                             {/* Line 3: Mail ID */}
-                            <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-400">
-                              <Mail className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                            <div className={`flex items-center gap-1.5 text-xs font-mono font-medium ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
+                              <Mail className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
                               <span className="truncate max-w-[190px]" title={student.email}>{student.email}</span>
                             </div>
                           </div>
                         </div>
                       </td>
 
-                      {/* Column 2: Course & Admission Date (Line 1: Course Name, Line 2: Duration, Line 3: Duration Date / Admission Date) */}
+                      {/* Column 2: Course & Admission Date */}
                       <td className="py-3.5 px-4">
                         <div className="space-y-0.5">
-                          {/* Line 1: Course Name */}
-                          <div className="text-neutral-100 font-bold text-sm tracking-tight">
+                          {/* Line 1: Course Name - Bold Pure Black in light */}
+                          <div className={`font-black text-sm tracking-tight ${isLight ? 'text-black' : 'text-neutral-100'}`}>
                             {student.enrolledCourseName}
                           </div>
                           {/* Line 2: Duration */}
-                          <div className="text-xs text-neutral-300 flex items-center gap-1.5">
-                            <BookOpen className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+                          <div className={`text-xs flex items-center gap-1.5 font-bold ${isLight ? 'text-black' : 'text-neutral-300'}`}>
+                            <BookOpen className="w-3.5 h-3.5 text-orange-500 shrink-0" />
                             <span>{course?.duration || '1 Month Practical'}</span>
                           </div>
                           {/* Line 3: Duration Date / Admission Date */}
-                          <div className="text-xs font-mono text-neutral-400 flex items-center gap-1.5">
-                            <Calendar className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                          <div className={`text-xs font-mono flex items-center gap-1.5 font-medium ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
+                            <Calendar className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
                             <span>{student.enrollmentDate}</span>
                           </div>
                         </div>
@@ -572,38 +699,38 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                             value={student.paymentStatus}
                             onChange={e => handleTableFeeStatusChange(student, e.target.value as PaymentStatus)}
                             aria-label={`Fee Status for ${student.name}`}
-                            className={`text-xs font-bold px-2.5 py-1 rounded-lg border cursor-pointer focus:outline-none transition-all shadow-sm ${
+                            className={`text-xs font-black px-2.5 py-1 rounded-lg border cursor-pointer focus:outline-none transition-all shadow-sm ${
                               student.paymentStatus === 'paid'
-                                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50 hover:bg-emerald-500/30'
+                                ? isLight ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50'
                                 : student.paymentStatus === 'partially_paid'
-                                ? 'bg-amber-500/20 text-amber-400 border-amber-500/50 hover:bg-amber-500/30'
-                                : 'bg-rose-500/20 text-rose-400 border-rose-500/50 hover:bg-rose-500/30'
+                                ? isLight ? 'bg-amber-50 text-amber-800 border-amber-300' : 'bg-amber-500/20 text-amber-400 border-amber-500/50'
+                                : isLight ? 'bg-rose-50 text-rose-800 border-rose-300' : 'bg-rose-500/20 text-rose-400 border-rose-500/50'
                             }`}
                           >
-                            <option value="paid" className="bg-neutral-900 text-emerald-400 font-bold">
+                            <option value="paid" className="bg-white dark:bg-neutral-900 text-emerald-600 dark:text-emerald-400 font-bold">
                               ✓ Paid
                             </option>
-                            <option value="unpaid" className="bg-neutral-900 text-rose-400 font-bold">
+                            <option value="unpaid" className="bg-white dark:bg-neutral-900 text-rose-600 dark:text-rose-400 font-bold">
                               ✕ Unpaid
                             </option>
                             {student.paymentStatus === 'partially_paid' && (
-                              <option value="partially_paid" className="bg-neutral-900 text-amber-400 font-bold">
+                              <option value="partially_paid" className="bg-white dark:bg-neutral-900 text-amber-600 dark:text-amber-400 font-bold">
                                 ⏳ Partial
                               </option>
                             )}
                           </select>
-                          <span className="text-[10px] text-neutral-400 font-mono uppercase font-semibold">
+                          <span className={`text-[10px] font-mono uppercase font-black ${isLight ? 'text-black' : 'text-neutral-400'}`}>
                             {student.paymentMethod || 'UPI'}
                           </span>
                         </div>
                       </td>
 
-                      {/* Column 4: Fees Payment Details (Separate Paid & Total Due with + sign for paid and RED for due) */}
+                      {/* Column 4: Fees Payment Details */}
                       <td className="py-3.5 px-4 text-right font-mono text-xs">
                         {/* Total Paid with + sign */}
                         <div className="flex items-center justify-end gap-1.5">
-                          <span className="text-[11px] text-neutral-400 font-sans">Paid:</span>
-                          <span className="font-extrabold text-emerald-400 text-sm tracking-tight">
+                          <span className={`text-[11px] font-sans font-bold ${isLight ? 'text-black' : 'text-neutral-400'}`}>Paid:</span>
+                          <span className={`font-black text-sm tracking-tight ${isLight ? 'text-emerald-700 font-mono' : 'text-emerald-400'}`}>
                             +₹{paid.toLocaleString('en-IN')}
                           </span>
                         </div>
@@ -611,20 +738,20 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                         {/* Total Due with RED colour indicator */}
                         <div className="mt-1 flex items-center justify-end">
                           {balance > 0 ? (
-                            <span className="text-xs font-bold text-red-400 bg-red-500/15 px-2 py-0.5 rounded border border-red-500/40 shadow-sm flex items-center gap-1">
-                              <span className="text-[10px] uppercase font-sans font-semibold text-red-300">Total Due:</span>
-                              <span className="text-red-400 font-black">₹{balance.toLocaleString('en-IN')}</span>
+                            <span className="text-xs font-black text-rose-700 dark:text-rose-400 bg-rose-500/15 px-2 py-0.5 rounded border border-rose-500/40 shadow-sm flex items-center gap-1">
+                              <span className="text-[10px] uppercase font-sans font-black">Total Due:</span>
+                              <span className="font-black">₹{balance.toLocaleString('en-IN')}</span>
                             </span>
                           ) : (
-                            <span className="text-[11px] font-semibold text-emerald-400/90 flex items-center gap-1">
+                            <span className={`text-[11px] font-bold flex items-center gap-1 ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>
                               <span>Total Due: ₹0</span>
-                              <span className="text-[10px] text-emerald-500">✓</span>
+                              <span className="text-[10px] font-black">✓</span>
                             </span>
                           )}
                         </div>
 
                         {/* Total Fee Reference */}
-                        <div className="text-[10px] text-neutral-500 mt-0.5">
+                        <div className={`text-[10px] mt-0.5 font-bold ${isLight ? 'text-neutral-600' : 'text-neutral-500'}`}>
                           Total: ₹{totalFee.toLocaleString('en-IN')}
                         </div>
                       </td>
@@ -635,29 +762,33 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                           <button
                             onClick={() => handleDownloadStudentInvoicePdf(student)}
                             title={`Download Tax Invoice (PDF) for ${student.name}`}
-                            className="p-1.5 text-orange-400 hover:text-orange-200 hover:bg-orange-500/20 bg-orange-500/10 border border-orange-500/30 rounded-lg transition-colors cursor-pointer group flex items-center gap-1"
+                            className="p-1.5 text-orange-600 hover:text-white hover:bg-orange-600 bg-orange-500/10 border border-orange-500/30 rounded-lg transition-colors cursor-pointer group flex items-center gap-1"
                           >
                             <Download className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                            <span className="text-[10px] font-bold">PDF</span>
+                            <span className="text-[10px] font-black">PDF</span>
                           </button>
                           <button
                             onClick={() => onGenerateInvoiceForStudent(student)}
                             title="Generate Invoice in Ledger"
-                            className="p-1.5 text-neutral-400 hover:text-emerald-400 hover:bg-neutral-800 rounded-lg transition-colors cursor-pointer"
+                            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                              isLight ? 'text-neutral-700 hover:text-emerald-600 hover:bg-emerald-50' : 'text-neutral-400 hover:text-emerald-400 hover:bg-neutral-800'
+                            }`}
                           >
                             <Receipt className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => openEditModal(student)}
                             title="Edit Student Info"
-                            className="p-1.5 text-neutral-400 hover:text-blue-400 hover:bg-neutral-800 rounded-lg transition-colors cursor-pointer"
+                            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                              isLight ? 'text-neutral-700 hover:text-blue-600 hover:bg-blue-50' : 'text-neutral-400 hover:text-blue-400 hover:bg-neutral-800'
+                            }`}
                           >
                             <Edit3 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleInitiateDelete(student)}
                             title={`Delete ${student.name}'s admission record`}
-                            className="p-1.5 text-rose-400 hover:text-rose-200 hover:bg-rose-500/20 bg-rose-500/10 border border-rose-500/30 rounded-lg transition-colors cursor-pointer group"
+                            className="p-1.5 text-rose-600 hover:text-white hover:bg-rose-600 bg-rose-500/10 border border-rose-500/30 rounded-lg transition-colors cursor-pointer group"
                           >
                             <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
                           </button>
@@ -675,9 +806,11 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
       {/* Mobile Card List (Instant touch actions on phone screens) */}
       <div className="md:hidden space-y-3">
         {filteredStudents.length === 0 ? (
-          <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-8 text-center text-neutral-500">
-            <User className="w-8 h-8 mx-auto text-neutral-600 mb-2 opacity-50" />
-            <p className="text-sm">No students match your criteria.</p>
+          <div className={`border rounded-xl p-8 text-center text-neutral-500 ${
+            isLight ? 'bg-white border-neutral-200' : 'bg-neutral-900/60 border-neutral-800'
+          }`}>
+            <User className="w-8 h-8 mx-auto text-neutral-500 mb-2 opacity-50" />
+            <p className="text-sm font-bold">No students match your criteria.</p>
           </div>
         ) : (
           filteredStudents.map(student => {
@@ -696,24 +829,26 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
             return (
               <div
                 key={student.id}
-                className="bg-neutral-900/90 border border-neutral-800 rounded-xl p-4 space-y-3.5 shadow-sm hover:border-neutral-700 transition-colors"
+                className={`border rounded-xl p-4 space-y-3.5 shadow-sm transition-colors ${
+                  isLight ? 'bg-white border-2 border-neutral-200 text-black' : 'bg-neutral-900/90 border border-neutral-800 text-neutral-100'
+                }`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-2.5 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center font-bold text-orange-400 text-xs shrink-0 mt-0.5">
+                    <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center font-bold text-orange-500 text-xs shrink-0 mt-0.5">
                       {initials}
                     </div>
                     <div className="min-w-0 space-y-0.5">
                       {/* Line 1: Student Name */}
-                      <div className="font-bold text-neutral-100 text-base leading-tight truncate">{student.name}</div>
+                      <div className={`font-black text-base leading-tight truncate ${isLight ? 'text-black' : 'text-neutral-100'}`}>{student.name}</div>
                       {/* Line 2: Phone Number */}
-                      <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-300">
-                        <Phone className="w-3 h-3 text-neutral-400 shrink-0" />
+                      <div className={`flex items-center gap-1.5 text-xs font-mono font-bold ${isLight ? 'text-black' : 'text-neutral-300'}`}>
+                        <Phone className="w-3 h-3 text-orange-500 shrink-0" />
                         <span>+91 {student.phone}</span>
                       </div>
                       {/* Line 3: Mail ID */}
-                      <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-400">
-                        <Mail className="w-3 h-3 text-neutral-500 shrink-0" />
+                      <div className={`flex items-center gap-1.5 text-xs font-mono font-medium ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
+                        <Mail className="w-3 h-3 text-neutral-400 shrink-0" />
                         <span className="truncate max-w-[170px]" title={student.email}>{student.email}</span>
                       </div>
                     </div>
@@ -724,94 +859,100 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                     value={student.paymentStatus}
                     onChange={e => handleTableFeeStatusChange(student, e.target.value as PaymentStatus)}
                     aria-label={`Fee Status for ${student.name}`}
-                    className={`text-xs font-bold px-2.5 py-1.5 rounded-lg border cursor-pointer focus:outline-none transition-all shrink-0 ${
+                    className={`text-xs font-black px-2.5 py-1.5 rounded-lg border cursor-pointer focus:outline-none transition-all shrink-0 ${
                       student.paymentStatus === 'paid'
-                        ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50'
+                        ? isLight ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50'
                         : student.paymentStatus === 'partially_paid'
-                        ? 'bg-amber-500/20 text-amber-400 border-amber-500/50'
-                        : 'bg-rose-500/20 text-rose-400 border-rose-500/50'
+                        ? isLight ? 'bg-amber-50 text-amber-800 border-amber-300' : 'bg-amber-500/20 text-amber-400 border-amber-500/50'
+                        : isLight ? 'bg-rose-50 text-rose-800 border-rose-300' : 'bg-rose-500/20 text-rose-400 border-rose-500/50'
                     }`}
                   >
-                    <option value="paid" className="bg-neutral-900 text-emerald-400">✓ Paid</option>
-                    <option value="unpaid" className="bg-neutral-900 text-rose-400">✕ Unpaid</option>
+                    <option value="paid" className="bg-white dark:bg-neutral-900 text-emerald-600 dark:text-emerald-400">✓ Paid</option>
+                    <option value="unpaid" className="bg-white dark:bg-neutral-900 text-rose-600 dark:text-rose-400">✕ Unpaid</option>
                     {student.paymentStatus === 'partially_paid' && (
-                      <option value="partially_paid" className="bg-neutral-900 text-amber-400">⏳ Partial</option>
+                      <option value="partially_paid" className="bg-white dark:bg-neutral-900 text-amber-600 dark:text-amber-400">⏳ Partial</option>
                     )}
                   </select>
                 </div>
 
                 {/* Course & Admission Details Block */}
-                <div className="text-xs text-neutral-300 space-y-2 bg-neutral-950/60 p-3 rounded-lg border border-neutral-800/80">
+                <div className={`text-xs space-y-2 p-3 rounded-lg border ${
+                  isLight ? 'bg-orange-50/50 border-orange-100 text-black' : 'bg-neutral-950/60 border-neutral-800/80 text-neutral-300'
+                }`}>
                   <div className="space-y-0.5">
                     {/* Line 1: Course Name */}
-                    <div className="text-neutral-100 font-bold text-sm tracking-tight">{student.enrolledCourseName}</div>
+                    <div className={`font-black text-sm tracking-tight ${isLight ? 'text-black' : 'text-neutral-100'}`}>{student.enrolledCourseName}</div>
                     {/* Line 2: Duration */}
-                    <div className="text-neutral-300 flex items-center gap-1.5">
-                      <BookOpen className="w-3 h-3 text-orange-400 shrink-0" />
+                    <div className={`flex items-center gap-1.5 font-bold ${isLight ? 'text-black' : 'text-neutral-300'}`}>
+                      <BookOpen className="w-3 h-3 text-orange-500 shrink-0" />
                       <span>{course?.duration || '1 Month Practical'}</span>
                     </div>
                     {/* Line 3: Duration Date / Admission Date */}
-                    <div className="text-neutral-400 font-mono flex items-center gap-1.5">
-                      <Calendar className="w-3 h-3 text-neutral-500 shrink-0" />
+                    <div className={`font-mono flex items-center gap-1.5 ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
+                      <Calendar className="w-3 h-3 text-neutral-400 shrink-0" />
                       <span>{student.enrollmentDate}</span>
                     </div>
                   </div>
 
                   {/* Fees Payment Details Block */}
-                  <div className="pt-2 border-t border-neutral-800/80 space-y-1 font-mono">
+                  <div className={`pt-2 border-t space-y-1 font-mono ${isLight ? 'border-orange-200' : 'border-neutral-800/80'}`}>
                     <div className="flex items-center justify-between">
-                      <span className="text-neutral-400 font-sans text-xs">Total Paid:</span>
-                      <span className="font-extrabold text-emerald-400 text-sm">+₹{paid.toLocaleString('en-IN')}</span>
+                      <span className={`font-sans text-xs font-bold ${isLight ? 'text-black' : 'text-neutral-400'}`}>Total Paid:</span>
+                      <span className={`font-black text-sm ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>+₹{paid.toLocaleString('en-IN')}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-neutral-400 font-sans text-xs">Total Due:</span>
+                      <span className={`font-sans text-xs font-bold ${isLight ? 'text-black' : 'text-neutral-400'}`}>Total Due:</span>
                       {balance > 0 ? (
-                        <span className="text-xs font-bold text-red-400 bg-red-500/15 px-2 py-0.5 rounded border border-red-500/40">
+                        <span className="text-xs font-black text-rose-700 dark:text-rose-400 bg-rose-500/15 px-2 py-0.5 rounded border border-rose-500/40">
                           ₹{balance.toLocaleString('en-IN')}
                         </span>
                       ) : (
-                        <span className="text-xs text-emerald-400 font-semibold">₹0 ✓</span>
+                        <span className={`text-xs font-black ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>₹0 ✓</span>
                       )}
                     </div>
-                    <div className="text-[10px] text-neutral-500 text-right">
+                    <div className={`text-[10px] text-right font-bold ${isLight ? 'text-neutral-600' : 'text-neutral-500'}`}>
                       Course Fee: ₹{totalFee.toLocaleString('en-IN')}
                     </div>
                   </div>
                 </div>
 
                 {/* Mobile Actions: PDF Download, Invoice, Edit, Delete */}
-                <div className="flex items-center justify-end gap-1.5 pt-2 border-t border-neutral-800/80 flex-wrap">
-                    <button
-                      onClick={() => handleDownloadStudentInvoicePdf(student)}
-                      className="px-2.5 py-1 text-xs text-orange-300 hover:text-white bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/30 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
-                      title="Download Invoice (PDF format)"
-                    >
-                      <Download className="w-3.5 h-3.5 text-orange-400" />
-                      <span className="font-bold">PDF</span>
-                    </button>
-                    <button
-                      onClick={() => onGenerateInvoiceForStudent(student)}
-                      className="px-2.5 py-1 text-xs text-neutral-300 hover:text-emerald-400 bg-neutral-800 hover:bg-neutral-700 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <Receipt className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Invoice</span>
-                    </button>
-                    <button
-                      onClick={() => openEditModal(student)}
-                      className="px-2.5 py-1 text-xs text-neutral-300 hover:text-blue-400 bg-neutral-800 hover:bg-neutral-700 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <Edit3 className="w-3.5 h-3.5 text-blue-400" />
-                      <span>Edit</span>
-                    </button>
-                    <button
-                      onClick={() => handleInitiateDelete(student)}
-                      className="px-2.5 py-1 text-xs font-semibold text-rose-300 hover:text-rose-100 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/30 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <Trash2 className="w-3.5 h-3.5 text-rose-400" />
-                      <span>Delete</span>
-                    </button>
-                  </div>
+                <div className={`flex items-center justify-end gap-1.5 pt-2 border-t flex-wrap ${isLight ? 'border-neutral-200' : 'border-neutral-800/80'}`}>
+                  <button
+                    onClick={() => handleDownloadStudentInvoicePdf(student)}
+                    className="px-2.5 py-1 text-xs text-orange-600 hover:text-white hover:bg-orange-600 bg-orange-500/10 border border-orange-500/30 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                    title="Download Invoice (PDF format)"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span className="font-bold">PDF</span>
+                  </button>
+                  <button
+                    onClick={() => onGenerateInvoiceForStudent(student)}
+                    className={`px-2.5 py-1 text-xs rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer ${
+                      isLight ? 'text-black bg-neutral-100 hover:bg-neutral-200' : 'text-neutral-300 hover:text-emerald-400 bg-neutral-800 hover:bg-neutral-700'
+                    }`}
+                  >
+                    <Receipt className="w-3.5 h-3.5 text-emerald-500" />
+                    <span>Invoice</span>
+                  </button>
+                  <button
+                    onClick={() => openEditModal(student)}
+                    className={`px-2.5 py-1 text-xs rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer ${
+                      isLight ? 'text-black bg-neutral-100 hover:bg-neutral-200' : 'text-neutral-300 hover:text-blue-400 bg-neutral-800 hover:bg-neutral-700'
+                    }`}
+                  >
+                    <Edit3 className="w-3.5 h-3.5 text-blue-500" />
+                    <span>Edit</span>
+                  </button>
+                  <button
+                    onClick={() => handleInitiateDelete(student)}
+                    className="px-2.5 py-1 text-xs font-bold text-rose-600 hover:text-white hover:bg-rose-600 bg-rose-500/10 border border-rose-500/30 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Delete</span>
+                  </button>
                 </div>
+              </div>
             );
           })
         )}

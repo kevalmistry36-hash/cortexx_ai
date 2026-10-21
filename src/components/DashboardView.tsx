@@ -102,13 +102,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* 4 Primary Metric Cards: All indicated with same Orange Colour, font black in white theme, uniform typography */}
+      {/* 4 Primary Metric Cards: Emojis according to block details, orange indicators, uniform typography */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Metric 1: Total Students KPI */}
         <div className={kpiCardClass}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-orange-500 shrink-0 shadow-sm shadow-orange-500/50"></span>
+              <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Total Students">🎓</span>
               <span className={kpiTitleClass}>Total Students</span>
             </div>
             <div className={kpiIconBoxClass}>
@@ -132,11 +132,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
 
-        {/* Metric 2: Active Courses KPI (Indicated with SAME Orange Colour) */}
+        {/* Metric 2: Active Courses KPI */}
         <div className={kpiCardClass}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-orange-500 shrink-0 shadow-sm shadow-orange-500/50"></span>
+              <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Active Courses">📚</span>
               <span className={kpiTitleClass}>Active Courses</span>
             </div>
             <div className={kpiIconBoxClass}>
@@ -154,11 +154,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
 
-        {/* Metric 3: Fees Received KPI (Indicated with SAME Orange Colour) */}
+        {/* Metric 3: Fees Received KPI */}
         <div className={kpiCardClass}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-orange-500 shrink-0 shadow-sm shadow-orange-500/50"></span>
+              <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Fees Received">💰</span>
               <span className={kpiTitleClass}>Fees Received</span>
             </div>
             <div className={kpiIconBoxClass}>
@@ -184,11 +184,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
 
-        {/* Metric 4: Pending Fees KPI (Indicated with SAME Orange Colour) */}
+        {/* Metric 4: Pending Fees KPI */}
         <div className={kpiCardClass}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-orange-500 shrink-0 shadow-sm shadow-orange-500/50"></span>
+              <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Pending Balance">⏳</span>
               <span className={kpiTitleClass}>Pending Balance</span>
             </div>
             <div className={kpiIconBoxClass}>
@@ -216,7 +216,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         <button
           onClick={onOpenAddStudent}
-          className="flex items-center justify-between p-4 bg-orange-600 hover:bg-orange-500 text-white rounded-xl font-bold shadow-lg shadow-orange-950/40 hover:shadow-orange-500/30 transition-all group cursor-pointer"
+          className="flex items-center justify-between p-4 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-bold shadow-lg shadow-orange-950/40 hover:shadow-orange-500/30 transition-all group cursor-pointer"
         >
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
@@ -224,7 +224,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
             <div className="text-left">
               <div className="text-sm font-black leading-tight text-white">Add Student</div>
-              <div className="text-xs text-orange-100 font-semibold mt-0.5">Quick registration</div>
+              <div className="text-xs text-orange-100 font-bold mt-0.5">Quick registration</div>
             </div>
           </div>
           <ArrowRight className="w-4 h-4 opacity-90 group-hover:translate-x-1 transition-transform text-white" />
@@ -234,35 +234,35 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           onClick={onOpenAddCourse}
           className={`flex items-center justify-between p-4 rounded-xl font-bold transition-all group cursor-pointer border ${
             isLight
-              ? 'bg-white hover:bg-orange-50/90 border-neutral-300 hover:border-orange-500 text-black shadow-sm hover:shadow-md'
+              ? 'bg-white hover:bg-orange-100/90 border-neutral-300 hover:border-orange-500 text-black shadow-sm hover:shadow-md'
               : 'bg-neutral-900/90 hover:bg-neutral-850 hover:border-orange-500/50 border-neutral-800 text-neutral-100 shadow-sm'
           }`}
         >
           <div className="flex items-center gap-3">
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
               isLight
-                ? 'bg-orange-100 text-orange-700 group-hover:bg-orange-500 group-hover:text-white'
+                ? 'bg-orange-100 text-orange-700 group-hover:bg-orange-600 group-hover:text-white'
                 : 'bg-neutral-800 border border-neutral-700 text-neutral-200 group-hover:bg-orange-500/20 group-hover:text-orange-400'
             }`}>
               <BookOpen className="w-5 h-5" />
             </div>
             <div className="text-left">
-              <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-black group-hover:text-orange-800' : 'text-neutral-100 group-hover:text-white'}`}>
+              <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-black group-hover:text-black' : 'text-neutral-100 group-hover:text-white'}`}>
                 Add Course
               </div>
-              <div className={`text-xs font-semibold mt-0.5 transition-colors ${isLight ? 'text-neutral-700 group-hover:text-black' : 'text-neutral-400 group-hover:text-neutral-200'}`}>
+              <div className={`text-xs font-bold mt-0.5 transition-colors ${isLight ? 'text-neutral-700 group-hover:text-black' : 'text-neutral-400 group-hover:text-neutral-200'}`}>
                 Catalog curriculum
               </div>
             </div>
           </div>
-          <ArrowRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${isLight ? 'text-neutral-600 group-hover:text-orange-600' : 'text-neutral-400 group-hover:text-orange-400'}`} />
+          <ArrowRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${isLight ? 'text-neutral-700 group-hover:text-black' : 'text-neutral-400 group-hover:text-orange-400'}`} />
         </button>
 
         <button
           onClick={onOpenGenerateInvoice}
           className={`flex items-center justify-between p-4 rounded-xl font-bold transition-all group cursor-pointer border ${
             isLight
-              ? 'bg-white hover:bg-emerald-50/80 border-neutral-300 hover:border-emerald-500 text-black shadow-sm hover:shadow-md'
+              ? 'bg-white hover:bg-emerald-50/90 border-neutral-300 hover:border-emerald-500 text-black shadow-sm hover:shadow-md'
               : 'bg-neutral-900/90 hover:bg-neutral-850 hover:border-emerald-500/50 border-neutral-800 text-neutral-100 shadow-sm'
           }`}
         >
@@ -275,108 +275,112 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <Receipt className="w-5 h-5" />
             </div>
             <div className="text-left">
-              <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-black group-hover:text-emerald-900' : 'text-neutral-100 group-hover:text-white'}`}>
+              <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-black group-hover:text-black' : 'text-neutral-100 group-hover:text-white'}`}>
                 Generate Invoice
               </div>
-              <div className={`text-xs font-semibold mt-0.5 transition-colors ${isLight ? 'text-neutral-700 group-hover:text-black' : 'text-neutral-400 group-hover:text-neutral-200'}`}>
+              <div className={`text-xs font-bold mt-0.5 transition-colors ${isLight ? 'text-neutral-700 group-hover:text-black' : 'text-neutral-400 group-hover:text-neutral-200'}`}>
                 PDF &amp; WhatsApp
               </div>
             </div>
           </div>
-          <ArrowRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${isLight ? 'text-neutral-600 group-hover:text-emerald-600' : 'text-neutral-400 group-hover:text-emerald-400'}`} />
+          <ArrowRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${isLight ? 'text-neutral-700 group-hover:text-black' : 'text-neutral-400 group-hover:text-emerald-400'}`} />
         </button>
 
         <button
           onClick={() => onNavigateToView('ad-studio')}
           className={`flex items-center justify-between p-4 rounded-xl font-bold transition-all group cursor-pointer border ${
             isLight
-              ? 'bg-white hover:bg-orange-50/90 border-neutral-300 hover:border-orange-500 text-black shadow-sm hover:shadow-md'
+              ? 'bg-white hover:bg-orange-100/90 border-neutral-300 hover:border-orange-500 text-black shadow-sm hover:shadow-md'
               : 'bg-gradient-to-r from-neutral-900 to-orange-950/40 hover:to-orange-950/70 border-orange-500/30 hover:border-orange-500/60 text-neutral-100 shadow-sm'
           }`}
         >
           <div className="flex items-center gap-3">
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
               isLight
-                ? 'bg-orange-100 text-orange-700 group-hover:bg-orange-500 group-hover:text-white'
+                ? 'bg-orange-100 text-orange-700 group-hover:bg-orange-600 group-hover:text-white'
                 : 'bg-orange-500/20 border border-orange-500/30 text-orange-400 group-hover:bg-orange-500/30'
             }`}>
               <Sparkles className="w-5 h-5" />
             </div>
             <div className="text-left">
-              <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-black group-hover:text-orange-800' : 'text-neutral-100 group-hover:text-white'}`}>
+              <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-black group-hover:text-black' : 'text-neutral-100 group-hover:text-white'}`}>
                 Banner Studio
               </div>
-              <div className={`text-xs font-semibold mt-0.5 transition-colors ${isLight ? 'text-neutral-700 group-hover:text-black' : 'text-neutral-400 group-hover:text-neutral-200'}`}>
+              <div className={`text-xs font-bold mt-0.5 transition-colors ${isLight ? 'text-neutral-700 group-hover:text-black' : 'text-neutral-400 group-hover:text-neutral-200'}`}>
                 IAB &amp; Social Ads
               </div>
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
+          <ArrowRight className="w-4 h-4 text-orange-500 group-hover:text-orange-700 group-hover:translate-x-1 transition-transform" />
         </button>
       </div>
 
       {/* Two Column Grid: Recent Invoices & Recent Students */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
         {/* Column 1: Recent Invoices */}
-        <div className={`${isLight ? 'bg-white border-neutral-300 shadow-md text-black' : 'bg-neutral-900/60 border-neutral-800 text-neutral-100'} border rounded-xl p-5`}>
-          <div className={`flex items-center justify-between pb-4 border-b ${isLight ? 'border-neutral-300' : 'border-neutral-800'}`}>
+        <div className={`${isLight ? 'bg-white border-neutral-200/90 shadow-sm text-neutral-800' : 'bg-neutral-850/80 border-neutral-800 text-neutral-100'} border rounded-xl p-5`}>
+          <div className={`flex items-center justify-between pb-4 border-b ${isLight ? 'border-neutral-200' : 'border-neutral-800'}`}>
             <div>
-              <h2 className={`text-base font-black ${isLight ? 'text-black' : 'text-neutral-100'}`}>Recent Invoices</h2>
-              <p className={`text-xs font-semibold mt-0.5 ${isLight ? 'text-neutral-700' : 'text-neutral-400'}`}>Latest student billing and fee statuses</p>
+              <div className="flex items-center gap-2">
+                <span className="text-base select-none shrink-0" role="img" aria-label="Invoices">🧾</span>
+                <h2 className={`text-base font-bold ${isLight ? 'text-black' : 'text-white'}`}>Recent Invoices</h2>
+              </div>
+              <p className={`text-xs font-medium mt-0.5 ${isLight ? 'text-neutral-500' : 'text-neutral-400'}`}>Latest student billing and fee statuses</p>
             </div>
             <button
               onClick={() => onNavigateToView('invoices')}
-              className="text-xs text-orange-500 hover:text-orange-600 font-extrabold flex items-center gap-1 cursor-pointer hover:underline"
+              className="text-xs text-orange-600 hover:text-orange-700 font-extrabold flex items-center gap-1 cursor-pointer hover:underline"
             >
               <span>View All</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className={`divide-y ${isLight ? 'divide-neutral-200' : 'divide-neutral-800/80'} mt-2`}>
+          <div className={`divide-y ${isLight ? 'divide-neutral-100' : 'divide-neutral-800/80'} mt-2`}>
             {invoices.slice(0, 5).map(inv => (
               <div
                 key={inv.invoiceNumber}
                 onClick={() => onSelectInvoice(inv)}
-                className={`py-3 px-2.5 rounded-xl cursor-pointer transition-all flex items-center justify-between group border border-transparent ${
-                  isLight
-                    ? 'hover:bg-orange-50/90 hover:border-orange-300 text-black'
-                    : 'hover:bg-orange-500/10 hover:border-orange-500/30 text-neutral-100'
-                }`}
+                className="py-3 px-2.5 rounded-xl cursor-pointer flex items-center justify-between border border-transparent"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className={`text-sm font-black transition-colors ${isLight ? 'text-black group-hover:text-orange-950' : 'text-neutral-100 group-hover:text-white'}`}>
+                    {/* Student Name: Bold and pure black (or white in dark theme) */}
+                    <span className={`text-sm font-black ${isLight ? 'text-black' : 'text-white'}`}>
                       {inv.studentName}
                     </span>
-                    <span className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded transition-colors ${isLight ? 'bg-neutral-100 text-black group-hover:bg-orange-100' : 'bg-neutral-800 text-neutral-300 group-hover:text-neutral-100'}`}>
+                    {/* Invoice Number: High contrast badge */}
+                    <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded ${isLight ? 'bg-orange-50 text-orange-700 border border-orange-200' : 'bg-neutral-800 text-neutral-200 border border-neutral-700'}`}>
                       {inv.invoiceNumber}
                     </span>
                   </div>
-                  <div className={`text-xs font-semibold mt-1 flex items-center gap-1.5 transition-colors ${isLight ? 'text-neutral-800 group-hover:text-black' : 'text-neutral-300 group-hover:text-neutral-100'}`}>
-                    <span>{inv.courseName}</span>
-                    <span className={isLight ? 'text-neutral-400' : 'text-neutral-600'}>·</span>
-                    <span className="font-mono">{inv.invoiceDate}</span>
+                  {/* Course Name: Bold and pure black */}
+                  <div className="text-xs mt-1 flex items-center gap-1.5">
+                    <span className={`font-black ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                      {inv.courseName}
+                    </span>
+                    <span className={isLight ? 'text-neutral-400 font-bold' : 'text-neutral-600'}>·</span>
+                    <span className={`font-mono font-semibold ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>{inv.invoiceDate}</span>
                   </div>
                 </div>
 
-                <div className="text-right">
-                  <div className={`text-sm font-black font-mono transition-colors ${isLight ? 'text-black' : 'text-neutral-100 group-hover:text-white'}`}>
+                <div className="text-right shrink-0">
+                  <div className={`text-sm font-black font-mono ${isLight ? 'text-black' : 'text-white'}`}>
                     ₹{inv.totalPayable.toLocaleString('en-IN')}
                   </div>
                   <div className="mt-0.5 font-bold">
                     {inv.paymentStatus === 'paid' && (
-                      <span className={`text-[11px] font-mono px-2 py-0.5 rounded font-extrabold ${isLight ? 'text-emerald-800 bg-emerald-100' : 'text-emerald-400 bg-emerald-500/15'}`}>
+                      <span className={`text-[11px] font-mono px-2 py-0.5 rounded font-extrabold ${isLight ? 'text-emerald-800 bg-emerald-50 border border-emerald-300' : 'text-emerald-400 bg-emerald-500/15'}`}>
                         Paid
                       </span>
                     )}
                     {inv.paymentStatus === 'partially_paid' && (
-                      <span className={`text-[11px] font-mono px-2 py-0.5 rounded font-extrabold ${isLight ? 'text-amber-800 bg-amber-100' : 'text-amber-400 bg-amber-500/15'}`}>
+                      <span className={`text-[11px] font-mono px-2 py-0.5 rounded font-extrabold ${isLight ? 'text-amber-800 bg-amber-50 border border-amber-300' : 'text-amber-400 bg-amber-500/15'}`}>
                         Due: ₹{inv.remainingBalance.toLocaleString('en-IN')}
                       </span>
                     )}
                     {inv.paymentStatus === 'unpaid' && (
-                      <span className={`text-[11px] font-mono px-2 py-0.5 rounded font-extrabold ${isLight ? 'text-rose-800 bg-rose-100' : 'text-rose-400 bg-rose-500/15'}`}>
+                      <span className={`text-[11px] font-mono px-2 py-0.5 rounded font-extrabold ${isLight ? 'text-rose-800 bg-rose-50 border border-rose-300' : 'text-rose-400 bg-rose-500/15'}`}>
                         Unpaid
                       </span>
                     )}
@@ -388,56 +392,73 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* Column 2: Recent Admissions & Student Roster */}
-        <div className={`${isLight ? 'bg-white border-neutral-300 shadow-md text-black' : 'bg-neutral-900/60 border-neutral-800 text-neutral-100'} border rounded-xl p-5`}>
-          <div className={`flex items-center justify-between pb-4 border-b ${isLight ? 'border-neutral-300' : 'border-neutral-800'}`}>
+        <div className={`${isLight ? 'bg-white border-neutral-200/90 shadow-sm text-neutral-800' : 'bg-neutral-850/80 border-neutral-800 text-neutral-100'} border rounded-xl p-5`}>
+          <div className={`flex items-center justify-between pb-4 border-b ${isLight ? 'border-neutral-200' : 'border-neutral-800'}`}>
             <div>
-              <h2 className={`text-base font-black ${isLight ? 'text-black' : 'text-neutral-100'}`}>Recent Admissions</h2>
-              <p className={`text-xs font-semibold mt-0.5 ${isLight ? 'text-neutral-700' : 'text-neutral-400'}`}>Newly registered students and active courses</p>
+              <div className="flex items-center gap-2">
+                <span className="text-base select-none shrink-0" role="img" aria-label="Admissions">🎓</span>
+                <h2 className={`text-base font-bold ${isLight ? 'text-black' : 'text-white'}`}>Recent Admissions</h2>
+              </div>
+              <p className={`text-xs font-medium mt-0.5 ${isLight ? 'text-neutral-500' : 'text-neutral-400'}`}>Newly registered students and active courses</p>
             </div>
             <button
               onClick={() => onNavigateToView('students')}
-              className="text-xs text-orange-500 hover:text-orange-600 font-extrabold flex items-center gap-1 cursor-pointer hover:underline"
+              className="text-xs text-orange-600 hover:text-orange-700 font-extrabold flex items-center gap-1 cursor-pointer hover:underline"
             >
               <span>View Directory</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className={`divide-y ${isLight ? 'divide-neutral-200' : 'divide-neutral-800/80'} mt-2`}>
+          <div className={`divide-y ${isLight ? 'divide-neutral-100' : 'divide-neutral-800/80'} mt-2`}>
             {students.slice(0, 5).map(stu => (
               <div
                 key={stu.id}
                 onClick={() => onNavigateToView('students')}
-                className={`py-3 px-2.5 rounded-xl cursor-pointer transition-all flex items-center justify-between group border border-transparent ${
-                  isLight
-                    ? 'hover:bg-orange-50/90 hover:border-orange-300 text-black'
-                    : 'hover:bg-orange-500/10 hover:border-orange-500/30 text-neutral-100'
-                }`}
+                className="py-3 px-2.5 rounded-xl cursor-pointer flex items-center justify-between border border-transparent"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className={`text-sm font-black transition-colors ${isLight ? 'text-black group-hover:text-orange-950' : 'text-neutral-100 group-hover:text-white'}`}>
+                    <span className={`text-sm font-black ${isLight ? 'text-black' : 'text-white'}`}>
                       {stu.name}
                     </span>
-                    <span className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded transition-colors ${isLight ? 'bg-neutral-100 text-black group-hover:bg-orange-100' : 'bg-neutral-800 text-neutral-300 group-hover:text-neutral-100'}`}>
+                    <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded ${isLight ? 'bg-orange-50 text-orange-700 border border-orange-200' : 'bg-neutral-800 text-neutral-200 border border-neutral-700'}`}>
                       {stu.id}
                     </span>
                   </div>
-                  <div className={`text-xs font-semibold mt-1 flex items-center gap-1.5 transition-colors ${isLight ? 'text-neutral-800 group-hover:text-black' : 'text-neutral-300 group-hover:text-neutral-100'}`}>
-                    <span>{stu.enrolledCourseName}</span>
-                    <span className={isLight ? 'text-neutral-400' : 'text-neutral-600'}>·</span>
-                    <span className="font-mono">+91 {stu.phone}</span>
+                  <div className="text-xs mt-1 flex items-center gap-1.5">
+                    <span className={`font-black ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                      {stu.enrolledCourseName}
+                    </span>
+                    <span className={isLight ? 'text-neutral-400 font-bold' : 'text-neutral-600'}>·</span>
+                    <span className={`font-mono font-semibold ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>+91 {stu.phone}</span>
                   </div>
                 </div>
 
-                <div className="text-right">
-                  <div className={`text-xs font-mono font-semibold ${isLight ? 'text-neutral-800' : 'text-neutral-300 group-hover:text-neutral-100'}`}>
-                    Paid: <span className={`font-black ${isLight ? 'text-black' : 'text-white'}`}>₹{stu.totalPaid.toLocaleString('en-IN')}</span> / ₹{stu.agreedFee.toLocaleString('en-IN')}
+                {/* Recent Admissions: Paid font and full paid amount visibly bold */}
+                <div className="text-right shrink-0">
+                  <div className="text-sm font-black font-mono tracking-tight">
+                    <span className={`text-xs uppercase tracking-wider font-bold mr-1 ${isLight ? 'text-neutral-700' : 'text-neutral-400'}`}>Paid:</span>
+                    <span className={`font-black ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>₹{stu.totalPaid.toLocaleString('en-IN')}</span>
+                    <span className={`font-normal mx-1 ${isLight ? 'text-neutral-400' : 'text-neutral-600'}`}>/</span>
+                    <span className={`font-black ${isLight ? 'text-black' : 'text-white'}`}>₹{stu.agreedFee.toLocaleString('en-IN')}</span>
                   </div>
-                  <div className="text-[11px] mt-0.5 font-bold">
-                    {stu.paymentStatus === 'paid' && <span className={`px-2 py-0.5 rounded font-extrabold ${isLight ? 'text-emerald-800 bg-emerald-100' : 'text-emerald-400 bg-emerald-500/15'}`}>Full</span>}
-                    {stu.paymentStatus === 'partially_paid' && <span className={`px-2 py-0.5 rounded font-extrabold ${isLight ? 'text-amber-800 bg-amber-100' : 'text-amber-400 bg-amber-500/15'}`}>Partial</span>}
-                    {stu.paymentStatus === 'unpaid' && <span className={`px-2 py-0.5 rounded font-extrabold ${isLight ? 'text-rose-800 bg-rose-100' : 'text-rose-400 bg-rose-500/15'}`}>Pending</span>}
+                  <div className="mt-1 flex items-center justify-end font-bold">
+                    {stu.paymentStatus === 'paid' && (
+                      <span className={`text-xs font-mono px-2 py-0.5 rounded font-black ${isLight ? 'text-emerald-800 bg-emerald-50 border border-emerald-300' : 'text-emerald-400 bg-emerald-500/20 border border-emerald-500/40'}`}>
+                        Full Paid
+                      </span>
+                    )}
+                    {stu.paymentStatus === 'partially_paid' && (
+                      <span className={`text-xs font-mono px-2 py-0.5 rounded font-black ${isLight ? 'text-amber-800 bg-amber-50 border border-amber-300' : 'text-amber-400 bg-amber-500/20 border border-amber-500/40'}`}>
+                        Due: ₹{(stu.agreedFee - stu.totalPaid).toLocaleString('en-IN')}
+                      </span>
+                    )}
+                    {stu.paymentStatus === 'unpaid' && (
+                      <span className={`text-xs font-mono px-2 py-0.5 rounded font-black ${isLight ? 'text-rose-800 bg-rose-50 border border-rose-300' : 'text-rose-400 bg-rose-500/20 border border-rose-500/40'}`}>
+                        Pending
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>

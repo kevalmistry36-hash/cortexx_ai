@@ -16,6 +16,7 @@ interface InvoicesViewProps {
   onOpenReceiptModal: (receipt: PaymentReceipt) => void;
   isCreateModalOpen?: boolean;
   onCloseCreateModal?: () => void;
+  theme?: 'light' | 'dark';
 }
 
 export const InvoicesView: React.FC<InvoicesViewProps> = ({
@@ -28,7 +29,9 @@ export const InvoicesView: React.FC<InvoicesViewProps> = ({
   onOpenReceiptModal,
   isCreateModalOpen = false,
   onCloseCreateModal,
+  theme = 'dark',
 }) => {
+  const isLight = theme === 'light';
   const [activeTab, setActiveTab] = useState<'invoices' | 'receipts'>('invoices');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | PaymentStatus>('all');
@@ -426,20 +429,51 @@ Accounts Office, Cortexx AI Institute`;
     return matchesSearch && matchesActiveStatus;
   });
 
+  // Financial computations
+  const totalBilled = invoices.reduce((sum, i) => sum + (i.totalPayable || 0), 0);
+  const totalCollected = invoices.reduce((sum, i) => sum + (i.amountPaid || 0), 0);
+  const paidInvoicesCount = invoices.filter(i => i.paymentStatus === 'paid').length;
+  const pendingInvoicesCount = invoices.filter(i => i.paymentStatus !== 'paid').length;
+
+  // Shared card classes - identical appearance to Dashboard
+  const kpiCardClass = isLight
+    ? 'dashboard-kpi-card bg-white border-2 border-neutral-200 border-t-4 border-t-orange-500 shadow-md hover:border-orange-500 text-black rounded-xl p-5 transition-all relative overflow-hidden'
+    : 'dashboard-kpi-card bg-neutral-900/80 border border-neutral-800 border-t-4 border-t-orange-500 hover:border-neutral-700 text-neutral-100 rounded-xl p-5 transition-all relative overflow-hidden';
+
+  const kpiTitleClass = isLight
+    ? 'text-xs font-black tracking-wider uppercase text-black font-sans'
+    : 'text-xs font-bold tracking-wider uppercase text-neutral-200 font-sans';
+
+  const kpiNumberClass = isLight
+    ? 'text-3xl sm:text-4xl font-black font-sans tabular-nums text-black tracking-tight'
+    : 'text-3xl sm:text-4xl font-black font-sans tabular-nums text-white tracking-tight';
+
+  const kpiSubtextClass = isLight
+    ? 'mt-3 text-xs text-black font-extrabold font-sans'
+    : 'mt-3 text-xs text-neutral-300 font-semibold font-sans';
+
+  const kpiBadgeClass =
+    'kpi-orange-badge text-[11px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-md bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-500/30 font-sans';
+
+  const kpiIconBoxClass =
+    'w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/35 flex items-center justify-center text-orange-600 dark:text-orange-400 shadow-sm shrink-0';
+
   return (
     <div className="space-y-6 animate-fadeIn">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-800">
+      {/* Header - Matches Dashboard Command Center */}
+      <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b ${isLight ? 'border-neutral-300' : 'border-neutral-800/80'}`}>
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-neutral-100">Invoices & Payment Receipts</h1>
-          <p className="text-sm text-neutral-400 mt-0.5">
-            Vector A4 PDF invoices, partial payment ledgers, student deactive mode, and direct document dispatch
+          <h1 className={`text-2xl lg:text-3xl font-extrabold tracking-tight ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+            Invoices & Payment Receipts
+          </h1>
+          <p className={`text-sm mt-1 ${isLight ? 'text-black font-semibold' : 'text-neutral-400'}`}>
+            Cortexx AI Institute · <span className="text-orange-500 font-bold">Billing Ledgers, PDF Documents & WhatsApp Receipts</span>
           </p>
         </div>
 
         <button
           onClick={openGenerateModal}
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white font-semibold rounded-lg shadow-md transition-colors shrink-0"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-black rounded-xl shadow-md transition-colors shrink-0 text-sm cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Generate New Invoice</span>
@@ -498,23 +532,132 @@ Accounts Office, Cortexx AI Institute`;
         </div>
       )}
 
+      {/* Invoice Section 5 KPI Cards - Identical Appearance to Dashboard Type */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        {/* KPI 1: Total Invoices */}
+        <div className={kpiCardClass}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Total Invoices">🧾</span>
+              <span className={kpiTitleClass}>Total Invoices</span>
+            </div>
+            <div className={kpiIconBoxClass}>
+              <Receipt className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className={kpiNumberClass}>{invoices.length}</span>
+            <span className={kpiBadgeClass}>Ledger</span>
+          </div>
+          <div className={kpiSubtextClass}>
+            <span>Official Billing Records</span>
+          </div>
+        </div>
+
+        {/* KPI 2: Paid in Full */}
+        <div className={kpiCardClass}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Paid In Full">💚</span>
+              <span className={kpiTitleClass}>Paid In Full</span>
+            </div>
+            <div className={kpiIconBoxClass}>
+              <CheckCircle className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className={kpiNumberClass}>{paidInvoicesCount}</span>
+            <span className={kpiBadgeClass}>100% Cleared</span>
+          </div>
+          <div className={kpiSubtextClass}>
+            <span className={isLight ? 'text-black' : 'text-emerald-400'}>Zero Pending Balance</span>
+          </div>
+        </div>
+
+        {/* KPI 3: Pending Fees */}
+        <div className={kpiCardClass}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Pending Fees">⏳</span>
+              <span className={kpiTitleClass}>Pending Fees</span>
+            </div>
+            <div className={kpiIconBoxClass}>
+              <Clock className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className={kpiNumberClass}>{pendingInvoicesCount}</span>
+            <span className={kpiBadgeClass}>Due</span>
+          </div>
+          <div className={kpiSubtextClass}>
+            <span className={isLight ? 'text-black' : 'text-amber-400'}>Installments Outstanding</span>
+          </div>
+        </div>
+
+        {/* KPI 4: Total Billed */}
+        <div className={kpiCardClass}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Total Billed">💰</span>
+              <span className={kpiTitleClass}>Total Billed</span>
+            </div>
+            <div className={kpiIconBoxClass}>
+              <IndianRupee className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className={kpiNumberClass}>₹{totalBilled.toLocaleString('en-IN')}</span>
+            <span className={kpiBadgeClass}>Cumulative</span>
+          </div>
+          <div className={kpiSubtextClass}>
+            <span>All Generated Invoices</span>
+          </div>
+        </div>
+
+        {/* KPI 5: Collected Fees */}
+        <div className={kpiCardClass}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Collected Fees">💳</span>
+              <span className={kpiTitleClass}>Collected Fees</span>
+            </div>
+            <div className={kpiIconBoxClass}>
+              <CheckCircle className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className={kpiNumberClass}>₹{totalCollected.toLocaleString('en-IN')}</span>
+            <span className={kpiBadgeClass}>Received</span>
+          </div>
+          <div className={kpiSubtextClass}>
+            <span className={isLight ? 'text-black' : 'text-emerald-400'}>Realized Revenue</span>
+          </div>
+        </div>
+      </div>
+
       {/* Tabs & Search & Filters */}
       <div className="flex flex-col gap-3">
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
           {/* Toggle between Invoices and Receipts */}
-          <div className="flex items-center gap-1 p-1 bg-neutral-900 border border-neutral-800 rounded-lg shrink-0">
+          <div className={`flex items-center gap-1 p-1 rounded-xl border shrink-0 ${
+            isLight ? 'bg-neutral-100 border-neutral-200' : 'bg-neutral-900 border-neutral-800'
+          }`}>
             <button
               onClick={() => setActiveTab('invoices')}
-              className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors ${
-                activeTab === 'invoices' ? 'bg-neutral-800 text-neutral-100 shadow-sm' : 'text-neutral-400 hover:text-neutral-200'
+              className={`px-4 py-1.5 text-xs font-black rounded-lg transition-colors cursor-pointer ${
+                activeTab === 'invoices'
+                  ? isLight ? 'bg-white text-black shadow-sm' : 'bg-neutral-800 text-neutral-100 shadow-sm'
+                  : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
               }`}
             >
               Invoices ({invoices.length})
             </button>
             <button
               onClick={() => setActiveTab('receipts')}
-              className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-colors ${
-                activeTab === 'receipts' ? 'bg-neutral-800 text-neutral-100 shadow-sm' : 'text-neutral-400 hover:text-neutral-200'
+              className={`px-4 py-1.5 text-xs font-black rounded-lg transition-colors cursor-pointer ${
+                activeTab === 'receipts'
+                  ? isLight ? 'bg-white text-black shadow-sm' : 'bg-neutral-800 text-neutral-100 shadow-sm'
+                  : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
               }`}
             >
               Payment Receipts ({receipts.length})
@@ -529,23 +672,29 @@ Accounts Office, Cortexx AI Institute`;
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search by invoice #, receipt #, student name, or course..."
-              className="w-full pl-10 pr-4 py-2 bg-neutral-900 border border-neutral-800 rounded-lg text-sm text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-orange-500 transition-colors"
+              className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm placeholder-neutral-500 focus:outline-none focus:border-orange-500 transition-colors border ${
+                isLight
+                  ? 'bg-white border-neutral-300 text-black font-semibold shadow-sm'
+                  : 'bg-neutral-900 border-neutral-800 text-neutral-200'
+              }`}
             />
           </div>
         </div>
 
         {/* Filters Bar: Student Active/Deactive Mode & Payment Status */}
-        <div className="flex items-center justify-between gap-3 flex-wrap bg-neutral-900/60 p-2.5 rounded-xl border border-neutral-800/80">
+        <div className={`flex items-center justify-between gap-3 flex-wrap p-2.5 rounded-xl border ${
+          isLight ? 'bg-white border-neutral-200 shadow-sm' : 'bg-neutral-900/60 border-neutral-800/80'
+        }`}>
           {/* Student Active / Deactive Mode Filter */}
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-xs font-semibold text-neutral-400 mr-1">Student Status:</span>
+            <span className={`text-xs font-bold mr-1 ${isLight ? 'text-black' : 'text-neutral-400'}`}>Student Status:</span>
             <button
               type="button"
               onClick={() => setStudentActiveFilter('all')}
-              className={`px-2.5 py-1 text-xs font-semibold rounded cursor-pointer transition-colors ${
+              className={`px-2.5 py-1 text-xs font-black rounded cursor-pointer transition-colors ${
                 studentActiveFilter === 'all'
-                  ? 'bg-neutral-800 text-neutral-100 shadow-sm'
-                  : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50'
+                  ? isLight ? 'bg-neutral-200 text-black font-black' : 'bg-neutral-800 text-neutral-100 shadow-sm'
+                  : isLight ? 'text-neutral-600 hover:text-black' : 'text-neutral-400 hover:text-neutral-200'
               }`}
             >
               All Students
@@ -553,10 +702,10 @@ Accounts Office, Cortexx AI Institute`;
             <button
               type="button"
               onClick={() => setStudentActiveFilter('active')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded cursor-pointer transition-colors ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-black rounded cursor-pointer transition-colors ${
                 studentActiveFilter === 'active'
-                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                  : 'text-neutral-400 hover:text-emerald-400 hover:bg-neutral-800/50'
+                  ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30'
+                  : isLight ? 'text-neutral-600 hover:text-emerald-700' : 'text-neutral-400 hover:text-emerald-400'
               }`}
             >
               <UserCheck className="w-3.5 h-3.5" />
@@ -568,17 +717,17 @@ Accounts Office, Cortexx AI Institute`;
             <button
               type="button"
               onClick={() => setStudentActiveFilter('deactivated')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded cursor-pointer transition-colors ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-black rounded cursor-pointer transition-colors ${
                 studentActiveFilter === 'deactivated'
-                  ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
-                  : 'text-neutral-400 hover:text-rose-400 hover:bg-neutral-800/50'
+                  ? 'bg-rose-500/20 text-rose-700 dark:text-rose-400 border border-rose-500/30'
+                  : isLight ? 'text-neutral-600 hover:text-rose-700' : 'text-neutral-400 hover:text-rose-400'
               }`}
               title="Show only students in Deactive Mode"
             >
-              <UserX className="w-3.5 h-3.5 text-rose-400" />
+              <UserX className="w-3.5 h-3.5 text-rose-500" />
               <span>Deactive Mode</span>
               {(activeTab === 'invoices' ? deactivatedInvoicesCount : deactivatedReceiptsCount) > 0 && (
-                <span className="text-[10px] bg-rose-500/30 text-rose-300 px-1.5 py-0.2 rounded-full font-mono">
+                <span className="text-[10px] bg-rose-500/30 text-rose-700 dark:text-rose-300 px-1.5 py-0.2 rounded-full font-mono">
                   {activeTab === 'invoices' ? deactivatedInvoicesCount : deactivatedReceiptsCount}
                 </span>
               )}
@@ -587,29 +736,41 @@ Accounts Office, Cortexx AI Institute`;
 
           {/* Payment Status Filter (when on Invoices tab) */}
           {activeTab === 'invoices' && (
-            <div className="flex items-center gap-1 p-1 bg-neutral-900 border border-neutral-800 rounded-lg shrink-0">
-              <span className="text-xs font-semibold text-neutral-400 px-1.5">Fee:</span>
+            <div className={`flex items-center gap-1 p-1 rounded-lg border shrink-0 ${
+              isLight ? 'bg-neutral-100 border-neutral-200' : 'bg-neutral-900 border-neutral-800'
+            }`}>
+              <span className={`text-xs font-bold px-1.5 ${isLight ? 'text-black' : 'text-neutral-400'}`}>Fee:</span>
               <button
                 onClick={() => setStatusFilter('all')}
-                className={`px-2 py-0.5 text-xs font-medium rounded ${statusFilter === 'all' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400'}`}
+                className={`px-2 py-0.5 text-xs font-black rounded ${
+                  statusFilter === 'all'
+                    ? isLight ? 'bg-white text-black shadow-sm' : 'bg-neutral-800 text-neutral-100'
+                    : isLight ? 'text-neutral-600 hover:text-black' : 'text-neutral-400'
+                }`}
               >
                 All
               </button>
               <button
                 onClick={() => setStatusFilter('paid')}
-                className={`px-2 py-0.5 text-xs font-medium rounded ${statusFilter === 'paid' ? 'bg-emerald-500/20 text-emerald-400' : 'text-neutral-400'}`}
+                className={`px-2 py-0.5 text-xs font-black rounded ${
+                  statusFilter === 'paid' ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-400' : isLight ? 'text-neutral-600' : 'text-neutral-400'
+                }`}
               >
                 Paid
               </button>
               <button
                 onClick={() => setStatusFilter('partially_paid')}
-                className={`px-2 py-0.5 text-xs font-medium rounded ${statusFilter === 'partially_paid' ? 'bg-amber-500/20 text-amber-400' : 'text-neutral-400'}`}
+                className={`px-2 py-0.5 text-xs font-black rounded ${
+                  statusFilter === 'partially_paid' ? 'bg-amber-500/20 text-amber-700 dark:text-amber-400' : isLight ? 'text-neutral-600' : 'text-neutral-400'
+                }`}
               >
                 Partial
               </button>
               <button
                 onClick={() => setStatusFilter('unpaid')}
-                className={`px-2 py-0.5 text-xs font-medium rounded ${statusFilter === 'unpaid' ? 'bg-rose-500/20 text-rose-400' : 'text-neutral-400'}`}
+                className={`px-2 py-0.5 text-xs font-black rounded ${
+                  statusFilter === 'unpaid' ? 'bg-rose-500/20 text-rose-700 dark:text-rose-400' : isLight ? 'text-neutral-600' : 'text-neutral-400'
+                }`}
               >
                 Pending
               </button>
@@ -620,38 +781,42 @@ Accounts Office, Cortexx AI Institute`;
 
       {/* Main Ledger Table */}
       {activeTab === 'invoices' ? (
-        <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl overflow-hidden shadow-sm">
+        <div className={`border rounded-xl overflow-hidden shadow-sm ${
+          isLight ? 'bg-white border-neutral-200/90 text-neutral-800' : 'bg-neutral-900/60 border-neutral-800 text-neutral-300'
+        }`}>
           {/* Desktop Invoices Table */}
           <div className="hidden md:block overflow-x-auto">
-            <table className="w-full text-left text-sm text-neutral-300">
-              <thead className="bg-neutral-900/90 text-xs uppercase tracking-wider text-neutral-400 font-semibold border-b border-neutral-800">
+            <table className="w-full text-left text-sm border-collapse">
+              <thead className={`text-xs uppercase tracking-wider font-black border-b ${
+                isLight ? 'bg-orange-50/70 text-black border-neutral-200' : 'bg-neutral-900/90 text-neutral-200 font-bold border-neutral-800'
+              }`}>
                 <tr>
-                  <th className="py-3.5 px-4">Invoice #</th>
-                  <th className="py-3.5 px-4">Date</th>
-                  <th className="py-3.5 px-4">Student & Course</th>
-                  <th className="py-3.5 px-4 text-right">Payable</th>
-                  <th className="py-3.5 px-4 text-right">Paid</th>
-                  <th className="py-3.5 px-4 text-right">Balance</th>
-                  <th className="py-3.5 px-4 text-right">Status</th>
-                  <th className="py-3.5 px-4 text-right">Actions</th>
+                  <th className="py-3.5 px-4 font-black">Invoice #</th>
+                  <th className="py-3.5 px-4 font-black">Date</th>
+                  <th className="py-3.5 px-4 font-black">Student & Course</th>
+                  <th className="py-3.5 px-4 text-right font-black">Payable</th>
+                  <th className="py-3.5 px-4 text-right font-black">Paid</th>
+                  <th className="py-3.5 px-4 text-right font-black">Balance</th>
+                  <th className="py-3.5 px-4 text-right font-black">Status</th>
+                  <th className="py-3.5 px-4 text-right font-black">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-800/80">
+              <tbody className={`divide-y ${isLight ? 'divide-neutral-100' : 'divide-neutral-800/80'}`}>
                 {filteredInvoices.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="py-12 text-center text-neutral-500">
                       <Receipt className="w-8 h-8 mx-auto text-neutral-600 mb-2 opacity-50" />
-                      <p className="text-sm">No invoices found.</p>
+                      <p className="text-sm font-bold">No invoices found.</p>
                     </td>
                   </tr>
                 ) : (
                   filteredInvoices.map(inv => (
-                    <tr key={inv.invoiceNumber} className="hover:bg-neutral-800/40 transition-colors">
-                      <td className="py-3.5 px-4 font-mono text-xs text-orange-400 font-bold whitespace-nowrap">
+                    <tr key={inv.invoiceNumber} className="transition-colors">
+                      <td className="py-3.5 px-4 font-mono text-xs text-orange-600 dark:text-orange-400 font-black whitespace-nowrap">
                         {inv.invoiceNumber}
                       </td>
 
-                      <td className="py-3.5 px-4 font-mono text-xs text-neutral-400 whitespace-nowrap">
+                      <td className={`py-3.5 px-4 font-mono text-xs font-semibold whitespace-nowrap ${isLight ? 'text-black' : 'text-neutral-400'}`}>
                         {inv.invoiceDate}
                       </td>
 
@@ -662,18 +827,18 @@ Accounts Office, Cortexx AI Institute`;
                             <>
                               <div className="flex items-center gap-2 flex-wrap">
                                 <span
-                                  className={`font-semibold transition-colors ${
+                                  className={`font-black text-sm tracking-tight transition-colors ${
                                     isDeact
-                                      ? 'line-through text-neutral-500 decoration-rose-500/60 opacity-80'
-                                      : 'text-neutral-100'
+                                      ? 'line-through text-neutral-400 decoration-rose-500/60 opacity-80'
+                                      : isLight ? 'text-black' : 'text-neutral-100'
                                   }`}
                                 >
                                   {inv.studentName}
                                 </span>
 
                                 {isDeact && (
-                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold rounded bg-rose-500/15 text-rose-400 border border-rose-500/30 uppercase tracking-wider">
-                                    <UserX className="w-3 h-3 text-rose-400 shrink-0" />
+                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold rounded bg-rose-500/15 text-rose-500 border border-rose-500/30 uppercase tracking-wider">
+                                    <UserX className="w-3 h-3 text-rose-500 shrink-0" />
                                     <span>Deactivated</span>
                                   </span>
                                 )}
@@ -689,8 +854,8 @@ Accounts Office, Cortexx AI Institute`;
                                   }
                                   className={`p-1 rounded-md transition-all cursor-pointer ${
                                     isDeact
-                                      ? 'text-rose-400 bg-rose-500/15 hover:bg-emerald-500/20 hover:text-emerald-400 border border-rose-500/30'
-                                      : 'text-neutral-500 hover:text-rose-400 hover:bg-neutral-800'
+                                      ? 'text-rose-500 bg-rose-500/15 hover:bg-emerald-500/20 hover:text-emerald-500 border border-rose-500/30'
+                                      : isLight ? 'text-neutral-400 hover:text-rose-500 hover:bg-neutral-100' : 'text-neutral-500 hover:text-rose-400 hover:bg-neutral-800'
                                   }`}
                                 >
                                   {isDeact ? (
@@ -700,45 +865,45 @@ Accounts Office, Cortexx AI Institute`;
                                   )}
                                 </button>
                               </div>
-                              <div className="text-xs text-neutral-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
-                                <span>{inv.courseName}</span>
-                                <span className="text-neutral-600">·</span>
-                                <span className="font-mono">+91 {inv.studentPhone}</span>
+                              <div className="text-xs mt-0.5 flex items-center gap-1.5 flex-wrap">
+                                <span className={`font-black ${isLight ? 'text-black' : 'text-neutral-100'}`}>{inv.courseName}</span>
+                                <span className={isLight ? 'text-neutral-400' : 'text-neutral-600'}>·</span>
+                                <span className={`font-mono font-bold ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>+91 {inv.studentPhone}</span>
                               </div>
                             </>
                           );
                         })()}
                       </td>
 
-                      <td className="py-3.5 px-4 text-right font-mono text-xs font-bold text-neutral-100 whitespace-nowrap">
+                      <td className={`py-3.5 px-4 text-right font-mono text-sm font-black whitespace-nowrap ${isLight ? 'text-black' : 'text-neutral-100'}`}>
                         ₹{inv.totalPayable.toLocaleString('en-IN')}
                       </td>
 
-                      <td className="py-3.5 px-4 text-right font-mono text-xs text-emerald-400 font-semibold whitespace-nowrap">
+                      <td className={`py-3.5 px-4 text-right font-mono text-sm font-black whitespace-nowrap ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>
                         ₹{inv.amountPaid.toLocaleString('en-IN')}
                       </td>
 
-                      <td className="py-3.5 px-4 text-right font-mono text-xs font-semibold whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-right font-mono text-xs font-bold whitespace-nowrap">
                         {inv.remainingBalance > 0 ? (
-                          <span className="text-amber-400">₹{inv.remainingBalance.toLocaleString('en-IN')}</span>
+                          <span className={`font-black ${isLight ? 'text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-300' : 'text-amber-400'}`}>₹{inv.remainingBalance.toLocaleString('en-IN')}</span>
                         ) : (
-                          <span className="text-neutral-500">₹0</span>
+                          <span className={`font-semibold ${isLight ? 'text-neutral-400' : 'text-neutral-500'}`}>₹0</span>
                         )}
                       </td>
 
                       <td className="py-3.5 px-4 text-right whitespace-nowrap">
                         {inv.paymentStatus === 'paid' && (
-                          <span className="px-2 py-0.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 rounded">
+                          <span className={`px-2 py-0.5 text-xs font-black rounded ${isLight ? 'text-emerald-800 bg-emerald-50 border border-emerald-300' : 'text-emerald-400 bg-emerald-500/10'}`}>
                             Paid
                           </span>
                         )}
                         {inv.paymentStatus === 'partially_paid' && (
-                          <span className="px-2 py-0.5 text-xs font-semibold text-amber-400 bg-amber-500/10 rounded">
+                          <span className={`px-2 py-0.5 text-xs font-black rounded ${isLight ? 'text-amber-800 bg-amber-50 border border-amber-300' : 'text-amber-400 bg-amber-500/10'}`}>
                             Partial
                           </span>
                         )}
                         {inv.paymentStatus === 'unpaid' && (
-                          <span className="px-2 py-0.5 text-xs font-semibold text-rose-400 bg-rose-500/10 rounded">
+                          <span className={`px-2 py-0.5 text-xs font-black rounded ${isLight ? 'text-rose-800 bg-rose-50 border border-rose-300' : 'text-rose-400 bg-rose-500/10'}`}>
                             Unpaid
                           </span>
                         )}
@@ -965,39 +1130,43 @@ Accounts Office, Cortexx AI Institute`;
         </div>
       ) : (
         /* Receipts Table */
-        <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl overflow-hidden shadow-sm">
+        <div className={`border rounded-xl overflow-hidden shadow-sm ${
+          isLight ? 'bg-white border-neutral-200/90 text-neutral-800' : 'bg-neutral-900/60 border-neutral-800 text-neutral-300'
+        }`}>
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-neutral-300">
-              <thead className="bg-neutral-900/90 text-xs uppercase tracking-wider text-neutral-400 font-semibold border-b border-neutral-800">
+            <table className="w-full text-left text-sm border-collapse">
+              <thead className={`text-xs uppercase tracking-wider font-black border-b ${
+                isLight ? 'bg-orange-50/70 text-black border-neutral-200' : 'bg-neutral-900/90 text-neutral-200 font-bold border-neutral-800'
+              }`}>
                 <tr>
-                  <th className="py-3.5 px-4">Receipt #</th>
-                  <th className="py-3.5 px-4">Invoice #</th>
-                  <th className="py-3.5 px-4">Date</th>
-                  <th className="py-3.5 px-4">Student</th>
-                  <th className="py-3.5 px-4">Payment Method</th>
-                  <th className="py-3.5 px-4 text-right">Amount Received</th>
-                  <th className="py-3.5 px-4 text-right">Balance After</th>
-                  <th className="py-3.5 px-4 text-right">Actions</th>
+                  <th className="py-3.5 px-4 font-black">Receipt #</th>
+                  <th className="py-3.5 px-4 font-black">Invoice #</th>
+                  <th className="py-3.5 px-4 font-black">Date</th>
+                  <th className="py-3.5 px-4 font-black">Student</th>
+                  <th className="py-3.5 px-4 font-black">Payment Method</th>
+                  <th className="py-3.5 px-4 text-right font-black">Amount Received</th>
+                  <th className="py-3.5 px-4 text-right font-black">Balance After</th>
+                  <th className="py-3.5 px-4 text-right font-black">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-800/80">
+              <tbody className={`divide-y ${isLight ? 'divide-neutral-100' : 'divide-neutral-800/80'}`}>
                 {filteredReceipts.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="py-12 text-center text-neutral-500">
                       <Receipt className="w-8 h-8 mx-auto text-neutral-600 mb-2 opacity-50" />
-                      <p className="text-sm">No payment receipts logged yet.</p>
+                      <p className="text-sm font-bold">No payment receipts logged yet.</p>
                     </td>
                   </tr>
                 ) : (
                   filteredReceipts.map(rec => (
-                    <tr key={rec.receiptNumber} className="hover:bg-neutral-800/40 transition-colors">
-                      <td className="py-3.5 px-4 font-mono text-xs text-emerald-400 font-bold whitespace-nowrap">
+                    <tr key={rec.receiptNumber} className="transition-colors">
+                      <td className="py-3.5 px-4 font-mono text-xs text-emerald-600 dark:text-emerald-400 font-black whitespace-nowrap">
                         {rec.receiptNumber}
                       </td>
-                      <td className="py-3.5 px-4 font-mono text-xs text-neutral-400 whitespace-nowrap">
+                      <td className={`py-3.5 px-4 font-mono text-xs font-bold whitespace-nowrap ${isLight ? 'text-orange-700' : 'text-neutral-400'}`}>
                         {rec.invoiceNumber}
                       </td>
-                      <td className="py-3.5 px-4 font-mono text-xs text-neutral-400 whitespace-nowrap">
+                      <td className={`py-3.5 px-4 font-mono text-xs font-semibold whitespace-nowrap ${isLight ? 'text-black' : 'text-neutral-400'}`}>
                         {rec.paymentDate}
                       </td>
                       <td className="py-3.5 px-4">
@@ -1006,18 +1175,18 @@ Accounts Office, Cortexx AI Institute`;
                           return (
                             <div className="flex items-center gap-2 flex-wrap">
                               <span
-                                className={`font-semibold transition-colors ${
+                                className={`font-black text-sm tracking-tight transition-colors ${
                                   isDeact
-                                    ? 'line-through text-neutral-500 decoration-rose-500/60 opacity-80'
-                                    : 'text-neutral-100'
+                                    ? 'line-through text-neutral-400 decoration-rose-500/60 opacity-80'
+                                    : isLight ? 'text-black' : 'text-neutral-100'
                                 }`}
                               >
                                 {rec.studentName}
                               </span>
 
                               {isDeact && (
-                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold rounded bg-rose-500/15 text-rose-400 border border-rose-500/30 uppercase tracking-wider">
-                                  <UserX className="w-3 h-3 text-rose-400 shrink-0" />
+                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold rounded bg-rose-500/15 text-rose-500 border border-rose-500/30 uppercase tracking-wider">
+                                  <UserX className="w-3 h-3 text-rose-500 shrink-0" />
                                   <span>Deactivated</span>
                                 </span>
                               )}
@@ -1033,8 +1202,8 @@ Accounts Office, Cortexx AI Institute`;
                                 }
                                 className={`p-1 rounded-md transition-all cursor-pointer ${
                                   isDeact
-                                    ? 'text-rose-400 bg-rose-500/15 hover:bg-emerald-500/20 hover:text-emerald-400 border border-rose-500/30'
-                                    : 'text-neutral-500 hover:text-rose-400 hover:bg-neutral-800'
+                                    ? 'text-rose-500 bg-rose-500/15 hover:bg-emerald-500/20 hover:text-emerald-500 border border-rose-500/30'
+                                    : isLight ? 'text-neutral-400 hover:text-rose-500 hover:bg-neutral-100' : 'text-neutral-500 hover:text-rose-400 hover:bg-neutral-800'
                                 }`}
                               >
                                 {isDeact ? (
@@ -1047,13 +1216,13 @@ Accounts Office, Cortexx AI Institute`;
                           );
                         })()}
                       </td>
-                      <td className="py-3.5 px-4 text-xs font-mono text-neutral-400">
+                      <td className={`py-3.5 px-4 text-xs font-mono font-bold ${isLight ? 'text-neutral-700' : 'text-neutral-400'}`}>
                         {rec.paymentMethod} {rec.transactionRef ? `(${rec.transactionRef})` : ''}
                       </td>
-                      <td className="py-3.5 px-4 text-right font-mono text-xs font-bold text-emerald-400 whitespace-nowrap">
+                      <td className={`py-3.5 px-4 text-right font-mono text-sm font-black whitespace-nowrap ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>
                         ₹{rec.amountReceived.toLocaleString('en-IN')}
                       </td>
-                      <td className="py-3.5 px-4 text-right font-mono text-xs text-neutral-400 whitespace-nowrap">
+                      <td className={`py-3.5 px-4 text-right font-mono text-xs font-bold whitespace-nowrap ${isLight ? 'text-black' : 'text-neutral-400'}`}>
                         ₹{rec.remainingBalanceAfter.toLocaleString('en-IN')}
                       </td>
                       <td className="py-3.5 px-4 text-right whitespace-nowrap">
@@ -1061,17 +1230,19 @@ Accounts Office, Cortexx AI Institute`;
                           <button
                             onClick={() => onOpenReceiptModal(rec)}
                             title="View / Print Receipt"
-                            className="p-1.5 text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800 rounded transition-colors cursor-pointer"
+                            className={`p-1.5 rounded transition-colors cursor-pointer ${
+                              isLight ? 'text-neutral-700 hover:text-black hover:bg-neutral-100' : 'text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800'
+                            }`}
                           >
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDownloadReceiptPdf(rec)}
                             title="Download Payment Receipt as PDF"
-                            className="p-1.5 text-emerald-400 hover:text-emerald-200 hover:bg-emerald-500/20 bg-emerald-500/10 border border-emerald-500/30 rounded-lg transition-colors cursor-pointer group flex items-center gap-1"
+                            className="p-1.5 text-emerald-600 hover:text-white hover:bg-emerald-600 bg-emerald-500/10 border border-emerald-500/30 rounded-lg transition-colors cursor-pointer group flex items-center gap-1"
                           >
                             <Download className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                            <span className="text-[10px] font-bold">PDF</span>
+                            <span className="text-[10px] font-black">PDF</span>
                           </button>
                           <button
                             onClick={() => sendReceiptEmail(rec)}

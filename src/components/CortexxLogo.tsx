@@ -7,6 +7,7 @@ export interface CortexxLogoProps {
   inverted?: boolean; // For light background/certificate/invoice printing
   mode?: 'light' | 'dark';
   variant?: 'standard' | 'emblem' | 'mobile';
+  layout?: 'horizontal' | 'vertical';
   className?: string;
 }
 
@@ -17,45 +18,29 @@ export const CortexxLogo: React.FC<CortexxLogoProps> = ({
   inverted = false,
   mode,
   variant = 'standard',
+  layout = 'horizontal',
   className = '',
 }) => {
   const isLight = mode === 'light' || inverted;
-
-  // If emblem / mobile variant is requested, render the exact emblem logo matching the user's reference
-  if (variant === 'emblem' || variant === 'mobile') {
-    const emblemSizes = {
-      xs: 'w-24',
-      sm: 'w-36',
-      md: 'w-48',
-      lg: 'w-60',
-      xl: 'w-72',
-      hero: 'w-84',
-    };
-
-    return (
-      <div className={`relative inline-block select-none ${className}`}>
-        <img
-          src="/cortexx-mobile-logo.svg"
-          alt="Cortexx AI - Where Thinking Meets Technology"
-          className={`${emblemSizes[size]} h-auto object-contain drop-shadow-[0_8px_30px_rgba(255,106,0,0.35)] rounded-2xl`}
-        />
-      </div>
-    );
-  }
+  const isVertical = layout === 'vertical' || variant === 'emblem';
 
   const sizeMap = {
-    xs: { icon: 26, text: 'text-sm', tag: 'text-[8px]', gap: 'gap-2' },
-    sm: { icon: 36, text: 'text-base', tag: 'text-[9.5px]', gap: 'gap-2.5' },
-    md: { icon: 46, text: 'text-xl', tag: 'text-[10.5px]', gap: 'gap-3' },
-    lg: { icon: 56, text: 'text-2xl', tag: 'text-xs', gap: 'gap-3.5' },
-    xl: { icon: 70, text: 'text-3xl', tag: 'text-sm', gap: 'gap-4' },
-    hero: { icon: 88, text: 'text-4xl', tag: 'text-base', gap: 'gap-5' },
+    xs: { icon: 26, text: 'text-sm', tag: 'text-[8px]', gap: isVertical ? 'gap-1.5' : 'gap-2' },
+    sm: { icon: 36, text: 'text-base', tag: 'text-[9.5px]', gap: isVertical ? 'gap-2' : 'gap-2.5' },
+    md: { icon: 46, text: 'text-xl', tag: 'text-[10.5px]', gap: isVertical ? 'gap-2.5' : 'gap-3' },
+    lg: { icon: 58, text: 'text-2xl', tag: 'text-xs', gap: isVertical ? 'gap-3' : 'gap-3.5' },
+    xl: { icon: 72, text: 'text-3xl', tag: 'text-sm', gap: isVertical ? 'gap-3.5' : 'gap-4' },
+    hero: { icon: 92, text: 'text-4xl', tag: 'text-base', gap: isVertical ? 'gap-4' : 'gap-5' },
   };
 
   const currentSize = sizeMap[size];
 
   return (
-    <div className={`inline-flex items-center ${currentSize.gap} select-none ${className}`}>
+    <div
+      className={`${
+        isVertical ? 'flex flex-col items-center justify-center text-center' : 'inline-flex items-center'
+      } ${currentSize.gap} select-none ${className}`}
+    >
       {/* Precision Dual-Brain Circuit Icon matching the exact Cortexx AI logo */}
       <svg
         width={currentSize.icon}
@@ -191,7 +176,7 @@ export const CortexxLogo: React.FC<CortexxLogoProps> = ({
 
       {/* Brand Wordmark & Tagline */}
       {showText && (
-        <div className="flex flex-col text-left">
+        <div className={`flex flex-col ${isVertical ? 'items-center text-center' : 'text-left'}`}>
           <div className={`font-black tracking-tight leading-none ${currentSize.text}`}>
             <span className={isLight ? 'text-black font-black' : 'text-neutral-100 font-extrabold'}>
               Cortexx

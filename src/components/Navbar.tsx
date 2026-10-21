@@ -64,8 +64,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                         ? 'bg-orange-500 text-white font-black shadow-md border border-orange-600'
                         : 'bg-orange-500 text-neutral-950 font-black shadow-md shadow-orange-500/25 border border-orange-400'
                       : theme === 'light'
-                      ? 'text-black hover:text-orange-600 hover:bg-orange-50 font-bold border border-transparent hover:border-orange-200'
-                      : 'text-neutral-300 hover:text-orange-400 hover:bg-neutral-900/90 font-semibold border border-transparent hover:border-neutral-800'
+                      ? 'text-black hover:text-black hover:bg-orange-100 font-black border border-transparent hover:border-orange-400 shadow-2xs'
+                      : 'text-neutral-300 hover:text-white hover:bg-orange-500/25 font-bold border border-transparent hover:border-orange-500/40'
                   }`}
                 >
                   {item.icon}
@@ -112,7 +112,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 isLocked
                   ? 'bg-amber-500/15 text-amber-400 border-amber-500/40 hover:bg-amber-500/25'
                   : theme === 'light'
-                  ? 'bg-white text-black border-neutral-300 hover:border-orange-500 hover:text-orange-600 font-bold'
+                  ? 'bg-white text-black border-neutral-300 hover:border-orange-500 hover:text-black hover:bg-orange-100 font-black'
                   : 'bg-neutral-900 text-neutral-200 border-neutral-800 hover:border-orange-500/40 hover:text-orange-400'
               }`}
             >
@@ -131,8 +131,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               title="System Settings & Database Backup"
               className={`p-2 rounded-lg border transition-colors cursor-pointer ${
                 theme === 'light'
-                  ? 'text-neutral-700 hover:text-orange-600 hover:bg-orange-50 border-transparent hover:border-orange-200'
-                  : 'text-neutral-300 hover:text-orange-400 hover:bg-neutral-900 border-transparent hover:border-neutral-800'
+                  ? 'text-neutral-800 hover:text-black hover:bg-orange-100 border-transparent hover:border-orange-400'
+                  : 'text-neutral-300 hover:text-white hover:bg-neutral-900 border-transparent hover:border-neutral-800'
               }`}
             >
               <Settings className="w-4 h-4" />
@@ -162,8 +162,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                         ? 'text-orange-600 bg-orange-500/15 border border-orange-500/40 font-black shadow-sm'
                         : 'text-orange-400 bg-orange-500/20 border border-orange-500/40 font-black shadow-sm'
                       : theme === 'light'
-                      ? 'text-black hover:text-orange-600 hover:bg-orange-50 font-bold'
-                      : 'text-neutral-400 hover:text-orange-400 hover:bg-neutral-900/60 font-semibold'
+                      ? 'text-black hover:text-black hover:bg-orange-100 font-black'
+                      : 'text-neutral-300 hover:text-white hover:bg-orange-500/20 font-bold'
                   }`}
                 >
                   <div className="relative flex items-center justify-center">

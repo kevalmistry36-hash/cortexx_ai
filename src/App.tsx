@@ -261,6 +261,7 @@ export default function App() {
             onRecordPaymentForStudent={handleRecordPaymentForStudent}
             isAddModalOpen={isAddStudentOpen}
             onCloseAddModal={() => setIsAddStudentOpen(false)}
+            theme={theme}
           />
         )}
 
@@ -272,6 +273,7 @@ export default function App() {
             onEnrollInCourse={handleEnrollInCourse}
             isAddModalOpen={isAddCourseOpen}
             onCloseAddModal={() => setIsAddCourseOpen(false)}
+            theme={theme}
           />
         )}
 
@@ -289,6 +291,7 @@ export default function App() {
               setIsGenerateInvoiceOpen(false);
               setSelectedStudentForInvoice(null);
             }}
+            theme={theme}
           />
         )}
 
@@ -297,6 +300,7 @@ export default function App() {
             students={students}
             courses={courses}
             onOpenVerificationGateway={code => setVerifyParam(code)}
+            theme={theme}
           />
         )}
 
