@@ -45,6 +45,48 @@ export function saveSmtpConfig(config: SmtpConfig): void {
 }
 
 /**
+ * Safely parse API Response text into JSON without throwing "Unexpected end of JSON input"
+ */
+async function parseApiResponse(res: Response): Promise<{ success: boolean; data: any; errorMessage?: string }> {
+  let text = '';
+  try {
+    text = await res.text();
+  } catch (err: any) {
+    return {
+      success: false,
+      data: null,
+      errorMessage: `Network error reading server response: ${err?.message || 'Read failure'}`,
+    };
+  }
+
+  if (!text || !text.trim()) {
+    return {
+      success: false,
+      data: null,
+      errorMessage: res.ok
+        ? 'Server returned an empty response.'
+        : `Server communication failed (${res.status} ${res.statusText || 'No Content'}). Ensure the server is online.`,
+    };
+  }
+
+  try {
+    const data = JSON.parse(text);
+    return {
+      success: res.ok && data?.success !== false,
+      data,
+      errorMessage: data?.error || (!res.ok ? `Request failed with status ${res.status}` : undefined),
+    };
+  } catch (_e) {
+    const cleanText = text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
+    return {
+      success: false,
+      data: null,
+      errorMessage: cleanText || `Unexpected response from server (HTTP ${res.status}).`,
+    };
+  }
+}
+
+/**
  * Test SMTP configuration via server backend
  */
 export async function testSmtpConnection(
@@ -52,6 +94,15 @@ export async function testSmtpConnection(
   recipient?: string
 ): Promise<{ success: boolean; message: string }> {
   const activeConfig = config || getSmtpConfig();
+
+  // Validate presence of credentials before dispatching request
+  if (!activeConfig.host?.trim() || !activeConfig.user?.trim() || !activeConfig.pass?.trim()) {
+    return {
+      success: false,
+      message: 'Please provide SMTP Host, Username/Email, and App Password before testing.',
+    };
+  }
+
   try {
     const res = await fetch('/api/mail/test-smtp', {
       method: 'POST',
@@ -72,17 +123,17 @@ export async function testSmtpConnection(
       }),
     });
 
-    const data = await res.json();
-    if (!res.ok || !data.success) {
+    const parsed = await parseApiResponse(res);
+    if (!parsed.success) {
       return {
         success: false,
-        message: data.error || 'Failed to authenticate with SMTP server. Please verify settings.',
+        message: parsed.errorMessage || parsed.data?.error || 'Failed to authenticate with SMTP server. Please verify settings.',
       };
     }
 
     return {
       success: true,
-      message: data.message || 'SMTP server connection verified successfully!',
+      message: parsed.data?.message || 'SMTP server connection verified successfully!',
     };
   } catch (err: any) {
     return {
@@ -247,11 +298,11 @@ export async function sendInvoiceEmail(
       }),
     });
 
-    const data = await res.json();
-    if (!res.ok || !data.success) {
+    const parsed = await parseApiResponse(res);
+    if (!parsed.success) {
       return {
         success: false,
-        message: data.error || 'Failed to dispatch email via SMTP. Please check your SMTP credentials in Settings.',
+        message: parsed.errorMessage || parsed.data?.error || 'Failed to dispatch email via SMTP. Please check your SMTP credentials in Settings.',
       };
     }
 
@@ -406,11 +457,11 @@ export async function sendReceiptEmail(
       }),
     });
 
-    const data = await res.json();
-    if (!res.ok || !data.success) {
+    const parsed = await parseApiResponse(res);
+    if (!parsed.success) {
       return {
         success: false,
-        message: data.error || 'Failed to dispatch email via SMTP. Please check your SMTP credentials in Settings.',
+        message: parsed.errorMessage || parsed.data?.error || 'Failed to dispatch email via SMTP. Please check your SMTP credentials in Settings.',
       };
     }
 

@@ -43,6 +43,9 @@ function createSmtpTransporter(smtpConfig?: any) {
       port,
       secure,
       auth: { user, pass },
+      connectionTimeout: 8000,
+      greetingTimeout: 6000,
+      socketTimeout: 10000,
       tls: {
         rejectUnauthorized: false,
       },
@@ -57,11 +60,22 @@ function createSmtpTransporter(smtpConfig?: any) {
 // SMTP Test Connection
 app.post('/api/mail/test-smtp', async (req, res) => {
   try {
-    const { smtp, recipient } = req.body;
+    const { smtp, recipient } = req.body || {};
+    if (!smtp) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing SMTP configuration parameters.',
+      });
+    }
+
     const { transporter, sender } = createSmtpTransporter(smtp);
 
-    // Verify SMTP connection
-    await transporter.verify();
+    // Verify SMTP connection with a 10s timeout to prevent proxy drops
+    const verifyPromise = transporter.verify();
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('SMTP connection timed out after 10 seconds. Check host and port.')), 10000)
+    );
+    await Promise.race([verifyPromise, timeoutPromise]);
 
     // If test recipient is specified, dispatch sample email
     if (recipient && typeof recipient === 'string' && recipient.includes('@')) {
@@ -165,7 +179,11 @@ app.post('/api/mail/send', async (req, res) => {
       }));
     }
 
-    const info = await transporter.sendMail(mailOptions);
+    const sendPromise = transporter.sendMail(mailOptions);
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('SMTP send timed out after 15 seconds. Please check your mail server.')), 15000)
+    );
+    const info: any = await Promise.race([sendPromise, timeoutPromise]);
 
     return res.json({
       success: true,
@@ -194,6 +212,17 @@ app.post('/api/mail/send', async (req, res) => {
     return res.status(400).json({
       success: false,
       error: userFriendlyError,
+    });
+  }
+});
+
+// Express global error handler to prevent empty or unhandled error responses
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.warn('[Server Middleware Error]', err?.message || err);
+  if (!res.headersSent) {
+    res.status(500).json({
+      success: false,
+      error: err?.message || 'Internal server error occurred.',
     });
   }
 });
