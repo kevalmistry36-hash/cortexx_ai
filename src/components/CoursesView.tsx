@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Course } from '../types';
 import { saveCourse, deleteCourse } from '../services/storage';
-import { BookOpen, CheckCircle, Clock, Plus, Sparkles, Edit3, Trash2, Award, Users, X, AlertTriangle } from 'lucide-react';
+import { BookOpen, CheckCircle, Clock, Plus, Sparkles, Edit3, Trash2, Award, Users, X, AlertTriangle, Youtube } from 'lucide-react';
 
 interface CoursesViewProps {
   courses: Course[];
@@ -333,12 +333,12 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
                     onClick={() => onLaunchAdStudioForCourse(course)}
                     className={`flex-1 py-2 px-3 border text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
                       isLight
-                        ? 'bg-orange-50 hover:bg-orange-100 text-orange-900 border-orange-300'
-                        : 'bg-orange-600/15 hover:bg-orange-600/25 border-orange-500/30 text-orange-300'
+                        ? 'bg-red-50 hover:bg-red-100 text-red-900 border-red-200'
+                        : 'bg-red-600/15 hover:bg-red-600/25 border-red-500/30 text-red-300'
                     }`}
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-orange-500" />
-                    <span>Generate Ad</span>
+                    <Youtube className="w-3.5 h-3.5 text-red-500" />
+                    <span>Watch Video</span>
                   </button>
                 </div>
 

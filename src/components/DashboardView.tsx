@@ -1,6 +1,6 @@
 import React from 'react';
 import { Student, Course, Invoice, PaymentReceipt } from '../types';
-import { Users, BookOpen, CheckCircle, Clock, Plus, Receipt, Sparkles, ArrowRight, IndianRupee } from 'lucide-react';
+import { Users, BookOpen, CheckCircle, Clock, Plus, Receipt, Sparkles, ArrowRight, IndianRupee, Youtube } from 'lucide-react';
 
 interface DashboardViewProps {
   students: Student[];
@@ -10,7 +10,7 @@ interface DashboardViewProps {
   onOpenAddStudent: () => void;
   onOpenAddCourse: () => void;
   onOpenGenerateInvoice: () => void;
-  onNavigateToView: (view: 'students' | 'courses' | 'invoices' | 'ad-studio') => void;
+  onNavigateToView: (view: 'students' | 'courses' | 'invoices' | 'ad-studio' | 'youtube') => void;
   onSelectInvoice: (invoice: Invoice) => void;
   theme?: 'light' | 'dark';
 }
@@ -287,31 +287,31 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </button>
 
         <button
-          onClick={() => onNavigateToView('ad-studio')}
+          onClick={() => onNavigateToView('youtube')}
           className={`flex items-center justify-between p-4 rounded-xl font-bold transition-all group cursor-pointer border ${
             isLight
-              ? 'bg-white hover:bg-orange-100/90 border-neutral-300 hover:border-orange-500 text-black shadow-sm hover:shadow-md'
-              : 'bg-gradient-to-r from-neutral-900 to-orange-950/40 hover:to-orange-950/70 border-orange-500/30 hover:border-orange-500/60 text-neutral-100 shadow-sm'
+              ? 'bg-white hover:bg-red-50/90 border-neutral-300 hover:border-red-500 text-black shadow-sm hover:shadow-md'
+              : 'bg-gradient-to-r from-neutral-900 to-red-950/30 hover:to-red-950/60 border-red-500/30 hover:border-red-500/60 text-neutral-100 shadow-sm'
           }`}
         >
           <div className="flex items-center gap-3">
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
               isLight
-                ? 'bg-orange-100 text-orange-700 group-hover:bg-orange-600 group-hover:text-white'
-                : 'bg-orange-500/20 border border-orange-500/30 text-orange-400 group-hover:bg-orange-500/30'
+                ? 'bg-red-100 text-red-600 group-hover:bg-red-600 group-hover:text-white'
+                : 'bg-red-500/20 border border-red-500/30 text-red-400 group-hover:bg-red-500/30'
             }`}>
-              <Sparkles className="w-5 h-5" />
+              <Youtube className="w-5 h-5" />
             </div>
             <div className="text-left">
               <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-black group-hover:text-black' : 'text-neutral-100 group-hover:text-white'}`}>
-                Banner Studio
+                YouTube Videos
               </div>
               <div className={`text-xs font-bold mt-0.5 transition-colors ${isLight ? 'text-neutral-700 group-hover:text-black' : 'text-neutral-400 group-hover:text-neutral-200'}`}>
-                IAB &amp; Social Ads
+                @CortexxWorld · 13 Videos
               </div>
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 text-orange-500 group-hover:text-orange-700 group-hover:translate-x-1 transition-transform" />
+          <ArrowRight className="w-4 h-4 text-red-500 group-hover:text-red-600 group-hover:translate-x-1 transition-transform" />
         </button>
       </div>
 

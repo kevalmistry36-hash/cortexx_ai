@@ -1,9 +1,9 @@
 import React from 'react';
 import { CortexxLogo } from './CortexxLogo';
 import { PWAInstallButton } from './PWAInstallButton';
-import { Lock, Settings, Sparkles, LayoutDashboard, Users, BookOpen, Receipt, Sun, Moon, Award } from 'lucide-react';
+import { Lock, Settings, Sparkles, LayoutDashboard, Users, BookOpen, Receipt, Sun, Moon, Award, Youtube } from 'lucide-react';
 
-export type NavView = 'dashboard' | 'students' | 'courses' | 'invoices' | 'ad-studio' | 'certificates';
+export type NavView = 'dashboard' | 'students' | 'courses' | 'invoices' | 'certificates' | 'youtube' | 'ad-studio';
 
 interface NavbarProps {
   activeView: NavView;
@@ -30,7 +30,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'courses', label: 'Courses', icon: <BookOpen className="w-5 h-5 md:w-3.5 md:h-3.5" /> },
     { id: 'invoices', label: 'Invoices', icon: <Receipt className="w-5 h-5 md:w-3.5 md:h-3.5" /> },
     { id: 'certificates', label: 'Certificates', icon: <Award className="w-5 h-5 md:w-3.5 md:h-3.5 text-amber-400" /> },
-    { id: 'ad-studio', label: 'Banner Studio', icon: <Sparkles className="w-5 h-5 md:w-3.5 md:h-3.5 text-orange-400" /> },
+    { id: 'youtube', label: 'YouTube Videos', icon: <Youtube className="w-5 h-5 md:w-3.5 md:h-3.5 text-red-500" /> },
   ];
 
   return (
@@ -147,9 +147,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           ? 'bg-white/95 border-t-orange-500 text-black shadow-[0_-6px_25px_rgba(249,115,22,0.14)]'
           : 'bg-neutral-950/95 border-t-orange-500/60 text-neutral-200'
       }`}>
-        <div className="grid grid-cols-5 w-full items-center gap-1 max-w-full">
+        <div className="grid grid-cols-6 w-full items-center gap-0.5 max-w-full">
           {navItems
-            .filter(item => item.id !== 'ad-studio')
             .map(item => {
               const isActive = activeView === item.id;
               return (

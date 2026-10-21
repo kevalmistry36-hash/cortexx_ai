@@ -19,6 +19,7 @@ import { StudentsView } from './components/StudentsView';
 import { CoursesView } from './components/CoursesView';
 import { InvoicesView } from './components/InvoicesView';
 import { BannerStudioView } from './components/BannerStudioView';
+import { YouTubeVideosView } from './components/YouTubeVideosView';
 import { CertificatesView } from './components/CertificatesView';
 import { CertificateVerificationGateway } from './components/CertificateVerificationGateway';
 import { InvoiceModal } from './components/InvoiceModal';
@@ -179,7 +180,7 @@ export default function App() {
 
   const handleLaunchAdStudioForCourse = (course: Course) => {
     setCourseForAdStudio(course);
-    setActiveView('ad-studio');
+    setActiveView('youtube');
   };
 
   const handleEnrollInCourse = (course: Course) => {
@@ -302,6 +303,10 @@ export default function App() {
             onOpenVerificationGateway={code => setVerifyParam(code)}
             theme={theme}
           />
+        )}
+
+        {activeView === 'youtube' && (
+          <YouTubeVideosView theme={theme} />
         )}
 
         {activeView === 'ad-studio' && (

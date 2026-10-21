@@ -256,16 +256,16 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
     ? 'dashboard-kpi-card bg-white border-2 border-neutral-200 border-t-4 border-t-orange-500 shadow-md hover:border-orange-500 text-black rounded-xl p-5 transition-all'
     : 'dashboard-kpi-card bg-neutral-900 border border-neutral-800 border-t-4 border-t-orange-500 hover:border-neutral-700 text-neutral-100 rounded-xl p-5 transition-all';
   const kpiTitleClass = isLight
-    ? 'text-xs uppercase tracking-wider font-extrabold text-black flex items-center gap-1.5'
+    ? 'text-xs uppercase tracking-wider font-black text-black flex items-center gap-1.5'
     : 'text-xs uppercase tracking-wider font-bold text-neutral-400 flex items-center gap-1.5';
   const kpiNumberClass = isLight
     ? 'text-2xl font-black text-black tracking-tight mt-1'
     : 'text-2xl font-black text-neutral-100 tracking-tight mt-1';
   const kpiSubtextClass = isLight
-    ? 'text-[11px] font-semibold text-neutral-700 mt-1'
+    ? 'text-[11px] font-black text-black mt-1'
     : 'text-[11px] font-medium text-neutral-500 mt-1';
   const kpiBadgeClass = isLight
-    ? 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 border border-orange-200'
+    ? 'text-[10px] font-black px-2 py-0.5 rounded-full bg-orange-100 text-black border border-orange-300'
     : 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20';
 
   return (
