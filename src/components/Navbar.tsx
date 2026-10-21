@@ -1,6 +1,5 @@
 import React from 'react';
 import { CortexxLogo } from './CortexxLogo';
-import { PWAInstallButton } from './PWAInstallButton';
 import { Lock, Settings, Sparkles, LayoutDashboard, Users, BookOpen, Receipt, Sun, Moon, Award, Youtube } from 'lucide-react';
 
 export type NavView = 'dashboard' | 'students' | 'courses' | 'invoices' | 'certificates' | 'youtube' | 'ad-studio';
@@ -29,8 +28,8 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'students', label: 'Students', icon: <Users className="w-5 h-5 md:w-3.5 md:h-3.5" /> },
     { id: 'courses', label: 'Courses', icon: <BookOpen className="w-5 h-5 md:w-3.5 md:h-3.5" /> },
     { id: 'invoices', label: 'Invoices', icon: <Receipt className="w-5 h-5 md:w-3.5 md:h-3.5" /> },
-    { id: 'certificates', label: 'Certificates', icon: <Award className="w-5 h-5 md:w-3.5 md:h-3.5 text-amber-400" /> },
-    { id: 'youtube', label: 'YouTube Videos', icon: <Youtube className="w-5 h-5 md:w-3.5 md:h-3.5 text-red-500" /> },
+    { id: 'certificates', label: 'Certificates', icon: <Award className="w-5 h-5 md:w-3.5 md:h-3.5 text-black dark:text-amber-400" /> },
+    { id: 'youtube', label: 'YouTube Videos', icon: <Youtube className="w-5 h-5 md:w-3.5 md:h-3.5 text-black dark:text-red-500" /> },
   ];
 
   return (
@@ -61,14 +60,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                   className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs lg:text-sm rounded-lg whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                     isActive
                       ? theme === 'light'
-                        ? 'bg-orange-500 text-white font-black shadow-md border border-orange-600'
+                        ? 'bg-orange-500 text-black font-black shadow-md border border-orange-600'
                         : 'bg-orange-500 text-neutral-950 font-black shadow-md shadow-orange-500/25 border border-orange-400'
                       : theme === 'light'
                       ? 'text-black hover:text-black hover:bg-orange-100 font-black border border-transparent hover:border-orange-400 shadow-2xs'
                       : 'text-neutral-300 hover:text-white hover:bg-orange-500/25 font-bold border border-transparent hover:border-orange-500/40'
                   }`}
                 >
-                  {item.icon}
+                  <span className={theme === 'light' ? 'text-black' : ''}>{item.icon}</span>
                   <span>{item.label}</span>
                 </button>
               );
@@ -120,22 +119,19 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="hidden sm:inline">{isLocked ? 'Locked' : 'Admin Lock'}</span>
             </button>
 
-            {/* PWA Web App Home Screen Install Shortcut (Hidden on mobile to save space and prevent horizontal scroll) */}
-            <div className="hidden md:flex shrink-0">
-              <PWAInstallButton variant="compact" />
-            </div>
-
-            {/* System Settings & Cloud Sync Button */}
+            {/* System Settings & Cloud Sync Button - prominent black Settings icon in light theme */}
             <button
               onClick={onOpenSettings}
               title="System Settings & Database Backup"
-              className={`p-2 rounded-lg border transition-colors cursor-pointer ${
+              aria-label="System Settings"
+              className={`flex items-center gap-1.5 p-2 sm:px-2.5 sm:py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
                 theme === 'light'
-                  ? 'text-neutral-800 hover:text-black hover:bg-orange-100 border-transparent hover:border-orange-400'
-                  : 'text-neutral-300 hover:text-white hover:bg-neutral-900 border-transparent hover:border-neutral-800'
+                  ? 'bg-white text-black border-neutral-300 hover:border-orange-500 hover:text-black hover:bg-orange-100 font-black shadow-2xs'
+                  : 'bg-neutral-900 text-neutral-200 border-neutral-800 hover:border-orange-500/40 hover:text-orange-400'
               }`}
             >
-              <Settings className="w-4 h-4" />
+              <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black dark:text-neutral-200 stroke-[2.2]" />
+              <span className="hidden sm:inline font-bold">Settings</span>
             </button>
           </div>
         </div>
@@ -158,7 +154,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   className={`flex flex-col items-center justify-center py-1.5 px-0.5 rounded-xl transition-all w-full text-center group cursor-pointer ${
                     isActive
                       ? theme === 'light'
-                        ? 'text-orange-600 bg-orange-500/15 border border-orange-500/40 font-black shadow-sm'
+                        ? 'text-black bg-orange-500/20 border border-orange-500/50 font-black shadow-sm'
                         : 'text-orange-400 bg-orange-500/20 border border-orange-500/40 font-black shadow-sm'
                       : theme === 'light'
                       ? 'text-black hover:text-black hover:bg-orange-100 font-black'
@@ -166,7 +162,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }`}
                 >
                   <div className="relative flex items-center justify-center">
-                    {item.icon}
+                    <span className={theme === 'light' ? 'text-black' : ''}>{item.icon}</span>
                     {isActive && (
                       <span className="absolute -top-1 -right-1 w-1.5 h-1.5 rounded-full bg-orange-500 shadow-sm shadow-orange-500 animate-pulse"></span>
                     )}
@@ -174,7 +170,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <span className={`text-[10px] tracking-tight mt-1 truncate max-w-full block leading-none font-sans ${
                     isActive
                       ? theme === 'light'
-                        ? 'text-orange-600 font-black'
+                        ? 'text-black font-black'
                         : 'text-orange-400 font-black'
                       : ''
                   }`}>
