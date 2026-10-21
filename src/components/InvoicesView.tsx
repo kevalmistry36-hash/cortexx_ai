@@ -561,16 +561,16 @@ Accounts Office, Cortexx AI Institute`;
               <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Paid In Full">💚</span>
               <span className={kpiTitleClass}>Paid In Full</span>
             </div>
-            <div className={kpiIconBoxClass}>
-              <CheckCircle className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/35 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-sm shrink-0">
+              <CheckCircle className="w-4 h-4 stroke-[2.5]" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className={kpiNumberClass}>{paidInvoicesCount}</span>
-            <span className={kpiBadgeClass}>100% Cleared</span>
+            <span className="text-[11px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40">100% Cleared</span>
           </div>
           <div className={kpiSubtextClass}>
-            <span className={isLight ? 'text-black' : 'text-emerald-400'}>Zero Pending Balance</span>
+            <span className="text-emerald-700 dark:text-emerald-400 font-bold">Zero Pending Balance</span>
           </div>
         </div>
 
@@ -581,16 +581,16 @@ Accounts Office, Cortexx AI Institute`;
               <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Pending Fees">⏳</span>
               <span className={kpiTitleClass}>Pending Fees</span>
             </div>
-            <div className={kpiIconBoxClass}>
-              <Clock className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+            <div className="w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/35 flex items-center justify-center text-rose-600 dark:text-rose-400 shadow-sm shrink-0">
+              <Clock className="w-4 h-4 stroke-[2.5]" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className={kpiNumberClass}>{pendingInvoicesCount}</span>
-            <span className={kpiBadgeClass}>Due</span>
+            <span className="text-[11px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-md bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/40">Due</span>
           </div>
           <div className={kpiSubtextClass}>
-            <span className={isLight ? 'text-black' : 'text-amber-400'}>Installments Outstanding</span>
+            <span className="text-rose-700 dark:text-rose-400 font-bold">Installments Outstanding</span>
           </div>
         </div>
 
@@ -682,19 +682,20 @@ Accounts Office, Cortexx AI Institute`;
         </div>
 
         {/* Filters Bar: Student Active/Deactive Mode & Payment Status */}
-        <div className={`flex items-center justify-between gap-3 flex-wrap p-2.5 rounded-xl border ${
+        {/* Filters Bar: Student Active/Deactive Mode & Payment Status */}
+        <div className={`flex items-center justify-between gap-3 flex-wrap p-3 rounded-xl border ${
           isLight ? 'bg-white border-neutral-200 shadow-sm' : 'bg-neutral-900/60 border-neutral-800/80'
         }`}>
           {/* Student Active / Deactive Mode Filter */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className={`text-xs font-bold mr-1 ${isLight ? 'text-black' : 'text-neutral-400'}`}>Student Status:</span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className={`text-xs font-black mr-1 uppercase tracking-wider ${isLight ? 'text-neutral-950' : 'text-neutral-200'}`}>Student Status:</span>
             <button
               type="button"
               onClick={() => setStudentActiveFilter('all')}
-              className={`px-2.5 py-1 text-xs font-black rounded cursor-pointer transition-colors ${
+              className={`px-3 py-1.5 text-xs font-black rounded-lg cursor-pointer transition-all border-2 ${
                 studentActiveFilter === 'all'
-                  ? isLight ? 'bg-neutral-200 text-black font-black' : 'bg-neutral-800 text-neutral-100 shadow-sm'
-                  : isLight ? 'text-neutral-600 hover:text-black' : 'text-neutral-400 hover:text-neutral-200'
+                  ? isLight ? 'bg-neutral-900 text-white border-neutral-900 shadow-sm' : 'bg-neutral-800 text-white border-neutral-700 shadow-sm'
+                  : isLight ? 'bg-neutral-100 text-neutral-800 border-neutral-300 hover:bg-neutral-200' : 'bg-neutral-900 text-neutral-300 border-neutral-800 hover:bg-neutral-800'
               }`}
             >
               All Students
@@ -702,32 +703,36 @@ Accounts Office, Cortexx AI Institute`;
             <button
               type="button"
               onClick={() => setStudentActiveFilter('active')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-black rounded cursor-pointer transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg cursor-pointer transition-all border-2 ${
                 studentActiveFilter === 'active'
-                  ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30'
-                  : isLight ? 'text-neutral-600 hover:text-emerald-700' : 'text-neutral-400 hover:text-emerald-400'
+                  ? 'bg-emerald-600 text-white border-emerald-700 shadow-md ring-2 ring-emerald-500/40'
+                  : isLight
+                  ? 'bg-emerald-100 text-emerald-900 border-emerald-400 hover:bg-emerald-200 shadow-xs'
+                  : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
               }`}
             >
-              <UserCheck className="w-3.5 h-3.5" />
+              <UserCheck className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>Active</span>
-              <span className="text-[10px] opacity-80 font-mono">
-                ({activeTab === 'invoices' ? activeInvoicesCount : activeReceiptsCount})
+              <span className={`text-[10px] font-mono font-black px-1.5 py-0.5 rounded ${studentActiveFilter === 'active' ? 'bg-black/20 text-white' : 'bg-emerald-200/80 text-emerald-950 dark:bg-emerald-500/30 dark:text-emerald-200'}`}>
+                {activeTab === 'invoices' ? activeInvoicesCount : activeReceiptsCount}
               </span>
             </button>
             <button
               type="button"
               onClick={() => setStudentActiveFilter('deactivated')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-black rounded cursor-pointer transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg cursor-pointer transition-all border-2 ${
                 studentActiveFilter === 'deactivated'
-                  ? 'bg-rose-500/20 text-rose-700 dark:text-rose-400 border border-rose-500/30'
-                  : isLight ? 'text-neutral-600 hover:text-rose-700' : 'text-neutral-400 hover:text-rose-400'
+                  ? 'bg-rose-600 text-white border-rose-700 shadow-md ring-2 ring-rose-500/40'
+                  : isLight
+                  ? 'bg-rose-100 text-rose-950 border-rose-400 hover:bg-rose-200 shadow-xs'
+                  : 'bg-rose-500/20 text-rose-300 border-rose-500/40 hover:bg-rose-500/30'
               }`}
               title="Show only students in Deactive Mode"
             >
-              <UserX className="w-3.5 h-3.5 text-rose-500" />
+              <UserX className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>Deactive Mode</span>
               {(activeTab === 'invoices' ? deactivatedInvoicesCount : deactivatedReceiptsCount) > 0 && (
-                <span className="text-[10px] bg-rose-500/30 text-rose-700 dark:text-rose-300 px-1.5 py-0.2 rounded-full font-mono">
+                <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-black ${studentActiveFilter === 'deactivated' ? 'bg-black/20 text-white' : 'bg-rose-200/80 text-rose-950 dark:bg-rose-500/30 dark:text-rose-200'}`}>
                   {activeTab === 'invoices' ? deactivatedInvoicesCount : deactivatedReceiptsCount}
                 </span>
               )}
@@ -736,43 +741,58 @@ Accounts Office, Cortexx AI Institute`;
 
           {/* Payment Status Filter (when on Invoices tab) */}
           {activeTab === 'invoices' && (
-            <div className={`flex items-center gap-1 p-1 rounded-lg border shrink-0 ${
-              isLight ? 'bg-neutral-100 border-neutral-200' : 'bg-neutral-900 border-neutral-800'
+            <div className={`flex items-center gap-1.5 p-1 rounded-xl border-2 shrink-0 ${
+              isLight ? 'bg-neutral-100 border-neutral-300' : 'bg-neutral-900 border-neutral-800'
             }`}>
-              <span className={`text-xs font-bold px-1.5 ${isLight ? 'text-black' : 'text-neutral-400'}`}>Fee:</span>
+              <span className={`text-xs font-black px-2 uppercase tracking-wider ${isLight ? 'text-neutral-950' : 'text-neutral-200'}`}>Fee Status:</span>
               <button
                 onClick={() => setStatusFilter('all')}
-                className={`px-2 py-0.5 text-xs font-black rounded ${
+                className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all border-2 cursor-pointer ${
                   statusFilter === 'all'
-                    ? isLight ? 'bg-white text-black shadow-sm' : 'bg-neutral-800 text-neutral-100'
-                    : isLight ? 'text-neutral-600 hover:text-black' : 'text-neutral-400'
+                    ? isLight ? 'bg-neutral-900 text-white border-neutral-900 shadow-sm' : 'bg-neutral-800 text-white border-neutral-700 shadow-sm'
+                    : isLight ? 'text-neutral-700 border-transparent hover:bg-neutral-200' : 'text-neutral-400 border-transparent hover:text-white'
                 }`}
               >
                 All
               </button>
               <button
                 onClick={() => setStatusFilter('paid')}
-                className={`px-2 py-0.5 text-xs font-black rounded ${
-                  statusFilter === 'paid' ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-400' : isLight ? 'text-neutral-600' : 'text-neutral-400'
+                className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all border-2 flex items-center gap-1.5 cursor-pointer ${
+                  statusFilter === 'paid'
+                    ? 'bg-emerald-600 text-white border-emerald-700 shadow-md ring-2 ring-emerald-500/40'
+                    : isLight
+                    ? 'bg-emerald-100 text-emerald-900 border-emerald-400 hover:bg-emerald-200 shadow-xs'
+                    : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
                 }`}
               >
-                Paid
+                <CheckCircle className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Paid</span>
               </button>
               <button
                 onClick={() => setStatusFilter('partially_paid')}
-                className={`px-2 py-0.5 text-xs font-black rounded ${
-                  statusFilter === 'partially_paid' ? 'bg-amber-500/20 text-amber-700 dark:text-amber-400' : isLight ? 'text-neutral-600' : 'text-neutral-400'
+                className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all border-2 flex items-center gap-1.5 cursor-pointer ${
+                  statusFilter === 'partially_paid'
+                    ? 'bg-amber-500 text-neutral-950 border-amber-600 shadow-md ring-2 ring-amber-500/40'
+                    : isLight
+                    ? 'bg-amber-100 text-amber-950 border-amber-400 hover:bg-amber-200 shadow-xs'
+                    : 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
                 }`}
               >
-                Partial
+                <Clock className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Partial</span>
               </button>
               <button
                 onClick={() => setStatusFilter('unpaid')}
-                className={`px-2 py-0.5 text-xs font-black rounded ${
-                  statusFilter === 'unpaid' ? 'bg-rose-500/20 text-rose-700 dark:text-rose-400' : isLight ? 'text-neutral-600' : 'text-neutral-400'
+                className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all border-2 flex items-center gap-1.5 cursor-pointer ${
+                  statusFilter === 'unpaid'
+                    ? 'bg-rose-600 text-white border-rose-700 shadow-md ring-2 ring-rose-500/40'
+                    : isLight
+                    ? 'bg-rose-100 text-rose-950 border-rose-400 hover:bg-rose-200 shadow-xs'
+                    : 'bg-rose-500/20 text-rose-300 border-rose-500/40 hover:bg-rose-500/30'
                 }`}
               >
-                Pending
+                <AlertCircle className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Pending</span>
               </button>
             </div>
           )}
@@ -827,18 +847,23 @@ Accounts Office, Cortexx AI Institute`;
                             <>
                               <div className="flex items-center gap-2 flex-wrap">
                                 <span
-                                  className={`font-black text-sm tracking-tight transition-colors ${
+                                  className={`font-black text-sm tracking-tight ${
                                     isDeact
-                                      ? 'line-through text-neutral-400 decoration-rose-500/60 opacity-80'
-                                      : isLight ? 'text-black' : 'text-neutral-100'
+                                      ? 'line-through text-rose-600 decoration-rose-600 decoration-2'
+                                      : isLight ? 'text-black font-black' : 'text-neutral-100 hover:text-orange-400'
                                   }`}
                                 >
                                   {inv.studentName}
                                 </span>
 
-                                {isDeact && (
-                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold rounded bg-rose-500/15 text-rose-500 border border-rose-500/30 uppercase tracking-wider">
-                                    <UserX className="w-3 h-3 text-rose-500 shrink-0" />
+                                {!isDeact ? (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-black rounded-md bg-emerald-600 text-white shadow-xs dark:bg-emerald-500/25 dark:text-emerald-300 dark:border dark:border-emerald-500/40 uppercase tracking-wider">
+                                    <UserCheck className="w-3 h-3 stroke-[2.5]" />
+                                    <span>Active</span>
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-black rounded-md bg-rose-600 text-white shadow-xs dark:bg-rose-500/25 dark:text-rose-300 dark:border dark:border-rose-500/40 uppercase tracking-wider">
+                                    <UserX className="w-3 h-3 stroke-[2.5]" />
                                     <span>Deactivated</span>
                                   </span>
                                 )}
@@ -866,16 +891,24 @@ Accounts Office, Cortexx AI Institute`;
                                 </button>
                               </div>
                               <div className="text-xs mt-0.5 flex items-center gap-1.5 flex-wrap">
+                                <span className={`font-mono font-black ${isLight ? 'text-black' : 'text-neutral-300'}`}>{inv.studentId}</span>
+                                <span className={isLight ? 'text-black font-black' : 'text-neutral-600'}>·</span>
                                 <span className={`font-black ${isLight ? 'text-black' : 'text-neutral-100'}`}>{inv.courseName}</span>
-                                <span className={isLight ? 'text-neutral-400' : 'text-neutral-600'}>·</span>
-                                <span className={`font-mono font-bold ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>+91 {inv.studentPhone}</span>
+                                <span className={isLight ? 'text-black font-black' : 'text-neutral-600'}>·</span>
+                                <span className={`font-mono font-black ${isLight ? 'text-black' : 'text-neutral-400'}`}>+91 {inv.studentPhone}</span>
+                                {inv.studentEmail && (
+                                  <>
+                                    <span className={isLight ? 'text-black font-black' : 'text-neutral-600'}>·</span>
+                                    <span className={`font-mono font-bold ${isLight ? 'text-black' : 'text-neutral-400'}`}>{inv.studentEmail}</span>
+                                  </>
+                                )}
                               </div>
                             </>
                           );
                         })()}
                       </td>
 
-                      <td className={`py-3.5 px-4 text-right font-mono text-sm font-black whitespace-nowrap ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                      <td className={`py-3.5 px-4 text-right font-mono text-sm font-black whitespace-nowrap ${isLight ? 'text-neutral-950' : 'text-neutral-100'}`}>
                         ₹{inv.totalPayable.toLocaleString('en-IN')}
                       </td>
 
@@ -885,26 +918,29 @@ Accounts Office, Cortexx AI Institute`;
 
                       <td className="py-3.5 px-4 text-right font-mono text-xs font-bold whitespace-nowrap">
                         {inv.remainingBalance > 0 ? (
-                          <span className={`font-black ${isLight ? 'text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-300' : 'text-amber-400'}`}>₹{inv.remainingBalance.toLocaleString('en-IN')}</span>
+                          <span className={`font-black ${isLight ? 'text-rose-700 bg-rose-50 px-2.5 py-1 rounded-md border border-rose-300' : 'text-rose-400 bg-rose-500/15 px-2 py-0.5 rounded border border-rose-500/30'}`}>₹{inv.remainingBalance.toLocaleString('en-IN')}</span>
                         ) : (
-                          <span className={`font-semibold ${isLight ? 'text-neutral-400' : 'text-neutral-500'}`}>₹0</span>
+                          <span className={`font-semibold ${isLight ? 'text-neutral-500' : 'text-neutral-500'}`}>₹0</span>
                         )}
                       </td>
 
                       <td className="py-3.5 px-4 text-right whitespace-nowrap">
                         {inv.paymentStatus === 'paid' && (
-                          <span className={`px-2 py-0.5 text-xs font-black rounded ${isLight ? 'text-emerald-800 bg-emerald-50 border border-emerald-300' : 'text-emerald-400 bg-emerald-500/10'}`}>
-                            Paid
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-black rounded-lg uppercase tracking-wider shadow-xs ${isLight ? 'bg-emerald-600 text-white border border-emerald-700' : 'bg-emerald-500/25 text-emerald-300 border border-emerald-500/50'}`}>
+                            <CheckCircle className="w-3.5 h-3.5 stroke-[2.5]" />
+                            <span>Paid</span>
                           </span>
                         )}
                         {inv.paymentStatus === 'partially_paid' && (
-                          <span className={`px-2 py-0.5 text-xs font-black rounded ${isLight ? 'text-amber-800 bg-amber-50 border border-amber-300' : 'text-amber-400 bg-amber-500/10'}`}>
-                            Partial
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-black rounded-lg uppercase tracking-wider shadow-xs ${isLight ? 'bg-amber-500 text-neutral-950 border border-amber-600' : 'bg-amber-500/25 text-amber-300 border border-amber-500/50'}`}>
+                            <Clock className="w-3.5 h-3.5 stroke-[2.5]" />
+                            <span>Partial</span>
                           </span>
                         )}
                         {inv.paymentStatus === 'unpaid' && (
-                          <span className={`px-2 py-0.5 text-xs font-black rounded ${isLight ? 'text-rose-800 bg-rose-50 border border-rose-300' : 'text-rose-400 bg-rose-500/10'}`}>
-                            Unpaid
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-black rounded-lg uppercase tracking-wider shadow-xs ${isLight ? 'bg-rose-600 text-white border border-rose-700' : 'bg-rose-500/25 text-rose-300 border border-rose-500/50'}`}>
+                            <AlertCircle className="w-3.5 h-3.5 stroke-[2.5]" />
+                            <span>Pending</span>
                           </span>
                         )}
                       </td>
@@ -981,15 +1017,30 @@ Accounts Office, Cortexx AI Institute`;
                     </span>
                   </div>
                   <span
-                    className={`px-2 py-0.5 text-xs font-bold rounded ${
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-black rounded-lg uppercase tracking-wider shadow-xs ${
                       inv.paymentStatus === 'paid'
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                        ? 'bg-emerald-600 text-white border border-emerald-700'
                         : inv.paymentStatus === 'partially_paid'
-                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                        : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                        ? 'bg-amber-500 text-neutral-950 border border-amber-600'
+                        : 'bg-rose-600 text-white border border-rose-700'
                     }`}
                   >
-                    {inv.paymentStatus === 'paid' ? '✓ Paid' : inv.paymentStatus === 'partially_paid' ? '⏳ Partial' : '✕ Unpaid'}
+                    {inv.paymentStatus === 'paid' ? (
+                      <>
+                        <CheckCircle className="w-3.5 h-3.5 stroke-[2.5]" />
+                        <span>Paid</span>
+                      </>
+                    ) : inv.paymentStatus === 'partially_paid' ? (
+                      <>
+                        <Clock className="w-3.5 h-3.5 stroke-[2.5]" />
+                        <span>Partial</span>
+                      </>
+                    ) : (
+                      <>
+                        <AlertCircle className="w-3.5 h-3.5 stroke-[2.5]" />
+                        <span>Pending</span>
+                      </>
+                    )}
                   </span>
                 </div>
 
@@ -997,17 +1048,22 @@ Accounts Office, Cortexx AI Institute`;
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span
-                      className={`font-bold text-base ${
+                      className={`font-black text-base ${
                         checkIsStudentDeactivated(inv.studentId, inv.studentName)
-                          ? 'line-through text-neutral-500 decoration-rose-500/60 opacity-80'
-                          : 'text-neutral-100'
+                          ? 'line-through text-rose-500 decoration-rose-600 decoration-2'
+                          : isLight ? 'text-black' : 'text-neutral-100'
                       }`}
                     >
                       {inv.studentName}
                     </span>
-                    {checkIsStudentDeactivated(inv.studentId, inv.studentName) && (
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold rounded bg-rose-500/15 text-rose-400 border border-rose-500/30 uppercase tracking-wider">
-                        <UserX className="w-3 h-3 text-rose-400 shrink-0" />
+                    {!checkIsStudentDeactivated(inv.studentId, inv.studentName) ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-black rounded-md bg-emerald-600 text-white shadow-xs uppercase tracking-wider">
+                        <UserCheck className="w-3 h-3 stroke-[2.5]" />
+                        <span>Active</span>
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-black rounded-md bg-rose-600 text-white shadow-xs uppercase tracking-wider">
+                        <UserX className="w-3 h-3 stroke-[2.5]" />
                         <span>Deactivated</span>
                       </span>
                     )}
@@ -1022,7 +1078,7 @@ Accounts Office, Cortexx AI Institute`;
                       className={`p-1 rounded cursor-pointer ${
                         checkIsStudentDeactivated(inv.studentId, inv.studentName)
                           ? 'text-rose-400 bg-rose-500/15 border border-rose-500/30'
-                          : 'text-neutral-400 hover:text-rose-400'
+                          : isLight ? 'text-neutral-500 hover:text-rose-500 hover:bg-neutral-200' : 'text-neutral-400 hover:text-rose-400'
                       }`}
                     >
                       {checkIsStudentDeactivated(inv.studentId, inv.studentName) ? (
@@ -1032,25 +1088,28 @@ Accounts Office, Cortexx AI Institute`;
                       )}
                     </button>
                   </div>
+                  <div className={`text-xs font-mono font-black ${isLight ? 'text-black' : 'text-neutral-400'}`}>
+                    Student ID: {inv.studentId}
+                  </div>
                   {inv.studentPhone && (
-                    <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-300">
-                      <Phone className="w-3 h-3 text-neutral-400 shrink-0" />
+                    <div className={`flex items-center gap-1.5 text-xs font-mono font-black ${isLight ? 'text-black' : 'text-neutral-300'}`}>
+                      <Phone className={`w-3 h-3 shrink-0 ${isLight ? 'text-black' : 'text-neutral-400'}`} />
                       <span>+91 {inv.studentPhone}</span>
                     </div>
                   )}
                   {inv.studentEmail && (
-                    <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-400">
-                      <Mail className="w-3 h-3 text-neutral-500 shrink-0" />
+                    <div className={`flex items-center gap-1.5 text-xs font-mono font-bold ${isLight ? 'text-black' : 'text-neutral-400'}`}>
+                      <Mail className={`w-3 h-3 shrink-0 ${isLight ? 'text-black' : 'text-neutral-500'}`} />
                       <span className="truncate max-w-[240px]">{inv.studentEmail}</span>
                     </div>
                   )}
                 </div>
 
                 {/* Vertical Course Curriculum */}
-                <div className="p-2.5 bg-neutral-950/70 rounded-xl border border-neutral-800/80 space-y-1">
-                  <div className="text-xs font-semibold text-neutral-200">{inv.courseName}</div>
-                  <div className="text-[11px] text-neutral-400 flex items-center gap-1">
-                    <BookOpen className="w-3 h-3 text-orange-400" />
+                <div className={`p-2.5 rounded-xl border space-y-1 ${isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950/70 border-neutral-800/80'}`}>
+                  <div className={`text-xs font-black ${isLight ? 'text-black' : 'text-neutral-200'}`}>{inv.courseName}</div>
+                  <div className={`text-[11px] font-bold flex items-center gap-1 ${isLight ? 'text-black' : 'text-neutral-400'}`}>
+                    <BookOpen className="w-3 h-3 text-orange-500" />
                     <span>{inv.courseDuration || 'Practical AI Course'}</span>
                   </div>
                 </div>
@@ -1175,18 +1234,23 @@ Accounts Office, Cortexx AI Institute`;
                           return (
                             <div className="flex items-center gap-2 flex-wrap">
                               <span
-                                className={`font-black text-sm tracking-tight transition-colors ${
+                                className={`font-black text-sm tracking-tight ${
                                   isDeact
-                                    ? 'line-through text-neutral-400 decoration-rose-500/60 opacity-80'
-                                    : isLight ? 'text-black' : 'text-neutral-100'
+                                    ? 'line-through text-rose-600 decoration-rose-600 decoration-2'
+                                    : isLight ? 'text-black font-black' : 'text-neutral-100 hover:text-emerald-400'
                                 }`}
                               >
                                 {rec.studentName}
                               </span>
 
-                              {isDeact && (
-                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold rounded bg-rose-500/15 text-rose-500 border border-rose-500/30 uppercase tracking-wider">
-                                  <UserX className="w-3 h-3 text-rose-500 shrink-0" />
+                              {!isDeact ? (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-black rounded-md bg-emerald-600 text-white shadow-xs dark:bg-emerald-500/25 dark:text-emerald-300 dark:border dark:border-emerald-500/40 uppercase tracking-wider">
+                                  <UserCheck className="w-3 h-3 stroke-[2.5]" />
+                                  <span>Active</span>
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-black rounded-md bg-rose-600 text-white shadow-xs dark:bg-rose-500/25 dark:text-rose-300 dark:border dark:border-rose-500/40 uppercase tracking-wider">
+                                  <UserX className="w-3 h-3 stroke-[2.5]" />
                                   <span>Deactivated</span>
                                 </span>
                               )}
@@ -1268,25 +1332,30 @@ Accounts Office, Cortexx AI Institute`;
           </div>
 
           {/* Mobile Receipts Cards List */}
-          <div className="md:hidden divide-y divide-neutral-800 bg-neutral-900/40">
+          <div className={`md:hidden divide-y ${isLight ? 'bg-white divide-neutral-200 border border-neutral-200' : 'bg-neutral-900/40 divide-neutral-800'}`}>
             {filteredReceipts.map(rec => (
-              <div key={rec.receiptNumber} className="p-4 space-y-3">
+              <div key={rec.receiptNumber} className={`p-4 space-y-3 ${isLight ? 'hover:bg-neutral-50 text-black' : 'hover:bg-neutral-900/60 text-neutral-100'}`}>
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <span className="font-mono text-xs font-bold text-emerald-400">{rec.receiptNumber}</span>
+                    <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">{rec.receiptNumber}</span>
                     <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                       <span
-                        className={`font-bold text-base ${
+                        className={`font-black text-base ${
                           checkIsStudentDeactivated(rec.studentId, rec.studentName)
-                            ? 'line-through text-neutral-500 decoration-rose-500/60 opacity-80'
-                            : 'text-neutral-100'
+                            ? 'line-through text-rose-500 decoration-rose-600 decoration-2'
+                            : isLight ? 'text-black' : 'text-neutral-100'
                         }`}
                       >
                         {rec.studentName}
                       </span>
-                      {checkIsStudentDeactivated(rec.studentId, rec.studentName) && (
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold rounded bg-rose-500/15 text-rose-400 border border-rose-500/30 uppercase tracking-wider">
-                          <UserX className="w-3 h-3 text-rose-400 shrink-0" />
+                      {!checkIsStudentDeactivated(rec.studentId, rec.studentName) ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-black rounded-md bg-emerald-600 text-white shadow-xs uppercase tracking-wider">
+                          <UserCheck className="w-3 h-3 stroke-[2.5]" />
+                          <span>Active</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-black rounded-md bg-rose-600 text-white shadow-xs uppercase tracking-wider">
+                          <UserX className="w-3 h-3 stroke-[2.5]" />
                           <span>Deactivated</span>
                         </span>
                       )}
@@ -1301,7 +1370,7 @@ Accounts Office, Cortexx AI Institute`;
                         className={`p-1 rounded cursor-pointer ${
                           checkIsStudentDeactivated(rec.studentId, rec.studentName)
                             ? 'text-rose-400 bg-rose-500/15 border border-rose-500/30'
-                            : 'text-neutral-400 hover:text-rose-400'
+                            : isLight ? 'text-neutral-500 hover:text-rose-500 hover:bg-neutral-200' : 'text-neutral-400 hover:text-rose-400'
                         }`}
                       >
                         {checkIsStudentDeactivated(rec.studentId, rec.studentName) ? (
@@ -1311,14 +1380,14 @@ Accounts Office, Cortexx AI Institute`;
                         )}
                       </button>
                     </div>
-                    <div className="text-xs font-mono text-neutral-400">Invoice: {rec.invoiceNumber}</div>
+                    <div className={`text-xs font-mono font-bold ${isLight ? 'text-black' : 'text-neutral-400'}`}>Invoice: {rec.invoiceNumber}</div>
                   </div>
-                  <span className="px-2 py-0.5 text-xs font-bold rounded bg-emerald-500/20 text-emerald-400">
+                  <span className="px-2.5 py-1 text-xs font-black rounded-lg bg-emerald-600 text-white shadow-xs">
                     ₹{rec.amountReceived.toLocaleString('en-IN')}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between text-xs font-mono text-neutral-300 bg-neutral-950/60 p-2.5 rounded-lg border border-neutral-800">
+                <div className={`flex items-center justify-between text-xs font-mono p-2.5 rounded-lg border ${isLight ? 'bg-neutral-50 text-black border-neutral-300 font-bold' : 'bg-neutral-950/60 text-neutral-300 border-neutral-800'}`}>
                   <div>Date: {rec.paymentDate}</div>
                   <div>Mode: {rec.paymentMethod}</div>
                   <div>Bal: ₹{rec.remainingBalanceAfter.toLocaleString('en-IN')}</div>
@@ -1365,19 +1434,24 @@ Accounts Office, Cortexx AI Institute`;
       {/* Generate Invoice Modal */}
       {showGenerateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-neutral-800">
+          <div className={`border rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-5 ${
+            isLight ? 'bg-white border-2 border-neutral-300 text-black' : 'bg-neutral-900 border-neutral-800 text-neutral-100'
+          }`}>
+            <div className={`flex items-center justify-between pb-3 border-b ${isLight ? 'border-neutral-200' : 'border-neutral-800'}`}>
               <div>
-                <h3 className="text-lg font-bold text-neutral-100">Generate Student Invoice</h3>
-                <p className="text-xs text-neutral-400 mt-0.5">Creates formal A4 invoice with live arithmetic</p>
+                <h3 className={`text-lg font-black tracking-tight ${isLight ? 'text-black' : 'text-neutral-100'}`}>Generate Student Invoice</h3>
+                <p className={`text-xs mt-0.5 font-bold ${isLight ? 'text-black' : 'text-neutral-400'}`}>Creates formal A4 invoice with live arithmetic</p>
               </div>
-              <button onClick={handleCloseGenerateModal} className="text-neutral-400 hover:text-neutral-200 p-1">
+              <button
+                onClick={handleCloseGenerateModal}
+                className={`p-1 rounded-lg transition-colors cursor-pointer ${isLight ? 'text-neutral-600 hover:text-black hover:bg-neutral-100' : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800'}`}
+              >
                 ✕
               </button>
             </div>
 
             {formError && (
-              <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-xs text-rose-400">
+              <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-xs font-bold text-rose-500">
                 {formError}
               </div>
             )}
@@ -1385,7 +1459,7 @@ Accounts Office, Cortexx AI Institute`;
             <form onSubmit={handleCreateInvoice} className="space-y-4">
               {/* Select Student */}
               <div>
-                <label className="block text-xs font-semibold text-neutral-300 uppercase tracking-wider mb-1">
+                <label className={`block text-xs font-black uppercase tracking-wider mb-1 ${isLight ? 'text-black' : 'text-neutral-300'}`}>
                   Select Student *
                 </label>
                 <select
@@ -1398,7 +1472,9 @@ Accounts Office, Cortexx AI Institute`;
                       setAmountPaidNow(stu.totalPaid);
                     }
                   }}
-                  className="w-full px-3.5 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm text-neutral-100 focus:outline-none focus:border-orange-500"
+                  className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-bold focus:outline-none focus:border-orange-500 cursor-pointer ${
+                    isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-100'
+                  }`}
                 >
                   {students.map(s => (
                     <option key={s.id} value={s.id}>
@@ -1410,13 +1486,15 @@ Accounts Office, Cortexx AI Institute`;
 
               {/* Course Selection */}
               <div>
-                <label className="block text-xs font-semibold text-neutral-300 uppercase tracking-wider mb-1">
+                <label className={`block text-xs font-black uppercase tracking-wider mb-1 ${isLight ? 'text-black' : 'text-neutral-300'}`}>
                   Course
                 </label>
                 <select
                   value={selectedCourseId}
                   onChange={e => setSelectedCourseId(e.target.value)}
-                  className="w-full px-3.5 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm text-neutral-100 focus:outline-none focus:border-orange-500"
+                  className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-bold focus:outline-none focus:border-orange-500 cursor-pointer ${
+                    isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-100'
+                  }`}
                 >
                   {courses.map(c => (
                     <option key={c.id} value={c.id}>
@@ -1429,7 +1507,7 @@ Accounts Office, Cortexx AI Institute`;
               {/* Discount Amount & Amount Paid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-300 uppercase tracking-wider mb-1">
+                  <label className={`block text-xs font-black uppercase tracking-wider mb-1 ${isLight ? 'text-black' : 'text-neutral-300'}`}>
                     Special Discount (₹)
                   </label>
                   <input
@@ -1438,12 +1516,14 @@ Accounts Office, Cortexx AI Institute`;
                     max={baseFee}
                     value={discountAmount}
                     onChange={e => setDiscountAmount(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm font-mono text-neutral-100 focus:outline-none focus:border-orange-500"
+                    className={`w-full px-3.5 py-2 border rounded-xl text-sm font-mono font-bold focus:outline-none focus:border-orange-500 ${
+                      isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-100'
+                    }`}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-300 uppercase tracking-wider mb-1">
+                  <label className={`block text-xs font-black uppercase tracking-wider mb-1 ${isLight ? 'text-black' : 'text-neutral-300'}`}>
                     Amount Paid Today (₹)
                   </label>
                   <input
@@ -1452,32 +1532,36 @@ Accounts Office, Cortexx AI Institute`;
                     max={netPayable}
                     value={amountPaidNow}
                     onChange={e => setAmountPaidNow(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm font-mono text-neutral-100 focus:outline-none focus:border-orange-500"
+                    className={`w-full px-3.5 py-2 border rounded-xl text-sm font-mono font-bold focus:outline-none focus:border-orange-500 ${
+                      isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-100'
+                    }`}
                   />
                 </div>
               </div>
 
               {/* Live Arithmetic Breakdown Summary */}
-              <div className="p-3.5 bg-neutral-950 border border-neutral-800/80 rounded-xl space-y-1.5 text-xs font-mono">
-                <div className="flex justify-between text-neutral-400">
+              <div className={`p-3.5 border rounded-xl space-y-1.5 text-xs font-mono ${
+                isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800/80'
+              }`}>
+                <div className={`flex justify-between ${isLight ? 'text-black font-bold' : 'text-neutral-400'}`}>
                   <span>Course Standard Fee:</span>
-                  <span>₹{baseFee.toLocaleString('en-IN')}</span>
+                  <span className="font-bold">₹{baseFee.toLocaleString('en-IN')}</span>
                 </div>
                 {discountAmount > 0 && (
-                  <div className="flex justify-between text-emerald-400">
+                  <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-bold">
                     <span>Discount Applied:</span>
                     <span>- ₹{discountAmount.toLocaleString('en-IN')}</span>
                   </div>
                 )}
-                <div className="flex justify-between font-bold text-neutral-200 pt-1 border-t border-neutral-800">
+                <div className={`flex justify-between font-black pt-1 border-t ${isLight ? 'border-neutral-200 text-black' : 'border-neutral-800 text-neutral-200'}`}>
                   <span>Net Payable Amount:</span>
                   <span>₹{netPayable.toLocaleString('en-IN')}</span>
                 </div>
-                <div className="flex justify-between text-emerald-400">
+                <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-bold">
                   <span>Payment Recorded:</span>
                   <span>₹{amountPaidNow.toLocaleString('en-IN')}</span>
                 </div>
-                <div className="flex justify-between font-bold text-amber-400 pt-1 border-t border-neutral-800">
+                <div className={`flex justify-between font-black pt-1 border-t ${isLight ? 'border-neutral-200 text-rose-700' : 'border-neutral-800 text-amber-400'}`}>
                   <span>Remaining Due Balance:</span>
                   <span>₹{calcRemainingBalance.toLocaleString('en-IN')}</span>
                 </div>
@@ -1485,7 +1569,7 @@ Accounts Office, Cortexx AI Institute`;
 
               {/* Payment Method */}
               <div>
-                <label className="block text-xs font-semibold text-neutral-300 uppercase tracking-wider mb-1">
+                <label className={`block text-xs font-black uppercase tracking-wider mb-1 ${isLight ? 'text-black' : 'text-neutral-300'}`}>
                   Payment Method
                 </label>
                 <div className="grid grid-cols-4 gap-2">
@@ -1494,10 +1578,12 @@ Accounts Office, Cortexx AI Institute`;
                       type="button"
                       key={method}
                       onClick={() => setPaymentMethod(method)}
-                      className={`py-1.5 text-xs font-medium rounded-lg border text-center transition-colors ${
+                      className={`py-1.5 text-xs font-black rounded-lg border text-center transition-colors cursor-pointer ${
                         paymentMethod === method
-                          ? 'bg-orange-500/20 text-orange-400 border-orange-500'
-                          : 'bg-neutral-950 text-neutral-400 border-neutral-800'
+                          ? 'bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-500'
+                          : isLight
+                          ? 'bg-neutral-50 text-black border-neutral-300 hover:bg-neutral-200'
+                          : 'bg-neutral-950 text-neutral-400 border-neutral-800 hover:text-white'
                       }`}
                     >
                       {method}
@@ -1508,7 +1594,7 @@ Accounts Office, Cortexx AI Institute`;
 
               {/* Notes */}
               <div>
-                <label className="block text-xs font-semibold text-neutral-300 uppercase tracking-wider mb-1">
+                <label className={`block text-xs font-black uppercase tracking-wider mb-1 ${isLight ? 'text-black' : 'text-neutral-300'}`}>
                   Invoice Notes / Terms
                 </label>
                 <input
@@ -1516,21 +1602,23 @@ Accounts Office, Cortexx AI Institute`;
                   value={invoiceNotes}
                   onChange={e => setInvoiceNotes(e.target.value)}
                   placeholder="Tuition fee for 1-Month Practical AI Course"
-                  className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-xs text-neutral-100 focus:outline-none focus:border-orange-500"
+                  className={`w-full px-3 py-2 border rounded-xl text-xs font-bold focus:outline-none focus:border-orange-500 ${
+                    isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-100'
+                  }`}
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-neutral-800">
+              <div className={`flex items-center justify-end gap-3 pt-3 border-t ${isLight ? 'border-neutral-200' : 'border-neutral-800'}`}>
                 <button
                   type="button"
                   onClick={handleCloseGenerateModal}
-                  className="px-4 py-2 text-xs font-semibold text-neutral-400 hover:text-neutral-200"
+                  className={`px-4 py-2 text-xs font-bold rounded-lg cursor-pointer ${isLight ? 'text-neutral-700 hover:text-black hover:bg-neutral-100' : 'text-neutral-400 hover:text-neutral-200'}`}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs rounded-lg transition-colors flex items-center gap-1.5"
+                  className="px-5 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-black text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <Receipt className="w-4 h-4" />
                   <span>Generate & Preview</span>
@@ -1544,37 +1632,66 @@ Accounts Office, Cortexx AI Institute`;
       {/* Record Payment Installment Modal */}
       {showPaymentModal && paymentInvoice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-neutral-800">
+          <div className={`border rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-5 ${
+            isLight ? 'bg-white border-2 border-neutral-300 text-black' : 'bg-neutral-900 border-neutral-800 text-neutral-100'
+          }`}>
+            <div className={`flex items-center justify-between pb-3 border-b ${isLight ? 'border-neutral-200' : 'border-neutral-800'}`}>
               <div>
-                <h3 className="text-lg font-bold text-neutral-100">Record Fee Payment</h3>
-                <p className="text-xs text-neutral-400 mt-0.5">
-                  {paymentInvoice.invoiceNumber} · {paymentInvoice.studentName}
+                <h3 className={`text-lg font-black tracking-tight ${isLight ? 'text-black' : 'text-neutral-100'}`}>Record Fee Payment</h3>
+                <p className={`text-xs mt-0.5 font-bold ${isLight ? 'text-black' : 'text-neutral-400'}`}>
+                  Official Payment Collection & Ledger Receipt
                 </p>
               </div>
-              <button onClick={() => setShowPaymentModal(false)} className="text-neutral-400 hover:text-neutral-200 p-1">
+              <button
+                onClick={() => setShowPaymentModal(false)}
+                className={`p-1 rounded-lg transition-colors cursor-pointer ${isLight ? 'text-neutral-600 hover:text-black hover:bg-neutral-100' : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800'}`}
+              >
                 ✕
               </button>
             </div>
 
+            {/* Dedicated Student Details Box in Pure Black Font */}
+            <div className={`p-4 rounded-xl border-2 space-y-1.5 ${
+              isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-200'
+            }`}>
+              <div className={`text-[10px] font-black uppercase tracking-wider ${isLight ? 'text-black' : 'text-neutral-400'}`}>
+                Student Payment Details
+              </div>
+              <div className={`text-lg font-black tracking-tight ${isLight ? 'text-black' : 'text-white'}`}>
+                {paymentInvoice.studentName}
+              </div>
+              <div className={`text-xs font-mono space-y-0.5 pt-1 border-t ${isLight ? 'border-neutral-200 text-black font-bold' : 'border-neutral-800/80 text-neutral-300'}`}>
+                <p><span className="font-black">Course: </span><span className={isLight ? 'text-black font-black' : 'text-white font-bold'}>{paymentInvoice.courseName}</span></p>
+                <p><span className="font-black">Student ID: </span><span className={isLight ? 'text-black font-black' : 'text-neutral-200'}>{paymentInvoice.studentId}</span> · <span className="font-black">Invoice: </span><span className="text-orange-600 dark:text-orange-400 font-black">{paymentInvoice.invoiceNumber}</span></p>
+                {paymentInvoice.studentPhone && (
+                  <p><span className="font-black">Mobile: </span><span className={isLight ? 'text-black font-black' : 'text-neutral-200'}>+91 {paymentInvoice.studentPhone}</span></p>
+                )}
+                {paymentInvoice.studentEmail && (
+                  <p><span className="font-black">Email: </span><span className={isLight ? 'text-black font-bold' : 'text-neutral-300'}>{paymentInvoice.studentEmail}</span></p>
+                )}
+              </div>
+            </div>
+
             <form onSubmit={handleConfirmPayment} className="space-y-4">
-              <div className="p-3 bg-neutral-950 border border-neutral-800 rounded-xl space-y-1 text-xs font-mono">
-                <div className="flex justify-between text-neutral-400">
+              <div className={`p-3.5 border rounded-xl space-y-1.5 text-xs font-mono ${
+                isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-200'
+              }`}>
+                <div className={`flex justify-between ${isLight ? 'text-black font-bold' : 'text-neutral-400'}`}>
                   <span>Total Payable:</span>
-                  <span>₹{paymentInvoice.totalPayable.toLocaleString('en-IN')}</span>
+                  <span className={`font-black ${isLight ? 'text-black' : 'text-neutral-100'}`}>₹{paymentInvoice.totalPayable.toLocaleString('en-IN')}</span>
                 </div>
-                <div className="flex justify-between text-neutral-400">
+                <div className={`flex justify-between ${isLight ? 'text-emerald-800 font-bold' : 'text-emerald-400'}`}>
                   <span>Previously Paid:</span>
-                  <span>₹{paymentInvoice.amountPaid.toLocaleString('en-IN')}</span>
+                  <span className="font-black">₹{paymentInvoice.amountPaid.toLocaleString('en-IN')}</span>
                 </div>
-                <div className="flex justify-between font-bold text-amber-400 pt-1 border-t border-neutral-800">
+                <div className={`flex justify-between font-black pt-1 border-t ${isLight ? 'border-neutral-200 text-rose-700' : 'border-neutral-800 text-amber-400'}`}>
                   <span>Current Outstanding Balance:</span>
-                  <span>₹{paymentInvoice.remainingBalance.toLocaleString('en-IN')}</span>
+                  <span className="font-mono text-sm">₹{paymentInvoice.remainingBalance.toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-300 uppercase tracking-wider mb-1">
+                <label className={`block text-xs font-black uppercase tracking-wider mb-1 ${isLight ? 'text-black' : 'text-neutral-300'}`}>
                   Payment Amount to Collect (₹) *
                 </label>
                 <input
@@ -1584,12 +1701,14 @@ Accounts Office, Cortexx AI Institute`;
                   max={paymentInvoice.remainingBalance}
                   value={payAmount}
                   onChange={e => setPayAmount(Number(e.target.value))}
-                  className="w-full px-3.5 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm font-mono text-neutral-100 focus:outline-none focus:border-orange-500"
+                  className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-mono font-black focus:outline-none focus:border-orange-500 ${
+                    isLight ? 'bg-white border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-100'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-300 uppercase tracking-wider mb-1">
+                <label className={`block text-xs font-black uppercase tracking-wider mb-1 ${isLight ? 'text-black' : 'text-neutral-300'}`}>
                   Payment Method
                 </label>
                 <div className="grid grid-cols-4 gap-2">
@@ -1598,10 +1717,12 @@ Accounts Office, Cortexx AI Institute`;
                       type="button"
                       key={method}
                       onClick={() => setPayMethod(method)}
-                      className={`py-1.5 text-xs font-medium rounded-lg border text-center transition-colors ${
+                      className={`py-1.5 text-xs font-black rounded-lg border text-center transition-colors cursor-pointer ${
                         payMethod === method
-                          ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500'
-                          : 'bg-neutral-950 text-neutral-400 border-neutral-800'
+                          ? 'bg-emerald-600 text-white border-emerald-700 shadow-sm'
+                          : isLight
+                          ? 'bg-neutral-100 text-black border-neutral-300 hover:bg-neutral-200'
+                          : 'bg-neutral-950 text-neutral-400 border-neutral-800 hover:text-white'
                       }`}
                     >
                       {method}
@@ -1611,7 +1732,7 @@ Accounts Office, Cortexx AI Institute`;
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-300 uppercase tracking-wider mb-1">
+                <label className={`block text-xs font-black uppercase tracking-wider mb-1 ${isLight ? 'text-black' : 'text-neutral-300'}`}>
                   Transaction / UPI Reference Number
                 </label>
                 <input
@@ -1619,23 +1740,25 @@ Accounts Office, Cortexx AI Institute`;
                   value={payRef}
                   onChange={e => setPayRef(e.target.value)}
                   placeholder="e.g. UPI/260314092144/COR"
-                  className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-xs font-mono text-neutral-100 focus:outline-none focus:border-orange-500"
+                  className={`w-full px-3.5 py-2 border rounded-xl text-xs font-mono font-bold focus:outline-none focus:border-orange-500 ${
+                    isLight ? 'bg-white border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-100'
+                  }`}
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-neutral-800">
+              <div className={`flex items-center justify-end gap-3 pt-3 border-t ${isLight ? 'border-neutral-200' : 'border-neutral-800'}`}>
                 <button
                   type="button"
                   onClick={() => setShowPaymentModal(false)}
-                  className="px-4 py-2 text-xs font-semibold text-neutral-400 hover:text-neutral-200"
+                  className={`px-4 py-2 text-xs font-bold rounded-lg cursor-pointer ${isLight ? 'text-neutral-700 hover:text-black hover:bg-neutral-100' : 'text-neutral-400 hover:text-neutral-200'}`}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-lg transition-colors flex items-center gap-1.5"
+                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
                 >
-                  <CheckCircle className="w-4 h-4" />
+                  <CheckCircle className="w-4 h-4 stroke-[2.5]" />
                   <span>Confirm & Issue Receipt</span>
                 </button>
               </div>

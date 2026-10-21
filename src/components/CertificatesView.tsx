@@ -415,9 +415,15 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
         <div className={`flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b gap-3 ${
           isLight ? 'border-neutral-200' : 'border-neutral-800'
         }`}>
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-orange-500 shrink-0" />
-            <h2 className={`text-base font-extrabold ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+          <div className="flex items-center gap-2.5 group cursor-pointer">
+            <div className="w-8 h-8 rounded-lg bg-orange-500/15 border border-orange-500/30 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-orange-500/25 transition-all">
+              <Sparkles className="w-4 h-4 text-orange-600 dark:text-orange-400 group-hover:text-orange-500 transition-colors" />
+            </div>
+            <h2 className={`text-base sm:text-lg font-black tracking-tight transition-colors ${
+              isLight
+                ? 'text-orange-700 hover:text-orange-500'
+                : 'text-orange-400 hover:text-orange-300'
+            }`}>
               Certificate Generation Wizard
             </h2>
           </div>
@@ -459,15 +465,15 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
           <div className="space-y-5 animate-fadeIn">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-1.5">
-                <label className={`text-xs font-bold ${isLight ? 'text-black' : 'text-neutral-300'}`}>
+                <label className={`text-xs font-bold transition-colors ${isLight ? 'text-orange-950 hover:text-orange-700' : 'text-orange-300 hover:text-orange-200'}`}>
                   Select Curriculum Course
                 </label>
                 <select
                   value={selectedCourseId}
                   onChange={e => setSelectedCourseId(e.target.value)}
                   aria-label="Select Curriculum Course"
-                  className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-semibold focus:outline-none focus:border-orange-500 cursor-pointer ${
-                    isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-100'
+                  className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-semibold focus:outline-none focus:border-orange-500 cursor-pointer transition-colors ${
+                    isLight ? 'bg-neutral-50 border-neutral-300 text-neutral-900 hover:border-orange-400' : 'bg-neutral-950 border-neutral-800 text-neutral-100 hover:border-neutral-700'
                   }`}
                 >
                   {courses.map(c => (
@@ -488,7 +494,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                     onChange={e => setCustomCourseName(e.target.value)}
                     placeholder="e.g. Advanced Generative AI & LLM Engineering"
                     className={`w-full px-3.5 py-2.5 border rounded-xl text-sm focus:outline-none focus:border-orange-500 ${
-                      isLight ? 'bg-neutral-50 border-orange-400 text-black' : 'bg-neutral-950 border-orange-500/50 text-neutral-100'
+                      isLight ? 'bg-neutral-50 border-orange-400 text-neutral-900' : 'bg-neutral-950 border-orange-500/50 text-neutral-100'
                     }`}
                   />
                 </div>
@@ -497,25 +503,25 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div className="space-y-1.5">
-                <label className={`text-xs font-bold ${isLight ? 'text-black' : 'text-neutral-300'}`}>Course Start Date</label>
+                <label className={`text-xs font-bold transition-colors ${isLight ? 'text-orange-950 hover:text-orange-700' : 'text-orange-300 hover:text-orange-200'}`}>Course Start Date</label>
                 <input
                   type="date"
                   value={startDate}
                   onChange={e => setStartDate(e.target.value)}
-                  className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-mono focus:outline-none focus:border-orange-500 cursor-pointer ${
-                    isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-100'
+                  className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-mono focus:outline-none focus:border-orange-500 cursor-pointer transition-colors ${
+                    isLight ? 'bg-neutral-50 border-neutral-300 text-neutral-900 hover:border-orange-400' : 'bg-neutral-950 border-neutral-800 text-neutral-100 hover:border-neutral-700'
                   }`}
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className={`text-xs font-bold ${isLight ? 'text-black' : 'text-neutral-300'}`}>Course End Date</label>
+                <label className={`text-xs font-bold transition-colors ${isLight ? 'text-orange-950 hover:text-orange-700' : 'text-orange-300 hover:text-orange-200'}`}>Course End Date</label>
                 <input
                   type="date"
                   value={endDate}
                   onChange={e => setEndDate(e.target.value)}
-                  className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-mono focus:outline-none focus:border-orange-500 cursor-pointer ${
-                    isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-100'
+                  className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-mono focus:outline-none focus:border-orange-500 cursor-pointer transition-colors ${
+                    isLight ? 'bg-neutral-50 border-neutral-300 text-neutral-900 hover:border-orange-400' : 'bg-neutral-950 border-neutral-800 text-neutral-100 hover:border-neutral-700'
                   }`}
                 />
               </div>
@@ -552,11 +558,11 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               </button>
             </div>
 
-            <div className={`max-h-72 overflow-y-auto space-y-2 pr-1 divide-y p-3 rounded-xl border ${
-              isLight ? 'bg-neutral-50/70 border-neutral-300 divide-neutral-200' : 'bg-neutral-950/60 border-neutral-800 divide-neutral-800/80'
+            <div className={`max-h-80 overflow-y-auto space-y-2.5 pr-1 p-3 rounded-xl border ${
+              isLight ? 'bg-neutral-50/70 border-neutral-300' : 'bg-neutral-950/60 border-neutral-800'
             }`}>
               {students.length === 0 ? (
-                <div className="text-center py-8 text-neutral-500 text-xs">No students available in admission roster.</div>
+                <div className="text-center py-8 text-neutral-500 text-xs font-bold">No students available in admission roster.</div>
               ) : (
                 students.map(student => {
                   const isSelected = selectedStudentIds.includes(student.id);
@@ -564,32 +570,47 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                     <div
                       key={student.id}
                       onClick={() => handleToggleSelectStudent(student.id)}
-                      className={`flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl transition-colors cursor-pointer gap-2 ${
+                      className={`group flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl transition-all cursor-pointer gap-2.5 border-2 ${
                         isSelected
-                          ? isLight ? 'bg-orange-100/70 border border-orange-400' : 'bg-orange-500/10 border border-orange-500/30'
-                          : isLight ? 'hover:bg-neutral-100' : 'hover:bg-neutral-900/60'
+                          ? isLight
+                            ? 'bg-orange-100/90 border-orange-500 shadow-sm ring-1 ring-orange-500/30'
+                            : 'bg-orange-500/20 border-orange-500 shadow-sm ring-1 ring-orange-500/40'
+                          : isLight
+                          ? 'bg-white border-neutral-200/90 hover:bg-orange-50/90 hover:border-orange-400 hover:shadow-xs'
+                          : 'bg-neutral-900/80 border-neutral-800 hover:bg-neutral-800/90 hover:border-orange-500/50 hover:shadow-xs'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <div
-                          className={`w-5 h-5 rounded flex items-center justify-center border shrink-0 ${
+                          className={`w-5 h-5 rounded-md flex items-center justify-center border-2 shrink-0 transition-all ${
                             isSelected
-                              ? 'bg-orange-500 border-orange-600 text-white font-bold text-xs'
-                              : isLight ? 'border-neutral-300 bg-white' : 'border-neutral-700 bg-neutral-900'
+                              ? 'bg-orange-600 border-orange-600 text-white font-black text-xs shadow-xs'
+                              : isLight
+                              ? 'border-neutral-400 bg-white group-hover:border-orange-500'
+                              : 'border-neutral-600 bg-neutral-950 group-hover:border-orange-400'
                           }`}
                         >
                           {isSelected ? '✓' : ''}
                         </div>
                         <div className="min-w-0">
-                          <div className={`font-black text-sm truncate ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                          {/* Student Name with High-Visibility Color & Hover Highlight */}
+                          <div
+                            className={`font-black text-base tracking-tight truncate transition-colors ${
+                              isSelected
+                                ? isLight ? 'text-orange-800' : 'text-orange-300'
+                                : isLight
+                                ? 'text-orange-600 group-hover:text-amber-600'
+                                : 'text-orange-400 group-hover:text-amber-300'
+                            }`}
+                          >
                             {student.name}
                           </div>
-                          <div className={`text-xs font-mono truncate font-semibold ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
-                            {student.id} · {student.enrolledCourseName}
+                          <div className="text-xs font-mono truncate font-bold text-neutral-600 dark:text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-neutral-100 transition-colors">
+                            <span className="text-orange-600 dark:text-orange-400 font-black group-hover:text-orange-500">{student.id}</span> · <span className="text-neutral-700 dark:text-neutral-300 group-hover:text-neutral-950 dark:group-hover:text-white transition-colors">{student.enrolledCourseName}</span>
                           </div>
                         </div>
                       </div>
-                      <div className={`text-xs font-mono font-bold sm:text-right pl-8 sm:pl-0 ${isLight ? 'text-neutral-700' : 'text-neutral-400'}`}>
+                      <div className="text-xs font-mono font-bold sm:text-right pl-8 sm:pl-0 text-neutral-700 dark:text-neutral-300 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                         +91 {student.phone}
                       </div>
                     </div>
@@ -635,7 +656,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
             <div className={`p-4 border rounded-xl space-y-2.5 text-xs font-mono ${
               isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950 border-neutral-800 text-neutral-200'
             }`}>
-              <div className={`font-sans font-black text-sm mb-2 ${isLight ? 'text-black' : 'text-neutral-200'}`}>
+              <div className="font-sans font-black text-sm mb-2 text-orange-700 dark:text-orange-400">
                 Review Certificate Batch:
               </div>
               <div className="flex flex-col sm:flex-row sm:justify-between gap-0.5 sm:gap-2">
@@ -644,7 +665,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               </div>
               <div className="flex flex-col sm:flex-row sm:justify-between gap-0.5 sm:gap-2">
                 <span className={isLight ? 'text-neutral-600' : 'text-neutral-400'}>Duration Period:</span>
-                <span className={`font-bold ${isLight ? 'text-black' : 'text-neutral-200'}`}>
+                <span className={`font-bold ${isLight ? 'text-orange-950' : 'text-neutral-100'}`}>
                   {startDate} to {endDate}
                 </span>
               </div>
@@ -739,7 +760,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                   </tr>
                 ) : (
                   filteredCertificates.map(cert => (
-                    <tr key={cert.id} className="transition-colors">
+                    <tr key={cert.id} className="transition-colors hover:bg-orange-50/40 dark:hover:bg-neutral-850/60">
                       <td className="py-3.5 px-4 font-mono text-xs">
                         <span className="font-black text-orange-600 dark:text-orange-400">{cert.id}</span>
                         <div className={`text-[10px] font-mono font-semibold ${isLight ? 'text-neutral-500' : 'text-neutral-400'}`}>
@@ -747,7 +768,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                         </div>
                       </td>
 
-                      <td className={`py-3.5 px-4 font-black text-sm ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                      <td className="py-3.5 px-4 font-black text-sm text-orange-600 dark:text-orange-400 hover:text-orange-500 dark:hover:text-orange-300 transition-colors">
                         {cert.studentName}
                       </td>
 
@@ -874,7 +895,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                   <div className={`text-[10px] uppercase font-black tracking-wider ${isLight ? 'text-neutral-500' : 'text-neutral-400'}`}>
                     Student Recipient
                   </div>
-                  <div className={`text-base font-black ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                  <div className="text-base font-black text-orange-600 dark:text-orange-400 hover:text-orange-500 dark:hover:text-orange-300 transition-colors">
                     {cert.studentName}
                   </div>
                   <div className={`text-xs font-mono font-semibold ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
