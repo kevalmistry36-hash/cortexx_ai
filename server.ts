@@ -99,10 +99,37 @@ app.post('/api/mail/test-smtp', async (req, res) => {
         : 'SMTP connection verified successfully! Server is ready to send emails.',
     });
   } catch (err: any) {
-    console.error('[SMTP Test Error]', err);
+    const errMsg = err?.message || String(err);
+    let userFriendlyError = errMsg;
+
+    if (
+      errMsg.includes('534') ||
+      errMsg.includes('Application-specific password required') ||
+      errMsg.includes('InvalidSecondFactor')
+    ) {
+      userFriendlyError =
+        'Gmail requires a 16-character Google App Password (not your normal Google account password). Go to Google Account > Security > 2-Step Verification > App Passwords, generate an App Password, and paste it here.';
+    } else if (
+      errMsg.includes('535') ||
+      errMsg.includes('Username and Password not accepted') ||
+      errMsg.includes('Invalid login')
+    ) {
+      userFriendlyError =
+        'SMTP Authentication Failed: Username and password not accepted. For Gmail, ensure 2-Step Verification is ON and use a 16-character App Password (not your personal account password).';
+    } else if (
+      errMsg.includes('ECONNREFUSED') ||
+      errMsg.includes('ETIMEDOUT') ||
+      errMsg.includes('ENOTFOUND')
+    ) {
+      userFriendlyError =
+        'Cannot connect to SMTP server host. Please verify the host server name and port.';
+    }
+
+    // Use console.warn so invalid user credential tests are not logged as fatal runner errors
+    console.warn(`[SMTP Test Notice] Authentication feedback: ${userFriendlyError}`);
     return res.status(400).json({
       success: false,
-      error: err.message || 'SMTP authentication failed. Check host, port, credentials, and app password.',
+      error: userFriendlyError,
     });
   }
 });
@@ -146,10 +173,27 @@ app.post('/api/mail/send', async (req, res) => {
       messageId: info.messageId,
     });
   } catch (err: any) {
-    console.error('[SMTP Dispatch Error]', err);
-    return res.status(500).json({
+    const errMsg = err?.message || String(err);
+    let userFriendlyError = errMsg;
+
+    if (
+      errMsg.includes('534') ||
+      errMsg.includes('Application-specific password required')
+    ) {
+      userFriendlyError =
+        'Gmail requires a 16-character Google App Password. Please update your credentials in Settings > Mail / SMTP.';
+    } else if (
+      errMsg.includes('535') ||
+      errMsg.includes('Username and Password not accepted')
+    ) {
+      userFriendlyError =
+        'SMTP login failed: Invalid username or App Password. Please check Settings > Mail / SMTP.';
+    }
+
+    console.warn(`[SMTP Dispatch Notice] Send feedback: ${userFriendlyError}`);
+    return res.status(400).json({
       success: false,
-      error: err.message || 'Failed to dispatch email via SMTP.',
+      error: userFriendlyError,
     });
   }
 });

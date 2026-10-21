@@ -611,8 +611,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 </div>
 
                 {smtpConfig.provider === 'gmail' && (
-                  <div className="bg-sky-500/10 border border-sky-500/20 rounded-xl p-3 text-[11px] text-sky-300 leading-relaxed">
-                    💡 <strong>Gmail Tip:</strong> Use an <strong>App Password</strong> instead of your regular password. Enable 2-Step Verification in Google Account &gt; Security &gt; App Passwords, generate a 16-character code, and paste it here.
+                  <div className="bg-sky-500/10 border border-sky-500/25 rounded-xl p-3 text-[11px] text-sky-300 leading-relaxed space-y-1.5">
+                    <div className="flex items-center gap-1.5 font-bold text-sky-200">
+                      <span>💡 Gmail Direct Integration Guide:</span>
+                    </div>
+                    <p>
+                      Gmail does not accept regular account passwords for automated SMTP. Ensure <strong>2-Step Verification</strong> is enabled on your Google account, then generate a <strong>16-character App Password</strong> and paste it in the password box above.
+                    </p>
+                    <a
+                      href="https://myaccount.google.com/apppasswords"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-sky-400 hover:text-sky-200 underline font-semibold text-[11px] pt-0.5"
+                    >
+                      <span>Generate Google App Password ↗</span>
+                    </a>
                   </div>
                 )}
 
@@ -648,15 +661,25 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               </form>
 
               {smtpStatus && (
-                <p
-                  className={`text-xs p-3 rounded-xl border font-medium ${
+                <div
+                  className={`text-xs p-3 rounded-xl border font-medium space-y-1.5 ${
                     smtpStatus.error
-                      ? 'text-rose-400 bg-rose-500/10 border-rose-500/20'
-                      : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+                      ? 'text-rose-300 bg-rose-500/10 border-rose-500/30'
+                      : 'text-emerald-300 bg-emerald-500/10 border-emerald-500/30'
                   }`}
                 >
-                  {smtpStatus.text}
-                </p>
+                  <p>{smtpStatus.text}</p>
+                  {smtpStatus.error && smtpStatus.text.includes('App Password') && (
+                    <a
+                      href="https://myaccount.google.com/apppasswords"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block text-rose-300 hover:text-white underline font-bold text-[11px]"
+                    >
+                      Open Google App Passwords page ↗
+                    </a>
+                  )}
+                </div>
               )}
             </div>
           )}
