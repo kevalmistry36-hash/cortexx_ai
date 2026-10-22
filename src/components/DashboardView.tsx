@@ -55,29 +55,29 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
   const isLight = theme === 'light';
 
-  // Shared card classes - Olive & Beige Palette (Olive #587731 & Beige #F5EFDF)
+  // Shared card classes - Olive & Beige Palette (Olive #587731 & Beige #F5EFDF) with proper responsive typography
   const kpiCardClass = isLight
-    ? 'dashboard-kpi-card bg-[#FAF6EE] border-2 border-[#E5DCBE] border-t-4 border-t-[#587731] shadow-sm hover:shadow-xl hover:border-[#587731] hover:-translate-y-0.5 text-[#243315] rounded-xl p-5 transition-all duration-300 relative overflow-hidden group'
-    : 'dashboard-kpi-card bg-[#182214]/90 border border-[#2C3D21] border-t-4 border-t-[#587731] hover:border-[#587731]/70 hover:shadow-xl hover:shadow-[#587731]/10 hover:-translate-y-0.5 text-neutral-100 rounded-xl p-5 transition-all duration-300 relative overflow-hidden group';
+    ? 'dashboard-kpi-card bg-[#FAF6EE] border-2 border-[#E5DCBE] border-t-4 border-t-[#587731] shadow-sm hover:shadow-xl hover:border-[#587731] hover:-translate-y-0.5 text-[#243315] rounded-xl p-4 sm:p-5 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between'
+    : 'dashboard-kpi-card bg-[#182214]/90 border border-[#2C3D21] border-t-4 border-t-[#587731] hover:border-[#587731]/70 hover:shadow-xl hover:shadow-[#587731]/10 hover:-translate-y-0.5 text-neutral-100 rounded-xl p-4 sm:p-5 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between';
 
   const kpiTitleClass = isLight
-    ? 'text-xs font-black tracking-wider uppercase text-[#243315] font-sans'
-    : 'text-xs font-bold tracking-wider uppercase text-neutral-200 font-sans';
+    ? 'text-[11px] sm:text-xs font-black tracking-wider uppercase text-[#243315] font-sans truncate'
+    : 'text-[11px] sm:text-xs font-bold tracking-wider uppercase text-neutral-200 font-sans truncate';
 
   const kpiNumberClass = isLight
-    ? 'text-3xl sm:text-4xl font-black font-sans tabular-nums text-[#19240E] tracking-tight'
-    : 'text-3xl sm:text-4xl font-black font-sans tabular-nums text-white tracking-tight';
+    ? 'text-2xl sm:text-3xl xl:text-4xl font-black font-sans tabular-nums text-[#19240E] tracking-tight'
+    : 'text-2xl sm:text-3xl xl:text-4xl font-black font-sans tabular-nums text-white tracking-tight';
 
   const kpiSubtextClass = isLight
-    ? 'mt-3 text-xs text-[#243315] font-extrabold font-sans'
-    : 'mt-3 text-xs text-neutral-300 font-semibold font-sans';
+    ? 'mt-2.5 sm:mt-3 text-[11px] sm:text-xs text-[#243315] font-extrabold font-sans'
+    : 'mt-2.5 sm:mt-3 text-[11px] sm:text-xs text-neutral-300 font-semibold font-sans';
 
   // Uniform olive badge and icon classes across all dashboard KPIs
   const kpiBadgeClass =
-    'kpi-orange-badge text-[11px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-md bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 font-sans';
+    'kpi-orange-badge text-[10px] sm:text-[11px] uppercase font-black tracking-wider px-2 sm:px-2.5 py-0.5 rounded-md bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 font-sans shrink-0';
 
   const kpiIconBoxClass =
-    'w-9 h-9 rounded-xl bg-[#587731]/15 border border-[#587731]/35 flex items-center justify-center text-[#587731] dark:text-[#8CB752] shadow-sm shrink-0';
+    'w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#587731]/15 border border-[#587731]/35 flex items-center justify-center text-[#587731] dark:text-[#8CB752] shadow-sm shrink-0';
 
   return (
     <div className="space-y-8 animate-fadeIn">
@@ -105,21 +105,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* 4 Primary Metric Cards: Emojis according to block details, orange indicators, uniform typography */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* 4 Primary Metric Cards: Properly arranged typography, responsive numbers, zero overflow */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
         {/* Metric 1: Total Students KPI */}
         <div className={kpiCardClass}>
           <div className="pointer-events-none absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-orange-500/10 blur-2xl group-hover:scale-125 transition-transform duration-500"></div>
-          <div className="flex items-center justify-between relative z-1">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2 relative z-1">
+            <div className="flex items-center gap-2 min-w-0">
               <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Total Students">🎓</span>
               <span className={kpiTitleClass}>Total Students</span>
             </div>
             <div className={kpiIconBoxClass}>
-              <Users className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+              <Users className="w-4 h-4 text-[#587731] dark:text-[#8CB752]" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2 relative z-1">
+          <div className="mt-3 flex items-baseline justify-between gap-1.5 flex-wrap relative z-1">
             <span className={kpiNumberClass}>{students.length}</span>
             <span className={kpiBadgeClass}>
               Enrolled
@@ -127,11 +127,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <div className={`${kpiSubtextClass} relative z-1`}>
             <div className="flex items-center gap-2 flex-wrap">
-              <span className={`font-mono font-black ${isLight ? 'text-black' : 'text-emerald-400'}`}>{paidCount} Paid</span>
-              <span className={isLight ? 'text-black font-black' : 'text-neutral-600'}>·</span>
-              <span className={`font-mono font-black ${isLight ? 'text-black' : 'text-amber-400'}`}>{partialCount} Partial</span>
-              <span className={isLight ? 'text-black font-black' : 'text-neutral-600'}>·</span>
-              <span className={`font-mono font-black ${isLight ? 'text-black' : 'text-rose-400'}`}>{unpaidCount} Unpaid</span>
+              <span className={`font-mono font-black ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>{paidCount} Paid</span>
+              <span className={isLight ? 'text-[#587731] font-black' : 'text-neutral-600'}>·</span>
+              <span className={`font-mono font-black ${isLight ? 'text-amber-700' : 'text-amber-400'}`}>{partialCount} Partial</span>
+              <span className={isLight ? 'text-[#587731] font-black' : 'text-neutral-600'}>·</span>
+              <span className={`font-mono font-black ${isLight ? 'text-rose-700' : 'text-rose-400'}`}>{unpaidCount} Unpaid</span>
             </div>
           </div>
         </div>
@@ -139,31 +139,31 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* Metric 2: Active Courses KPI */}
         <div className={kpiCardClass}>
           <div className="pointer-events-none absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-orange-500/10 blur-2xl group-hover:scale-125 transition-transform duration-500"></div>
-          <div className="flex items-center justify-between relative z-1">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2 relative z-1">
+            <div className="flex items-center gap-2 min-w-0">
               <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Active Courses">📚</span>
               <span className={kpiTitleClass}>Active Courses</span>
             </div>
             <div className={kpiIconBoxClass}>
-              <BookOpen className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+              <BookOpen className="w-4 h-4 text-[#587731] dark:text-[#8CB752]" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2 relative z-1">
+          <div className="mt-3 flex items-baseline justify-between gap-1.5 flex-wrap relative z-1">
             <span className={kpiNumberClass}>{courses.length}</span>
             <span className={kpiBadgeClass}>
               Live
             </span>
           </div>
           <div className={`${kpiSubtextClass} relative z-1`}>
-            <span className={isLight ? 'text-black font-black' : 'text-neutral-300'}>Flagship: 1-Month Practical AI</span>
+            <span className={isLight ? 'text-[#243315] font-extrabold' : 'text-neutral-300'}>Flagship: 1-Month Practical AI</span>
           </div>
         </div>
 
         {/* Metric 3: Fees Received KPI */}
         <div className={kpiCardClass}>
           <div className="pointer-events-none absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-[#587731]/15 blur-2xl group-hover:scale-125 transition-transform duration-500"></div>
-          <div className="flex items-center justify-between relative z-1">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2 relative z-1">
+            <div className="flex items-center gap-2 min-w-0">
               <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Fees Received">💰</span>
               <span className={kpiTitleClass}>Fees Received</span>
             </div>
@@ -171,7 +171,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <IndianRupee className="w-4 h-4 text-[#587731] dark:text-[#8CB752]" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2 relative z-1">
+          <div className="mt-3 flex items-baseline justify-between gap-1.5 flex-wrap relative z-1">
             <span className={kpiNumberClass}>
               ₹{totalReceived.toLocaleString('en-IN')}
             </span>
@@ -206,8 +206,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* Metric 4: Pending Fees KPI */}
         <div className={kpiCardClass}>
           <div className="pointer-events-none absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-[#587731]/15 blur-2xl group-hover:scale-125 transition-transform duration-500"></div>
-          <div className="flex items-center justify-between relative z-1">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2 relative z-1">
+            <div className="flex items-center gap-2 min-w-0">
               <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Pending Balance">⏳</span>
               <span className={kpiTitleClass}>Pending Balance</span>
             </div>
@@ -215,7 +215,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <Clock className="w-4 h-4 text-[#587731] dark:text-[#8CB752]" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2 relative z-1">
+          <div className="mt-3 flex items-baseline justify-between gap-1.5 flex-wrap relative z-1">
             <span className={kpiNumberClass}>
               ₹{totalPending.toLocaleString('en-IN')}
             </span>
@@ -361,34 +361,33 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div
                 key={inv.invoiceNumber}
                 onClick={() => onSelectInvoice(inv)}
-                className="py-3 px-2.5 rounded-xl cursor-pointer flex items-center justify-between border border-transparent"
+                className={`py-3 px-2.5 rounded-xl cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2 border border-transparent transition-colors ${
+                  isLight ? 'hover:bg-[#F5EFDF]/60 text-[#243315]' : 'hover:bg-neutral-800/50 text-neutral-100'
+                }`}
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    {/* Student Name: Bold and pure black (or white in dark theme) */}
-                    <span className={`text-sm font-black ${isLight ? 'text-black' : 'text-white'}`}>
+                    <span className={`text-sm font-black ${isLight ? 'text-[#19240E]' : 'text-white'}`}>
                       {inv.studentName}
                     </span>
-                    {/* Invoice Number: High contrast badge */}
-                    <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded ${isLight ? 'bg-orange-50 text-orange-700 border border-orange-200' : 'bg-neutral-800 text-neutral-200 border border-neutral-700'}`}>
+                    <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded ${isLight ? 'bg-[#587731]/15 text-[#587731] border border-[#587731]/30' : 'bg-neutral-800 text-neutral-200 border border-neutral-700'}`}>
                       {inv.invoiceNumber}
                     </span>
                   </div>
-                  {/* Course Name: Bold and pure black */}
                   <div className="text-xs mt-1 flex items-center gap-1.5">
-                    <span className={`font-black ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                    <span className={`font-black ${isLight ? 'text-[#243315]' : 'text-neutral-100'}`}>
                       {inv.courseName}
                     </span>
-                    <span className={isLight ? 'text-neutral-400 font-bold' : 'text-neutral-600'}>·</span>
-                    <span className={`font-mono font-semibold ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>{inv.invoiceDate}</span>
+                    <span className={isLight ? 'text-[#3E5422] font-bold' : 'text-neutral-600'}>·</span>
+                    <span className={`font-mono font-semibold ${isLight ? 'text-[#3E5422]' : 'text-neutral-400'}`}>{inv.invoiceDate}</span>
                   </div>
                 </div>
 
-                <div className="text-right shrink-0">
-                  <div className={`text-sm font-black font-mono ${isLight ? 'text-black' : 'text-white'}`}>
+                <div className="flex items-center justify-between sm:justify-end sm:text-right gap-3 shrink-0 pt-1.5 sm:pt-0 border-t sm:border-t-0 border-[#E5DCBE]/60 dark:border-neutral-800/60">
+                  <div className={`text-sm font-black font-mono ${isLight ? 'text-[#19240E]' : 'text-white'}`}>
                     ₹{inv.totalPayable.toLocaleString('en-IN')}
                   </div>
-                  <div className="mt-0.5 font-bold">
+                  <div className="font-bold">
                     {inv.paymentStatus === 'paid' && (
                       <span className={`text-[11px] font-mono px-2 py-0.5 rounded font-extrabold ${isLight ? 'text-emerald-800 bg-emerald-50 border border-emerald-300' : 'text-emerald-400 bg-emerald-500/15'}`}>
                         Paid
@@ -423,7 +422,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
             <button
               onClick={() => onNavigateToView('students')}
-              className="text-xs text-orange-600 hover:text-orange-700 font-extrabold flex items-center gap-1 cursor-pointer hover:underline"
+              className="text-xs text-[#587731] hover:text-[#486228] font-extrabold flex items-center gap-1 cursor-pointer hover:underline"
             >
               <span>View Directory</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -435,35 +434,37 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div
                 key={stu.id}
                 onClick={() => onNavigateToView('students')}
-                className="py-3 px-2.5 rounded-xl cursor-pointer flex items-center justify-between border border-transparent"
+                className={`py-3 px-2.5 rounded-xl cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2 border border-transparent transition-colors ${
+                  isLight ? 'hover:bg-[#F5EFDF]/60 text-[#243315]' : 'hover:bg-neutral-800/50 text-neutral-100'
+                }`}
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className={`text-sm font-black ${isLight ? 'text-black' : 'text-white'}`}>
+                    <span className={`text-sm font-black ${isLight ? 'text-[#19240E]' : 'text-white'}`}>
                       {stu.name}
                     </span>
-                    <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded ${isLight ? 'bg-orange-50 text-orange-700 border border-orange-200' : 'bg-neutral-800 text-neutral-200 border border-neutral-700'}`}>
+                    <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded ${isLight ? 'bg-[#587731]/15 text-[#587731] border border-[#587731]/30' : 'bg-neutral-800 text-neutral-200 border border-neutral-700'}`}>
                       {stu.id}
                     </span>
                   </div>
                   <div className="text-xs mt-1 flex items-center gap-1.5">
-                    <span className={`font-black ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                    <span className={`font-black ${isLight ? 'text-[#243315]' : 'text-neutral-100'}`}>
                       {stu.enrolledCourseName}
                     </span>
-                    <span className={isLight ? 'text-neutral-400 font-bold' : 'text-neutral-600'}>·</span>
-                    <span className={`font-mono font-semibold ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>+91 {stu.phone}</span>
+                    <span className={isLight ? 'text-[#3E5422] font-bold' : 'text-neutral-600'}>·</span>
+                    <span className={`font-mono font-semibold ${isLight ? 'text-[#3E5422]' : 'text-neutral-400'}`}>+91 {stu.phone}</span>
                   </div>
                 </div>
 
                 {/* Recent Admissions: Paid font and full paid amount visibly bold */}
-                <div className="text-right shrink-0">
+                <div className="flex items-center justify-between sm:justify-end sm:text-right gap-3 shrink-0 pt-1.5 sm:pt-0 border-t sm:border-t-0 border-[#E5DCBE]/60 dark:border-neutral-800/60">
                   <div className="text-sm font-black font-mono tracking-tight">
-                    <span className={`text-xs uppercase tracking-wider font-bold mr-1 ${isLight ? 'text-neutral-700' : 'text-neutral-400'}`}>Paid:</span>
+                    <span className={`text-xs uppercase tracking-wider font-bold mr-1 ${isLight ? 'text-[#243315]' : 'text-neutral-400'}`}>Paid:</span>
                     <span className={`font-black ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>₹{stu.totalPaid.toLocaleString('en-IN')}</span>
                     <span className={`font-normal mx-1 ${isLight ? 'text-neutral-400' : 'text-neutral-600'}`}>/</span>
-                    <span className={`font-black ${isLight ? 'text-black' : 'text-white'}`}>₹{stu.agreedFee.toLocaleString('en-IN')}</span>
+                    <span className={`font-black ${isLight ? 'text-[#19240E]' : 'text-white'}`}>₹{stu.agreedFee.toLocaleString('en-IN')}</span>
                   </div>
-                  <div className="mt-1 flex items-center justify-end font-bold">
+                  <div className="font-bold">
                     {stu.paymentStatus === 'paid' && (
                       <span className={`text-xs font-mono px-2 py-0.5 rounded font-black ${isLight ? 'text-emerald-800 bg-emerald-50 border border-emerald-300' : 'text-emerald-400 bg-emerald-500/20 border border-emerald-500/40'}`}>
                         Full Paid

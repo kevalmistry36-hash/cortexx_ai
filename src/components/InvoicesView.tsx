@@ -435,28 +435,28 @@ Accounts Office, Cortexx AI Institute`;
   const paidInvoicesCount = invoices.filter(i => i.paymentStatus === 'paid').length;
   const pendingInvoicesCount = invoices.filter(i => i.paymentStatus !== 'paid').length;
 
-  // Shared card classes - Olive & Beige palette
+  // Shared card classes - Olive & Beige palette with proper responsive typography
   const kpiCardClass = isLight
-    ? 'dashboard-kpi-card bg-[#FAF6EE] border-2 border-[#E5DCBE] border-t-4 border-t-[#587731] shadow-md hover:border-[#587731] text-[#243315] rounded-xl p-5 transition-all relative overflow-hidden'
-    : 'dashboard-kpi-card bg-[#182214]/90 border border-[#2C3D21] border-t-4 border-t-[#587731] hover:border-[#587731]/70 text-neutral-100 rounded-xl p-5 transition-all relative overflow-hidden';
+    ? 'dashboard-kpi-card bg-[#FAF6EE] border-2 border-[#E5DCBE] border-t-4 border-t-[#587731] shadow-md hover:border-[#587731] text-[#243315] rounded-xl p-4 sm:p-5 transition-all relative overflow-hidden flex flex-col justify-between'
+    : 'dashboard-kpi-card bg-[#182214]/90 border border-[#2C3D21] border-t-4 border-t-[#587731] hover:border-[#587731]/70 text-neutral-100 rounded-xl p-4 sm:p-5 transition-all relative overflow-hidden flex flex-col justify-between';
 
   const kpiTitleClass = isLight
-    ? 'text-xs font-black tracking-wider uppercase text-[#243315] font-sans'
-    : 'text-xs font-bold tracking-wider uppercase text-neutral-200 font-sans';
+    ? 'text-[11px] sm:text-xs font-black tracking-wider uppercase text-[#243315] font-sans truncate'
+    : 'text-[11px] sm:text-xs font-bold tracking-wider uppercase text-neutral-200 font-sans truncate';
 
   const kpiNumberClass = isLight
-    ? 'text-3xl sm:text-4xl font-black font-sans tabular-nums text-[#19240E] tracking-tight'
-    : 'text-3xl sm:text-4xl font-black font-sans tabular-nums text-white tracking-tight';
+    ? 'text-2xl sm:text-3xl xl:text-4xl font-black font-sans tabular-nums text-[#19240E] tracking-tight'
+    : 'text-2xl sm:text-3xl xl:text-4xl font-black font-sans tabular-nums text-white tracking-tight';
 
   const kpiSubtextClass = isLight
-    ? 'mt-3 text-xs text-[#243315] font-extrabold font-sans'
-    : 'mt-3 text-xs text-neutral-300 font-semibold font-sans';
+    ? 'mt-2.5 sm:mt-3 text-[11px] sm:text-xs text-[#243315] font-extrabold font-sans'
+    : 'mt-2.5 sm:mt-3 text-[11px] sm:text-xs text-neutral-300 font-semibold font-sans';
 
   const kpiBadgeClass =
-    'kpi-orange-badge text-[11px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-md bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 font-sans';
+    'kpi-orange-badge text-[10px] sm:text-[11px] uppercase font-black tracking-wider px-2 sm:px-2.5 py-0.5 rounded-md bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 font-sans shrink-0';
 
   const kpiIconBoxClass =
-    'w-9 h-9 rounded-xl bg-[#587731]/15 border border-[#587731]/35 flex items-center justify-center text-[#587731] dark:text-[#8CB752] shadow-sm shrink-0';
+    'w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#587731]/15 border border-[#587731]/35 flex items-center justify-center text-[#587731] dark:text-[#8CB752] shadow-sm shrink-0';
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -532,20 +532,20 @@ Accounts Office, Cortexx AI Institute`;
         </div>
       )}
 
-      {/* Invoice Section 5 KPI Cards - Identical Appearance to Dashboard Type */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      {/* Invoice Section 5 KPI Cards - Properly arranged typography, responsive numbers, zero overflow */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
         {/* KPI 1: Total Invoices */}
         <div className={kpiCardClass}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
               <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Total Invoices">🧾</span>
               <span className={kpiTitleClass}>Total Invoices</span>
             </div>
             <div className={kpiIconBoxClass}>
-              <Receipt className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+              <Receipt className="w-4 h-4 text-[#587731] dark:text-[#8CB752]" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
+          <div className="mt-3 flex items-baseline justify-between gap-1.5 flex-wrap">
             <span className={kpiNumberClass}>{invoices.length}</span>
             <span className={kpiBadgeClass}>Ledger</span>
           </div>
@@ -556,18 +556,18 @@ Accounts Office, Cortexx AI Institute`;
 
         {/* KPI 2: Paid in Full */}
         <div className={kpiCardClass}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
               <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Paid In Full">💚</span>
               <span className={kpiTitleClass}>Paid In Full</span>
             </div>
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/35 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-sm shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/35 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-sm shrink-0">
               <CheckCircle className="w-4 h-4 stroke-[2.5]" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
+          <div className="mt-3 flex items-baseline justify-between gap-1.5 flex-wrap">
             <span className={kpiNumberClass}>{paidInvoicesCount}</span>
-            <span className="text-[11px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40">100% Cleared</span>
+            <span className="text-[10px] sm:text-[11px] uppercase font-black tracking-wider px-2 sm:px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 shrink-0">100% Cleared</span>
           </div>
           <div className={kpiSubtextClass}>
             <span className="text-emerald-700 dark:text-emerald-400 font-bold">Zero Pending Balance</span>
@@ -576,18 +576,18 @@ Accounts Office, Cortexx AI Institute`;
 
         {/* KPI 3: Pending Fees */}
         <div className={kpiCardClass}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
               <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Pending Fees">⏳</span>
               <span className={kpiTitleClass}>Pending Fees</span>
             </div>
-            <div className="w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/35 flex items-center justify-center text-rose-600 dark:text-rose-400 shadow-sm shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-rose-500/15 border border-rose-500/35 flex items-center justify-center text-rose-600 dark:text-rose-400 shadow-sm shrink-0">
               <Clock className="w-4 h-4 stroke-[2.5]" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
+          <div className="mt-3 flex items-baseline justify-between gap-1.5 flex-wrap">
             <span className={kpiNumberClass}>{pendingInvoicesCount}</span>
-            <span className="text-[11px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-md bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/40">Due</span>
+            <span className="text-[10px] sm:text-[11px] uppercase font-black tracking-wider px-2 sm:px-2.5 py-0.5 rounded-md bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/40 shrink-0">Due</span>
           </div>
           <div className={kpiSubtextClass}>
             <span className="text-rose-700 dark:text-rose-400 font-bold">Installments Outstanding</span>
@@ -596,16 +596,16 @@ Accounts Office, Cortexx AI Institute`;
 
         {/* KPI 4: Total Billed */}
         <div className={kpiCardClass}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
               <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Total Billed">💰</span>
               <span className={kpiTitleClass}>Total Billed</span>
             </div>
             <div className={kpiIconBoxClass}>
-              <IndianRupee className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+              <IndianRupee className="w-4 h-4 text-[#587731] dark:text-[#8CB752]" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
+          <div className="mt-3 flex items-baseline justify-between gap-1.5 flex-wrap">
             <span className={kpiNumberClass}>₹{totalBilled.toLocaleString('en-IN')}</span>
             <span className={kpiBadgeClass}>Cumulative</span>
           </div>
@@ -616,21 +616,21 @@ Accounts Office, Cortexx AI Institute`;
 
         {/* KPI 5: Collected Fees */}
         <div className={kpiCardClass}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
               <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Collected Fees">💳</span>
               <span className={kpiTitleClass}>Collected Fees</span>
             </div>
             <div className={kpiIconBoxClass}>
-              <CheckCircle className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+              <CheckCircle className="w-4 h-4 text-[#587731] dark:text-[#8CB752]" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
+          <div className="mt-3 flex items-baseline justify-between gap-1.5 flex-wrap">
             <span className={kpiNumberClass}>₹{totalCollected.toLocaleString('en-IN')}</span>
             <span className={kpiBadgeClass}>Received</span>
           </div>
           <div className={kpiSubtextClass}>
-            <span className={isLight ? 'text-black' : 'text-emerald-400'}>Realized Revenue</span>
+            <span className={isLight ? 'text-emerald-700 font-bold' : 'text-emerald-400 font-bold'}>Realized Revenue</span>
           </div>
         </div>
       </div>
@@ -1001,190 +1001,245 @@ Accounts Office, Cortexx AI Institute`;
             </table>
           </div>
 
-          {/* Mobile Invoices Cards List (Vertical Layout) */}
-          <div className="md:hidden divide-y divide-neutral-800 bg-neutral-900/40">
-            {filteredInvoices.map(inv => (
-              <div key={inv.invoiceNumber} className="p-4 space-y-3 hover:bg-neutral-900/60 transition-colors">
-                {/* Vertical Header: Invoice #, Date, Status */}
-                <div className="flex items-center justify-between gap-2 border-b border-neutral-800/80 pb-2.5">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/30">
-                      {inv.invoiceNumber}
-                    </span>
-                    <span className="text-[11px] font-mono text-neutral-400 flex items-center gap-1">
-                      <Calendar className="w-3 h-3 text-neutral-500" />
-                      {inv.invoiceDate}
-                    </span>
-                  </div>
-                  <span
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-black rounded-lg uppercase tracking-wider shadow-xs ${
-                      inv.paymentStatus === 'paid'
-                        ? 'bg-emerald-600 text-white border border-emerald-700'
-                        : inv.paymentStatus === 'partially_paid'
-                        ? 'bg-amber-500 text-neutral-950 border border-amber-600'
-                        : 'bg-rose-600 text-white border border-rose-700'
-                    }`}
-                  >
-                    {inv.paymentStatus === 'paid' ? (
-                      <>
-                        <CheckCircle className="w-3.5 h-3.5 stroke-[2.5]" />
-                        <span>Paid</span>
-                      </>
-                    ) : inv.paymentStatus === 'partially_paid' ? (
-                      <>
-                        <Clock className="w-3.5 h-3.5 stroke-[2.5]" />
-                        <span>Partial</span>
-                      </>
-                    ) : (
-                      <>
-                        <AlertCircle className="w-3.5 h-3.5 stroke-[2.5]" />
-                        <span>Pending</span>
-                      </>
-                    )}
-                  </span>
-                </div>
+          {/* Mobile Invoices Cards List (Properly Arranged Vertical Fees Status Layout) */}
+          <div className={`md:hidden divide-y ${isLight ? 'divide-[#E5DCBE] bg-[#FAF6EE]' : 'divide-neutral-800 bg-neutral-900/40'}`}>
+            {filteredInvoices.map(inv => {
+              const isDeact = checkIsStudentDeactivated(inv.studentId, inv.studentName);
+              const percentPaid = inv.totalPayable > 0 ? Math.min(100, Math.round((inv.amountPaid / inv.totalPayable) * 100)) : 100;
 
-                {/* Vertical Student & Contact Details */}
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 flex-wrap">
+              return (
+                <div key={inv.invoiceNumber} className={`p-4 space-y-3.5 transition-colors ${isLight ? 'hover:bg-[#F5EFDF]/60 text-[#243315]' : 'hover:bg-neutral-900/60 text-neutral-100'}`}>
+                  {/* Top Header: Invoice # & Date & Status Badge */}
+                  <div className={`flex items-center justify-between gap-2 border-b pb-2.5 ${isLight ? 'border-[#E5DCBE]' : 'border-neutral-800/80'}`}>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-black text-[#587731] dark:text-[#8CB752] bg-[#587731]/15 px-2.5 py-1 rounded-lg border border-[#587731]/30">
+                        {inv.invoiceNumber}
+                      </span>
+                      <span className={`text-[11px] font-mono flex items-center gap-1 font-bold ${isLight ? 'text-[#243315]' : 'text-neutral-400'}`}>
+                        <Calendar className="w-3 h-3 text-[#587731]" />
+                        {inv.invoiceDate}
+                      </span>
+                    </div>
+
+                    {/* Status Badge */}
                     <span
-                      className={`font-black text-base ${
-                        checkIsStudentDeactivated(inv.studentId, inv.studentName)
-                          ? 'line-through text-rose-500 decoration-rose-600 decoration-2'
-                          : isLight ? 'text-black' : 'text-neutral-100'
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-black rounded-lg uppercase tracking-wider shadow-xs ${
+                        inv.paymentStatus === 'paid'
+                          ? 'bg-emerald-600 text-white border border-emerald-700'
+                          : inv.paymentStatus === 'partially_paid'
+                          ? 'bg-amber-500 text-neutral-950 border border-amber-600'
+                          : 'bg-rose-600 text-white border border-rose-700'
                       }`}
                     >
-                      {inv.studentName}
-                    </span>
-                    {!checkIsStudentDeactivated(inv.studentId, inv.studentName) ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-black rounded-md bg-emerald-600 text-white shadow-xs uppercase tracking-wider">
-                        <UserCheck className="w-3 h-3 stroke-[2.5]" />
-                        <span>Active</span>
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-black rounded-md bg-rose-600 text-white shadow-xs uppercase tracking-wider">
-                        <UserX className="w-3 h-3 stroke-[2.5]" />
-                        <span>Deactivated</span>
-                      </span>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => handleToggleStudentDeactivation(inv.studentId, inv.studentName)}
-                      title={
-                        checkIsStudentDeactivated(inv.studentId, inv.studentName)
-                          ? `Reactivate "${inv.studentName}"`
-                          : `Put "${inv.studentName}" into Deactive mode`
-                      }
-                      className={`p-1 rounded cursor-pointer ${
-                        checkIsStudentDeactivated(inv.studentId, inv.studentName)
-                          ? 'text-rose-400 bg-rose-500/15 border border-rose-500/30'
-                          : isLight ? 'text-neutral-500 hover:text-rose-500 hover:bg-neutral-200' : 'text-neutral-400 hover:text-rose-400'
-                      }`}
-                    >
-                      {checkIsStudentDeactivated(inv.studentId, inv.studentName) ? (
-                        <UserCheck className="w-3.5 h-3.5" />
+                      {inv.paymentStatus === 'paid' ? (
+                        <>
+                          <CheckCircle className="w-3.5 h-3.5 stroke-[2.5]" />
+                          <span>Paid</span>
+                        </>
+                      ) : inv.paymentStatus === 'partially_paid' ? (
+                        <>
+                          <Clock className="w-3.5 h-3.5 stroke-[2.5]" />
+                          <span>Partial</span>
+                        </>
                       ) : (
-                        <UserX className="w-3.5 h-3.5" />
+                        <>
+                          <AlertCircle className="w-3.5 h-3.5 stroke-[2.5]" />
+                          <span>Pending</span>
+                        </>
                       )}
-                    </button>
+                    </span>
                   </div>
-                  <div className={`text-xs font-mono font-black ${isLight ? 'text-black' : 'text-neutral-400'}`}>
-                    Student ID: {inv.studentId}
-                  </div>
-                  {inv.studentPhone && (
-                    <div className={`flex items-center gap-1.5 text-xs font-mono font-black ${isLight ? 'text-black' : 'text-neutral-300'}`}>
-                      <Phone className={`w-3 h-3 shrink-0 ${isLight ? 'text-black' : 'text-neutral-400'}`} />
-                      <span>+91 {inv.studentPhone}</span>
-                    </div>
-                  )}
-                  {inv.studentEmail && (
-                    <div className={`flex items-center gap-1.5 text-xs font-mono font-bold ${isLight ? 'text-black' : 'text-neutral-400'}`}>
-                      <Mail className={`w-3 h-3 shrink-0 ${isLight ? 'text-black' : 'text-neutral-500'}`} />
-                      <span className="truncate max-w-[240px]">{inv.studentEmail}</span>
-                    </div>
-                  )}
-                </div>
 
-                {/* Vertical Course Curriculum */}
-                <div className={`p-2.5 rounded-xl border space-y-1 ${isLight ? 'bg-neutral-50 border-neutral-300 text-black' : 'bg-neutral-950/70 border-neutral-800/80'}`}>
-                  <div className={`text-xs font-black ${isLight ? 'text-black' : 'text-neutral-200'}`}>{inv.courseName}</div>
-                  <div className={`text-[11px] font-bold flex items-center gap-1 ${isLight ? 'text-black' : 'text-neutral-400'}`}>
-                    <BookOpen className="w-3 h-3 text-orange-500" />
-                    <span>{inv.courseDuration || 'Practical AI Course'}</span>
-                  </div>
-                </div>
+                  {/* Student & Contact Info */}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <div className="flex items-center gap-2 flex-wrap min-w-0">
+                        <span
+                          className={`font-black text-base truncate ${
+                            isDeact
+                              ? 'line-through text-rose-500 decoration-rose-600 decoration-2'
+                              : isLight ? 'text-[#19240E]' : 'text-neutral-100'
+                          }`}
+                        >
+                          {inv.studentName}
+                        </span>
+                        {!isDeact ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-black rounded-md bg-emerald-600 text-white shadow-xs uppercase tracking-wider">
+                            <UserCheck className="w-3 h-3 stroke-[2.5]" />
+                            <span>Active</span>
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-black rounded-md bg-rose-600 text-white shadow-xs uppercase tracking-wider">
+                            <UserX className="w-3 h-3 stroke-[2.5]" />
+                            <span>Deactivated</span>
+                          </span>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleStudentDeactivation(inv.studentId, inv.studentName)}
+                        title={
+                          isDeact
+                            ? `Reactivate "${inv.studentName}"`
+                            : `Put "${inv.studentName}" into Deactive mode`
+                        }
+                        className={`p-1.5 rounded-lg cursor-pointer transition-colors ${
+                          isDeact
+                            ? 'text-rose-400 bg-rose-500/15 border border-rose-500/30'
+                            : isLight ? 'text-neutral-500 hover:text-rose-600 hover:bg-[#E5DCBE]' : 'text-neutral-400 hover:text-rose-400 hover:bg-neutral-800'
+                        }`}
+                      >
+                        {isDeact ? (
+                          <UserCheck className="w-3.5 h-3.5" />
+                        ) : (
+                          <UserX className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </div>
 
-                {/* Vertical Financial Details Breakdown */}
-                <div className="p-3 bg-neutral-950/80 rounded-xl border border-neutral-800/80 space-y-1.5 font-mono text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="text-neutral-400 font-sans">Total Fee Payable:</span>
-                    <span className="text-neutral-200 font-bold">₹{inv.totalPayable.toLocaleString('en-IN')}</span>
+                    <div className={`flex items-center gap-2 flex-wrap text-xs font-mono font-bold ${isLight ? 'text-[#243315]' : 'text-neutral-300'}`}>
+                      <span className="font-black text-[#587731] dark:text-[#8CB752]">ID: {inv.studentId}</span>
+                      {inv.studentPhone && (
+                        <>
+                          <span>·</span>
+                          <span className="flex items-center gap-1">
+                            <Phone className="w-3 h-3 text-[#587731]" />
+                            +91 {inv.studentPhone}
+                          </span>
+                        </>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-neutral-400 font-sans">Total Amount Paid:</span>
-                    <span className="font-extrabold text-emerald-400">+₹{inv.amountPaid.toLocaleString('en-IN')}</span>
+
+                  {/* Course Details */}
+                  <div className={`p-2.5 rounded-xl border space-y-1 ${isLight ? 'bg-[#F5EFDF]/90 border-[#E5DCBE] text-[#243315]' : 'bg-neutral-950/70 border-neutral-800/80'}`}>
+                    <div className={`text-xs font-black ${isLight ? 'text-[#19240E]' : 'text-neutral-200'}`}>{inv.courseName}</div>
+                    <div className={`text-[11px] font-bold flex items-center gap-1 ${isLight ? 'text-[#3E5422]' : 'text-neutral-400'}`}>
+                      <BookOpen className="w-3 h-3 text-[#587731]" />
+                      <span>{inv.courseDuration || 'Practical AI Course'}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between pt-1 border-t border-neutral-800/80">
-                    <span className="text-neutral-400 font-sans">Total Due / Balance:</span>
-                    {inv.remainingBalance > 0 ? (
-                      <span className="font-bold text-red-400 bg-red-500/15 px-2 py-0.5 rounded border border-red-500/40">
-                        ₹{inv.remainingBalance.toLocaleString('en-IN')}
+
+                  {/* PROPER VERTICAL FEES STATUS BLOCK */}
+                  <div className={`p-3.5 rounded-xl border-2 space-y-2.5 ${
+                    isLight
+                      ? 'bg-[#FAF6EE] border-[#587731]/40 shadow-sm'
+                      : 'bg-[#182214]/90 border-[#2C3D21]'
+                  }`}>
+                    {/* Header with Fee Status & Payment Mode */}
+                    <div className="flex items-center justify-between pb-2 border-b border-[#E5DCBE] dark:border-[#2C3D21]">
+                      <span className="text-[11px] font-black uppercase tracking-wider font-sans text-[#587731] dark:text-[#8CB752] flex items-center gap-1.5">
+                        <IndianRupee className="w-3.5 h-3.5" />
+                        <span>Vertical Fee Status</span>
                       </span>
-                    ) : (
-                      <span className="text-emerald-400 font-semibold">₹0 ✓ Cleared</span>
+                      <span className="text-[10px] font-mono uppercase font-black px-2 py-0.5 rounded bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30">
+                        Mode: {inv.paymentMethod || 'UPI'}
+                      </span>
+                    </div>
+
+                    {/* Vertical Fee Row 1: Total Fee Payable */}
+                    <div className="flex items-center justify-between text-xs">
+                      <span className={`font-bold font-sans ${isLight ? 'text-[#243315]' : 'text-neutral-400'}`}>
+                        Total Fee Payable:
+                      </span>
+                      <span className={`font-mono font-black text-sm ${isLight ? 'text-[#19240E]' : 'text-neutral-100'}`}>
+                        ₹{inv.totalPayable.toLocaleString('en-IN')}
+                      </span>
+                    </div>
+
+                    {/* Vertical Fee Row 2: Amount Paid */}
+                    <div className="flex items-center justify-between text-xs">
+                      <span className={`font-bold font-sans ${isLight ? 'text-[#243315]' : 'text-neutral-400'}`}>
+                        Total Amount Paid:
+                      </span>
+                      <span className="font-mono font-black text-base text-emerald-700 dark:text-emerald-400">
+                        +₹{inv.amountPaid.toLocaleString('en-IN')}
+                      </span>
+                    </div>
+
+                    {/* Vertical Fee Row 3: Remaining Due / Balance */}
+                    <div className="flex items-center justify-between text-xs pt-1.5 border-t border-[#E5DCBE] dark:border-[#2C3D21]">
+                      <span className={`font-bold font-sans ${isLight ? 'text-[#243315]' : 'text-neutral-400'}`}>
+                        Remaining Due / Balance:
+                      </span>
+                      {inv.remainingBalance > 0 ? (
+                        <span className="font-mono font-black text-xs text-rose-700 dark:text-rose-300 bg-rose-500/20 border-2 border-rose-400 px-2.5 py-0.5 rounded-lg shadow-xs">
+                          ₹{inv.remainingBalance.toLocaleString('en-IN')} Due
+                        </span>
+                      ) : (
+                        <span className="font-mono font-black text-xs text-emerald-700 dark:text-emerald-300 bg-emerald-500/20 border-2 border-emerald-400 px-2.5 py-0.5 rounded-lg shadow-xs">
+                          ₹0 ✓ Cleared
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Vertical Fee Row 4: Progress Bar */}
+                    <div className="space-y-1 pt-1 border-t border-[#E5DCBE] dark:border-[#2C3D21]">
+                      <div className="flex items-center justify-between text-[10px] font-mono font-bold">
+                        <span className={isLight ? 'text-[#243315]' : 'text-neutral-400'}>Collection Progress</span>
+                        <span className="text-[#587731] dark:text-[#8CB752] font-black">{percentPaid}% Cleared</span>
+                      </div>
+                      <div className={`w-full h-2 rounded-full overflow-hidden ${isLight ? 'bg-[#E5DCBE]' : 'bg-neutral-800'}`}>
+                        <div
+                          className="h-full bg-gradient-to-r from-[#587731] to-[#8CB752] rounded-full transition-all duration-300"
+                          style={{ width: `${percentPaid}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions Bar */}
+                  <div className="flex items-center justify-end gap-1.5 pt-1 border-t border-[#E5DCBE] dark:border-neutral-800/80 flex-wrap">
+                    {inv.remainingBalance > 0 && (
+                      <button
+                        onClick={() => openRecordPaymentModal(inv)}
+                        className="px-3 py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg cursor-pointer shadow-sm"
+                      >
+                        + Record Payment
+                      </button>
                     )}
+                    <button
+                      onClick={() => onOpenInvoiceModal(inv)}
+                      className={`px-2.5 py-1.5 text-xs rounded-lg flex items-center gap-1 cursor-pointer font-bold ${
+                        isLight ? 'text-[#243315] bg-[#E5DCBE] hover:bg-[#DCD1B0]' : 'text-neutral-300 hover:text-white bg-neutral-800 hover:bg-neutral-700'
+                      }`}
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>View</span>
+                    </button>
+                    <button
+                      onClick={() => handleDownloadInvoicePdf(inv)}
+                      className="px-2.5 py-1.5 text-xs font-bold text-[#587731] dark:text-[#8CB752] hover:text-[#FAF6EE] hover:bg-[#587731] bg-[#587731]/15 border border-[#587731]/40 rounded-lg flex items-center gap-1 cursor-pointer transition-colors"
+                      title="Download Invoice as PDF"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>PDF</span>
+                    </button>
+                    <button
+                      onClick={() => shareOnWhatsApp(inv)}
+                      className="p-1.5 text-emerald-600 hover:text-white hover:bg-emerald-600 bg-emerald-500/15 rounded-lg cursor-pointer transition-colors"
+                      title="Share on WhatsApp"
+                    >
+                      <Share2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => sendInvoiceEmail(inv)}
+                      className="p-1.5 text-sky-600 hover:text-white hover:bg-sky-600 bg-sky-500/15 rounded-lg cursor-pointer transition-colors"
+                      title="Email Invoice"
+                    >
+                      <Mail className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => setInvoiceToDelete(inv)}
+                      className="p-1.5 text-rose-600 hover:text-white hover:bg-rose-600 bg-rose-500/15 border border-rose-500/30 rounded-lg cursor-pointer transition-colors"
+                      title="Delete Invoice"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </div>
-
-                {/* Vertical Action Buttons */}
-                <div className="flex items-center justify-end gap-1.5 pt-1 border-t border-neutral-800/80 flex-wrap">
-                  {inv.remainingBalance > 0 && (
-                    <button
-                      onClick={() => openRecordPaymentModal(inv)}
-                      className="px-3 py-1.5 text-xs font-bold bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/30 rounded-lg cursor-pointer"
-                    >
-                      + Record Payment
-                    </button>
-                  )}
-                  <button
-                    onClick={() => onOpenInvoiceModal(inv)}
-                    className="px-2.5 py-1.5 text-xs text-neutral-300 hover:text-white bg-neutral-800 hover:bg-neutral-700 rounded-lg flex items-center gap-1 cursor-pointer"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>View</span>
-                  </button>
-                  <button
-                    onClick={() => handleDownloadInvoicePdf(inv)}
-                    className="px-2.5 py-1.5 text-xs font-bold text-orange-300 hover:text-white bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/30 rounded-lg flex items-center gap-1 cursor-pointer"
-                    title="Download Invoice as PDF"
-                  >
-                    <Download className="w-3.5 h-3.5 text-orange-400" />
-                    <span>PDF</span>
-                  </button>
-                  <button
-                    onClick={() => shareOnWhatsApp(inv)}
-                    className="p-1.5 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg cursor-pointer"
-                    title="Share on WhatsApp"
-                  >
-                    <Share2 className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    onClick={() => sendInvoiceEmail(inv)}
-                    className="p-1.5 text-sky-400 bg-sky-500/10 hover:bg-sky-500/20 rounded-lg cursor-pointer"
-                    title="Email Invoice"
-                  >
-                    <Mail className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    onClick={() => setInvoiceToDelete(inv)}
-                    className="p-1.5 text-rose-400 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/30 rounded-lg cursor-pointer"
-                    title="Delete Invoice"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       ) : (
@@ -1331,19 +1386,21 @@ Accounts Office, Cortexx AI Institute`;
             </table>
           </div>
 
-          {/* Mobile Receipts Cards List */}
-          <div className={`md:hidden divide-y ${isLight ? 'bg-white divide-neutral-200 border border-neutral-200' : 'bg-neutral-900/40 divide-neutral-800'}`}>
+          {/* Mobile Receipts Cards List (Clean Vertical Layout) */}
+          <div className={`md:hidden divide-y ${isLight ? 'bg-[#FAF6EE] divide-[#E5DCBE] border border-[#E5DCBE]' : 'bg-neutral-900/40 divide-neutral-800'}`}>
             {filteredReceipts.map(rec => (
-              <div key={rec.receiptNumber} className={`p-4 space-y-3 ${isLight ? 'hover:bg-neutral-50 text-black' : 'hover:bg-neutral-900/60 text-neutral-100'}`}>
-                <div className="flex items-start justify-between gap-2">
+              <div key={rec.receiptNumber} className={`p-4 space-y-3.5 transition-colors ${isLight ? 'hover:bg-[#F5EFDF]/60 text-[#243315]' : 'hover:bg-neutral-900/60 text-neutral-100'}`}>
+                <div className="flex items-start justify-between gap-2 border-b pb-2.5 border-[#E5DCBE] dark:border-neutral-800/80">
                   <div>
-                    <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">{rec.receiptNumber}</span>
-                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                    <span className="font-mono text-xs font-black text-emerald-700 dark:text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded border border-emerald-500/30">
+                      {rec.receiptNumber}
+                    </span>
+                    <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                       <span
                         className={`font-black text-base ${
                           checkIsStudentDeactivated(rec.studentId, rec.studentName)
                             ? 'line-through text-rose-500 decoration-rose-600 decoration-2'
-                            : isLight ? 'text-black' : 'text-neutral-100'
+                            : isLight ? 'text-[#19240E]' : 'text-neutral-100'
                         }`}
                       >
                         {rec.studentName}
@@ -1370,7 +1427,7 @@ Accounts Office, Cortexx AI Institute`;
                         className={`p-1 rounded cursor-pointer ${
                           checkIsStudentDeactivated(rec.studentId, rec.studentName)
                             ? 'text-rose-400 bg-rose-500/15 border border-rose-500/30'
-                            : isLight ? 'text-neutral-500 hover:text-rose-500 hover:bg-neutral-200' : 'text-neutral-400 hover:text-rose-400'
+                            : isLight ? 'text-neutral-500 hover:text-rose-500 hover:bg-[#E5DCBE]' : 'text-neutral-400 hover:text-rose-400'
                         }`}
                       >
                         {checkIsStudentDeactivated(rec.studentId, rec.studentName) ? (
@@ -1380,30 +1437,44 @@ Accounts Office, Cortexx AI Institute`;
                         )}
                       </button>
                     </div>
-                    <div className={`text-xs font-mono font-bold ${isLight ? 'text-black' : 'text-neutral-400'}`}>Invoice: {rec.invoiceNumber}</div>
+                    <div className={`text-xs font-mono font-bold mt-1 ${isLight ? 'text-[#3E5422]' : 'text-neutral-400'}`}>
+                      Invoice Ref: {rec.invoiceNumber}
+                    </div>
                   </div>
-                  <span className="px-2.5 py-1 text-xs font-black rounded-lg bg-emerald-600 text-white shadow-xs">
-                    ₹{rec.amountReceived.toLocaleString('en-IN')}
+                  <span className="px-2.5 py-1 text-xs font-black rounded-lg bg-emerald-600 text-white shadow-xs shrink-0 font-mono">
+                    +₹{rec.amountReceived.toLocaleString('en-IN')}
                   </span>
                 </div>
 
-                <div className={`flex items-center justify-between text-xs font-mono p-2.5 rounded-lg border ${isLight ? 'bg-neutral-50 text-black border-neutral-300 font-bold' : 'bg-neutral-950/60 text-neutral-300 border-neutral-800'}`}>
-                  <div>Date: {rec.paymentDate}</div>
-                  <div>Mode: {rec.paymentMethod}</div>
-                  <div>Bal: ₹{rec.remainingBalanceAfter.toLocaleString('en-IN')}</div>
+                {/* Vertical Receipt Details */}
+                <div className={`p-3 rounded-xl border space-y-1.5 text-xs font-mono ${isLight ? 'bg-[#F5EFDF] text-[#243315] border-[#E5DCBE]' : 'bg-neutral-950/60 text-neutral-300 border-neutral-800'}`}>
+                  <div className="flex items-center justify-between">
+                    <span className="font-sans font-bold">Payment Date:</span>
+                    <span className="font-bold">{rec.paymentDate}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-sans font-bold">Payment Mode:</span>
+                    <span className="font-bold uppercase text-[#587731] dark:text-[#8CB752]">{rec.paymentMethod}</span>
+                  </div>
+                  <div className="flex items-center justify-between pt-1 border-t border-[#E5DCBE] dark:border-neutral-800/80">
+                    <span className="font-sans font-bold">Remaining Balance:</span>
+                    <span className="font-black text-rose-700 dark:text-rose-400">₹{rec.remainingBalanceAfter.toLocaleString('en-IN')}</span>
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-2">
+                <div className="flex items-center justify-end gap-1.5 pt-1 border-t border-[#E5DCBE] dark:border-neutral-800/80 flex-wrap">
                   <button
                     onClick={() => onOpenReceiptModal(rec)}
-                    className="px-2.5 py-1 text-xs text-neutral-300 hover:text-white bg-neutral-800 rounded-lg flex items-center gap-1"
+                    className={`px-2.5 py-1.5 text-xs rounded-lg flex items-center gap-1 font-bold cursor-pointer ${
+                      isLight ? 'text-[#243315] bg-[#E5DCBE] hover:bg-[#DCD1B0]' : 'text-neutral-300 hover:text-white bg-neutral-800'
+                    }`}
                   >
                     <Eye className="w-3.5 h-3.5" />
                     <span>View</span>
                   </button>
                   <button
                     onClick={() => handleDownloadReceiptPdf(rec)}
-                    className="px-2.5 py-1 text-xs font-bold text-emerald-300 hover:text-white bg-emerald-500/20 border border-emerald-500/30 rounded-lg flex items-center gap-1 cursor-pointer"
+                    className="px-2.5 py-1.5 text-xs font-bold text-[#587731] dark:text-[#8CB752] hover:text-[#FAF6EE] hover:bg-[#587731] bg-[#587731]/15 border border-[#587731]/40 rounded-lg flex items-center gap-1 cursor-pointer transition-colors"
                     title="Download Receipt as PDF"
                   >
                     <Download className="w-3.5 h-3.5" />
@@ -1411,7 +1482,7 @@ Accounts Office, Cortexx AI Institute`;
                   </button>
                   <button
                     onClick={() => sendReceiptEmail(rec)}
-                    className="px-2 py-1 text-xs font-medium text-sky-300 bg-sky-500/20 rounded-lg flex items-center gap-1 cursor-pointer"
+                    className="px-2.5 py-1.5 text-xs font-bold text-sky-600 hover:text-white hover:bg-sky-600 bg-sky-500/15 border border-sky-500/30 rounded-lg flex items-center gap-1 cursor-pointer transition-colors"
                     title="Email Receipt to Student"
                   >
                     <Mail className="w-3.5 h-3.5" />
@@ -1419,10 +1490,10 @@ Accounts Office, Cortexx AI Institute`;
                   </button>
                   <button
                     onClick={() => setReceiptToDelete(rec)}
-                    className="px-2.5 py-1 text-xs font-semibold text-rose-300 bg-rose-500/20 border border-rose-500/30 rounded-lg flex items-center gap-1 cursor-pointer"
+                    className="p-1.5 text-rose-600 hover:text-white hover:bg-rose-600 bg-rose-500/15 border border-rose-500/30 rounded-lg cursor-pointer transition-colors"
+                    title="Delete Receipt"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                    <span>Delete</span>
                   </button>
                 </div>
               </div>
