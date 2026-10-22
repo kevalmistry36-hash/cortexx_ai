@@ -50,54 +50,57 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const partialCount = students.filter(s => s.paymentStatus === 'partially_paid').length;
   const unpaidCount = students.filter(s => s.paymentStatus === 'unpaid').length;
 
+  const totalBilled = totalReceived + totalPending;
+  const collectionRate = totalBilled > 0 ? Math.min(100, Math.round((totalReceived / totalBilled) * 100)) : 100;
+
   const isLight = theme === 'light';
 
-  // Shared card classes - All indicated with same Orange Colour, font black in white theme
+  // Shared card classes - Olive & Beige Palette (Olive #587731 & Beige #F5EFDF)
   const kpiCardClass = isLight
-    ? 'dashboard-kpi-card bg-white border-2 border-neutral-200 border-t-4 border-t-orange-500 shadow-md hover:border-orange-500 text-black rounded-xl p-5 transition-all relative overflow-hidden'
-    : 'dashboard-kpi-card bg-neutral-900/80 border border-neutral-800 border-t-4 border-t-orange-500 hover:border-neutral-700 text-neutral-100 rounded-xl p-5 transition-all relative overflow-hidden';
+    ? 'dashboard-kpi-card bg-[#FAF6EE] border-2 border-[#E5DCBE] border-t-4 border-t-[#587731] shadow-sm hover:shadow-xl hover:border-[#587731] hover:-translate-y-0.5 text-[#243315] rounded-xl p-5 transition-all duration-300 relative overflow-hidden group'
+    : 'dashboard-kpi-card bg-[#182214]/90 border border-[#2C3D21] border-t-4 border-t-[#587731] hover:border-[#587731]/70 hover:shadow-xl hover:shadow-[#587731]/10 hover:-translate-y-0.5 text-neutral-100 rounded-xl p-5 transition-all duration-300 relative overflow-hidden group';
 
   const kpiTitleClass = isLight
-    ? 'text-xs font-black tracking-wider uppercase text-black font-sans'
+    ? 'text-xs font-black tracking-wider uppercase text-[#243315] font-sans'
     : 'text-xs font-bold tracking-wider uppercase text-neutral-200 font-sans';
 
   const kpiNumberClass = isLight
-    ? 'text-3xl sm:text-4xl font-black font-sans tabular-nums text-black tracking-tight'
+    ? 'text-3xl sm:text-4xl font-black font-sans tabular-nums text-[#19240E] tracking-tight'
     : 'text-3xl sm:text-4xl font-black font-sans tabular-nums text-white tracking-tight';
 
   const kpiSubtextClass = isLight
-    ? 'mt-3 text-xs text-black font-extrabold font-sans'
+    ? 'mt-3 text-xs text-[#243315] font-extrabold font-sans'
     : 'mt-3 text-xs text-neutral-300 font-semibold font-sans';
 
-  // Uniform orange badge and icon classes across all dashboard KPIs
+  // Uniform olive badge and icon classes across all dashboard KPIs
   const kpiBadgeClass =
-    'kpi-orange-badge text-[11px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-md bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-500/30 font-sans';
+    'kpi-orange-badge text-[11px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-md bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 font-sans';
 
   const kpiIconBoxClass =
-    'w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/35 flex items-center justify-center text-orange-600 dark:text-orange-400 shadow-sm shrink-0';
+    'w-9 h-9 rounded-xl bg-[#587731]/15 border border-[#587731]/35 flex items-center justify-center text-[#587731] dark:text-[#8CB752] shadow-sm shrink-0';
 
   return (
     <div className="space-y-8 animate-fadeIn">
       {/* Hero Welcome & Tagline */}
-      <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b ${isLight ? 'border-neutral-300' : 'border-neutral-800/80'}`}>
+      <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b ${isLight ? 'border-[#E5DCBE]' : 'border-neutral-800/80'}`}>
         <div>
-          <h1 className={`text-2xl lg:text-3xl font-extrabold tracking-tight ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+          <h1 className={`text-2xl lg:text-3xl font-extrabold tracking-tight ${isLight ? 'text-[#19240E]' : 'text-neutral-100'}`}>
             Institute Command Center
           </h1>
-          <p className={`text-sm mt-1 ${isLight ? 'text-black font-semibold' : 'text-neutral-400'}`}>
-            Cortexx AI Institute · <span className="text-orange-500 font-bold">Where Thinking Meets Technology</span>
+          <p className={`text-sm mt-1 ${isLight ? 'text-[#243315] font-semibold' : 'text-neutral-400'}`}>
+            Cortexx AI Institute · <span className="text-[#587731] font-bold">Where Thinking Meets Technology</span>
           </p>
         </div>
 
         {/* Live Date / Time Stamp */}
         <div className={`text-xs font-mono flex items-center gap-2 self-start md:self-auto px-3 py-1.5 rounded-lg border ${
           isLight
-            ? 'bg-white border-neutral-300 text-black font-bold shadow-sm'
+            ? 'bg-[#FAF6EE] border-[#E5DCBE] text-[#243315] font-bold shadow-sm'
             : 'bg-neutral-900/60 border-neutral-800 text-neutral-400'
         }`}>
-          <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+          <span className="w-2 h-2 rounded-full bg-[#587731] animate-pulse"></span>
           <span>Session Active</span>
-          <span className={isLight ? 'text-black font-bold' : 'text-neutral-600'}>·</span>
+          <span className={isLight ? 'text-[#243315] font-bold' : 'text-neutral-600'}>·</span>
           <span>{new Date().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</span>
         </div>
       </div>
@@ -106,7 +109,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Metric 1: Total Students KPI */}
         <div className={kpiCardClass}>
-          <div className="flex items-center justify-between">
+          <div className="pointer-events-none absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-orange-500/10 blur-2xl group-hover:scale-125 transition-transform duration-500"></div>
+          <div className="flex items-center justify-between relative z-1">
             <div className="flex items-center gap-2">
               <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Total Students">🎓</span>
               <span className={kpiTitleClass}>Total Students</span>
@@ -115,13 +119,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <Users className="w-4 h-4 text-orange-600 dark:text-orange-400" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
+          <div className="mt-3 flex items-baseline gap-2 relative z-1">
             <span className={kpiNumberClass}>{students.length}</span>
             <span className={kpiBadgeClass}>
               Enrolled
             </span>
           </div>
-          <div className={kpiSubtextClass}>
+          <div className={`${kpiSubtextClass} relative z-1`}>
             <div className="flex items-center gap-2 flex-wrap">
               <span className={`font-mono font-black ${isLight ? 'text-black' : 'text-emerald-400'}`}>{paidCount} Paid</span>
               <span className={isLight ? 'text-black font-black' : 'text-neutral-600'}>·</span>
@@ -134,7 +138,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         {/* Metric 2: Active Courses KPI */}
         <div className={kpiCardClass}>
-          <div className="flex items-center justify-between">
+          <div className="pointer-events-none absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-orange-500/10 blur-2xl group-hover:scale-125 transition-transform duration-500"></div>
+          <div className="flex items-center justify-between relative z-1">
             <div className="flex items-center gap-2">
               <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Active Courses">📚</span>
               <span className={kpiTitleClass}>Active Courses</span>
@@ -143,29 +148,30 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <BookOpen className="w-4 h-4 text-orange-600 dark:text-orange-400" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
+          <div className="mt-3 flex items-baseline gap-2 relative z-1">
             <span className={kpiNumberClass}>{courses.length}</span>
             <span className={kpiBadgeClass}>
               Live
             </span>
           </div>
-          <div className={kpiSubtextClass}>
+          <div className={`${kpiSubtextClass} relative z-1`}>
             <span className={isLight ? 'text-black font-black' : 'text-neutral-300'}>Flagship: 1-Month Practical AI</span>
           </div>
         </div>
 
         {/* Metric 3: Fees Received KPI */}
         <div className={kpiCardClass}>
-          <div className="flex items-center justify-between">
+          <div className="pointer-events-none absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-[#587731]/15 blur-2xl group-hover:scale-125 transition-transform duration-500"></div>
+          <div className="flex items-center justify-between relative z-1">
             <div className="flex items-center gap-2">
               <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Fees Received">💰</span>
               <span className={kpiTitleClass}>Fees Received</span>
             </div>
             <div className={kpiIconBoxClass}>
-              <IndianRupee className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+              <IndianRupee className="w-4 h-4 text-[#587731] dark:text-[#8CB752]" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
+          <div className="mt-3 flex items-baseline gap-2 relative z-1">
             <span className={kpiNumberClass}>
               ₹{totalReceived.toLocaleString('en-IN')}
             </span>
@@ -173,29 +179,43 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               Collected
             </span>
           </div>
-          <div className={kpiSubtextClass}>
+          <div className={`${kpiSubtextClass} relative z-1`}>
             <div className="flex items-center justify-between flex-wrap gap-1">
               <div className="flex items-center gap-1.5 font-black">
-                <CheckCircle className="w-3.5 h-3.5 text-orange-500 shrink-0" />
-                <span className={isLight ? 'text-black' : 'text-neutral-200'}>{paidCount} Paid Fees</span>
+                <CheckCircle className="w-3.5 h-3.5 text-[#587731] shrink-0" />
+                <span className={isLight ? 'text-[#243315]' : 'text-neutral-200'}>{paidCount} Paid Fees</span>
               </div>
-              <span className={`font-mono font-black ${isLight ? 'text-black' : 'text-neutral-400'}`}>{receipts.length} receipts</span>
+              <span className={`font-mono font-black ${isLight ? 'text-[#3E5422]' : 'text-neutral-400'}`}>{receipts.length} receipts</span>
+            </div>
+            {/* Dynamic Collection Rate indicator */}
+            <div className="mt-2.5 pt-2 border-t border-[#587731]/20">
+              <div className="flex items-center justify-between text-[11px] font-mono font-bold mb-1">
+                <span className={isLight ? 'text-[#243315] font-extrabold' : 'text-neutral-300'}>Collection Rate</span>
+                <span className="text-[#587731] dark:text-[#8CB752] font-black">{collectionRate}%</span>
+              </div>
+              <div className={`w-full h-1.5 rounded-full overflow-hidden ${isLight ? 'bg-[#E5DCBE]' : 'bg-neutral-800'}`}>
+                <div 
+                  className="h-full bg-gradient-to-r from-[#587731] to-[#8CB752] rounded-full transition-all duration-500" 
+                  style={{ width: `${collectionRate}%` }}
+                />
+              </div>
             </div>
           </div>
         </div>
 
         {/* Metric 4: Pending Fees KPI */}
         <div className={kpiCardClass}>
-          <div className="flex items-center justify-between">
+          <div className="pointer-events-none absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-[#587731]/15 blur-2xl group-hover:scale-125 transition-transform duration-500"></div>
+          <div className="flex items-center justify-between relative z-1">
             <div className="flex items-center gap-2">
               <span className="kpi-emoji text-lg select-none shrink-0" role="img" aria-label="Pending Balance">⏳</span>
               <span className={kpiTitleClass}>Pending Balance</span>
             </div>
             <div className={kpiIconBoxClass}>
-              <Clock className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+              <Clock className="w-4 h-4 text-[#587731] dark:text-[#8CB752]" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
+          <div className="mt-3 flex items-baseline gap-2 relative z-1">
             <span className={kpiNumberClass}>
               ₹{totalPending.toLocaleString('en-IN')}
             </span>
@@ -203,39 +223,39 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               Outstanding
             </span>
           </div>
-          <div className={kpiSubtextClass}>
+          <div className={`${kpiSubtextClass} relative z-1`}>
             <div className="flex items-center justify-between flex-wrap gap-1">
-              <span className={`font-black ${isLight ? 'text-black' : 'text-rose-400'}`}>{unpaidCount} Unpaid Students</span>
-              <span className={`font-mono font-black ${isLight ? 'text-black' : 'text-neutral-400'}`}>₹{studentTotalPending.toLocaleString('en-IN')} due</span>
+              <span className={`font-black ${isLight ? 'text-rose-700' : 'text-rose-400'}`}>{unpaidCount} Unpaid Students</span>
+              <span className={`font-mono font-black ${isLight ? 'text-[#3E5422]' : 'text-neutral-400'}`}>₹{studentTotalPending.toLocaleString('en-IN')} due</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 4 Prominent Action Buttons with High-Contrast Hover States */}
+      {/* 4 Prominent Action Buttons with Olive & Beige styling */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         <button
           onClick={onOpenAddStudent}
-          className="flex items-center justify-between p-4 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-bold shadow-lg shadow-orange-950/40 hover:shadow-orange-500/30 transition-all group cursor-pointer"
+          className="flex items-center justify-between p-4 bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] rounded-xl font-bold shadow-md hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 group cursor-pointer"
         >
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
-              <Plus className="w-5 h-5 text-white" />
+              <Plus className="w-5 h-5 text-[#FAF6EE]" />
             </div>
             <div className="text-left">
-              <div className="text-sm font-black leading-tight text-white">Add Student</div>
-              <div className="text-xs text-orange-100 font-bold mt-0.5">Quick registration</div>
+              <div className="text-sm font-black leading-tight text-[#FAF6EE]">Add Student</div>
+              <div className="text-xs text-[#E5DCBE] font-bold mt-0.5">Quick registration</div>
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 opacity-90 group-hover:translate-x-1 transition-transform text-white" />
+          <ArrowRight className="w-4 h-4 opacity-90 group-hover:translate-x-1 transition-transform text-[#FAF6EE]" />
         </button>
 
         <button
           onClick={onOpenAddCourse}
-          className={`flex items-center justify-between p-4 rounded-xl font-bold transition-all group cursor-pointer border ${
+          className={`flex items-center justify-between p-4 rounded-xl font-bold transition-all duration-200 group cursor-pointer border hover:-translate-y-0.5 active:translate-y-0 ${
             isLight
-              ? 'bg-white hover:bg-orange-100/90 border-neutral-300 hover:border-orange-500 text-black shadow-sm hover:shadow-md'
-              : 'bg-neutral-900/90 hover:bg-neutral-850 hover:border-orange-500/50 border-neutral-800 text-neutral-100 shadow-sm'
+              ? 'bg-[#FAF6EE] hover:bg-[#F5EFDF] border-[#E5DCBE] hover:border-[#587731] text-[#243315] shadow-sm hover:shadow-xl'
+              : 'bg-neutral-900/90 hover:bg-neutral-850 hover:border-orange-500/50 border-neutral-800 text-neutral-100 shadow-sm hover:shadow-xl'
           }`}
         >
           <div className="flex items-center gap-3">
@@ -260,10 +280,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         <button
           onClick={onOpenGenerateInvoice}
-          className={`flex items-center justify-between p-4 rounded-xl font-bold transition-all group cursor-pointer border ${
+          className={`flex items-center justify-between p-4 rounded-xl font-bold transition-all duration-200 group cursor-pointer border hover:-translate-y-0.5 active:translate-y-0 ${
             isLight
-              ? 'bg-white hover:bg-emerald-50/90 border-neutral-300 hover:border-emerald-500 text-black shadow-sm hover:shadow-md'
-              : 'bg-neutral-900/90 hover:bg-neutral-850 hover:border-emerald-500/50 border-neutral-800 text-neutral-100 shadow-sm'
+              ? 'bg-white hover:bg-emerald-50/80 border-neutral-300 hover:border-emerald-500 text-black shadow-sm hover:shadow-xl'
+              : 'bg-neutral-900/90 hover:bg-neutral-850 hover:border-emerald-500/50 border-neutral-800 text-neutral-100 shadow-sm hover:shadow-xl'
           }`}
         >
           <div className="flex items-center gap-3">
@@ -288,10 +308,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         <button
           onClick={() => onNavigateToView('youtube')}
-          className={`flex items-center justify-between p-4 rounded-xl font-bold transition-all group cursor-pointer border ${
+          className={`flex items-center justify-between p-4 rounded-xl font-bold transition-all duration-200 group cursor-pointer border hover:-translate-y-0.5 active:translate-y-0 ${
             isLight
-              ? 'bg-white hover:bg-red-50/90 border-neutral-300 hover:border-red-500 text-black shadow-sm hover:shadow-md'
-              : 'bg-gradient-to-r from-neutral-900 to-red-950/30 hover:to-red-950/60 border-red-500/30 hover:border-red-500/60 text-neutral-100 shadow-sm'
+              ? 'bg-white hover:bg-red-50/80 border-neutral-300 hover:border-red-500 text-black shadow-sm hover:shadow-xl'
+              : 'bg-gradient-to-r from-neutral-900 to-red-950/30 hover:to-red-950/60 border-red-500/30 hover:border-red-500/60 text-neutral-100 shadow-sm hover:shadow-xl'
           }`}
         >
           <div className="flex items-center gap-3">

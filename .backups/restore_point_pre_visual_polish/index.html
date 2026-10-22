@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Suppress Vite WebSocket HMR disconnect errors in AI Studio iframe environment
+      (function() {
+        var isViteWsError = function(val) {
+          if (!val) return false;
+          var str = typeof val === 'string' ? val : (val.message || val.stack || String(val));
+          return str.indexOf('WebSocket') !== -1 || 
+                 str.indexOf('@vite/client') !== -1 || 
+                 str.indexOf('vite:ws') !== -1 || 
+                 str.indexOf('[vite]') !== -1 ||
+                 str.indexOf('vite-hmr') !== -1 ||
+                 str.indexOf('closed without opened') !== -1;
+        };
+
+        var origError = console.error;
+        console.error = function() {
+          for (var i = 0; i < arguments.length; i++) {
+            if (isViteWsError(arguments[i])) return;
+          }
+          origError.apply(console, arguments);
+        };
+
+        var origWarn = console.warn;
+        console.warn = function() {
+          for (var i = 0; i < arguments.length; i++) {
+            if (isViteWsError(arguments[i])) return;
+          }
+          origWarn.apply(console, arguments);
+        };
+
+        window.onerror = function(msg, url, line, col, err) {
+          if (isViteWsError(msg) || isViteWsError(err) || (url && url.indexOf('@vite/client') !== -1)) {
+            return true;
+          }
+        };
+
+        window.addEventListener('error', function(e) {
+          if (isViteWsError(e.message) || isViteWsError(e.error) || (e.filename && e.filename.indexOf('@vite/client') !== -1)) {
+            if (e.preventDefault) e.preventDefault();
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            return true;
+          }
+        }, true);
+
+        window.addEventListener('unhandledrejection', function(e) {
+          if (isViteWsError(e.reason)) {
+            if (e.preventDefault) e.preventDefault();
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            return true;
+          }
+        }, true);
+
+        if (typeof window !== 'undefined' && window.WebSocket) {
+          var OrigWS = window.WebSocket;
+          window.WebSocket = function(url, protocols) {
+            var urlStr = typeof url === 'string' ? url : (url && url.url) || '';
+            var isViteHmr = protocols === 'vite-hmr' || 
+                            urlStr.indexOf('vite') !== -1 || 
+                            urlStr.indexOf('/@vite') !== -1 ||
+                            urlStr.indexOf('hmr') !== -1;
+
+            if (isViteHmr) {
+              // Simulated mock socket for Vite HMR client to satisfy connection and avoid "WebSocket closed without opened"
+              var listeners = { open: [], message: [], close: [], error: [] };
+              var mockSocket = {
+                readyState: 1, // WebSocket.OPEN
+                CONNECTING: 0,
+                OPEN: 1,
+                CLOSING: 2,
+                CLOSED: 3,
+                url: urlStr,
+                protocol: protocols || '',
+                binaryType: 'blob',
+                bufferedAmount: 0,
+                extensions: '',
+                onopen: null,
+                onclose: null,
+                onerror: null,
+                onmessage: null,
+                addEventListener: function(type, cb) {
+                  if (!listeners[type]) listeners[type] = [];
+                  listeners[type].push(cb);
+                  if (type === 'open') {
+                    setTimeout(function() {
+                      try {
+                        if (mockSocket.onopen) mockSocket.onopen({ type: 'open', target: mockSocket });
+                        listeners.open.forEach(function(fn) { fn({ type: 'open', target: mockSocket }); });
+                      } catch (e) {}
+                    }, 5);
+                  }
+                },
+                removeEventListener: function(type, cb) {
+                  if (listeners[type]) {
+                    listeners[type] = listeners[type].filter(function(fn) { return fn !== cb; });
+                  }
+                },
+                dispatchEvent: function() { return true; },
+                send: function() {},
+                close: function() {
+                  mockSocket.readyState = 3; // CLOSED
+                }
+              };
+              return mockSocket;
+            }
+
+            try {
+              var ws = protocols ? new OrigWS(url, protocols) : new OrigWS(url);
+              ws.addEventListener('error', function(err) {
+                if (err && err.stopImmediatePropagation) err.stopImmediatePropagation();
+              });
+              return ws;
+            } catch (e) {
+              return {
+                readyState: 3,
+                addEventListener: function() {},
+                removeEventListener: function() {},
+                send: function() {},
+                close: function() {},
+              };
+            }
+          };
+          window.WebSocket.prototype = OrigWS.prototype;
+          window.WebSocket.CONNECTING = OrigWS.CONNECTING;
+          window.WebSocket.OPEN = OrigWS.OPEN;
+          window.WebSocket.CLOSING = OrigWS.CLOSING;
+          window.WebSocket.CLOSED = OrigWS.CLOSED;
+        }
+      })();
+    </script>
+    <title>Cortexx AI Institute & Ad Studio</title>
+    <meta name="description" content="Streamlined institute management and banner ad studio for Cortexx AI to manage courses, students, invoices, receipts, and multi-format advertising campaigns." />
+    <meta property="og:title" content="Cortexx AI Institute & Ad Studio" />
+    <meta property="og:description" content="Streamlined institute management and banner ad studio for Cortexx AI to manage courses, students, invoices, receipts, and multi-format advertising campaigns." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#0a0a0c" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Cortexx AI" />
+    <meta name="application-name" content="Cortexx AI" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body class="bg-neutral-950 text-neutral-100 font-sans antialiased min-h-screen selection:bg-orange-500 selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

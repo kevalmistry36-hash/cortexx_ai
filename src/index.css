@@ -22,91 +22,93 @@
 }
 
 /* ==========================================================================
-   LIGHT THEME: WHITE & ORANGE PALETTE
-   Ultra-clean crisp white surfaces, warm orange highlights, slate dark typography
+   OLIVE & BEIGE PALETTE
+   Exact palette sampled from user image: Olive (#587731) & Beige (#F5EFDF)
+   Luxury earthy aesthetics, warm creamy beige surfaces, rich olive green accents
    ========================================================================== */
 html.light,
 html[data-theme="light"],
 body.light {
   color-scheme: light;
-  --color-neutral-950: #ffffff;
-  --color-neutral-900: #ffffff;
-  --color-neutral-850: #f8fafc;
-  --color-neutral-800: #e2e8f0;
-  --color-neutral-750: #cbd5e1;
-  --color-neutral-700: #cbd5e1;
-  --color-neutral-600: #94a3b8;
-  --color-neutral-500: #64748b;
-  --color-neutral-400: #475569;
-  --color-neutral-300: #334155;
-  --color-neutral-200: #1e293b;
-  --color-neutral-100: #0f172a;
-  --color-neutral-50: #020617;
+  --color-neutral-950: #FAF6EE;
+  --color-neutral-900: #FFFFFF;
+  --color-neutral-850: #F5EFDF;
+  --color-neutral-800: #E5DCBE;
+  --color-neutral-750: #DCD1B0;
+  --color-neutral-700: #C2B694;
+  --color-neutral-600: #7A8967;
+  --color-neutral-500: #587731;
+  --color-neutral-400: #3E5422;
+  --color-neutral-300: #30421A;
+  --color-neutral-200: #243315;
+  --color-neutral-100: #19240E;
+  --color-neutral-50: #0F1608;
   
-  background-color: #fafafc !important;
-  color: #0f172a !important;
+  background-color: #F5EFDF !important;
+  color: #243315 !important;
 }
 
-/* Specific component overrides for Light Theme */
+/* Specific component overrides for Olive & Beige Theme */
 html.light body {
-  background-color: #fafafc !important;
-  color: #0f172a !important;
+  background-color: #F5EFDF !important;
+  color: #243315 !important;
 }
 
 html.light header {
-  background-color: rgba(255, 255, 255, 0.96) !important;
-  border-bottom-color: #fed7aa !important; /* warm orange accent border */
-  box-shadow: 0 1px 3px 0 rgba(234, 88, 12, 0.05);
+  background-color: rgba(250, 246, 238, 0.96) !important;
+  border-bottom-color: #587731 !important; /* Rich Olive accent border */
+  box-shadow: 0 2px 12px 0 rgba(88, 119, 49, 0.12);
 }
 
-/* In white theme, Cortexx AI Heading is pure black color */
+/* In Olive & Beige theme, Cortexx AI Heading is deep olive black */
 html.light .cortexx-ai-heading,
 html.light .cortexx-ai-heading span,
 html[data-theme="light"] .cortexx-ai-heading,
 html[data-theme="light"] .cortexx-ai-heading span,
 body.light .cortexx-ai-heading,
 body.light .cortexx-ai-heading span {
-  color: #000000 !important;
+  color: #243315 !important;
 }
 
-/* In white theme, Dashboard KPI cards have pure black font with vivid orange indicators */
+/* In Olive & Beige theme, Dashboard KPI cards have warm beige surfaces with Olive indicators */
 html.light .dashboard-kpi-card,
 html[data-theme="light"] .dashboard-kpi-card,
 body.light .dashboard-kpi-card {
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  border-top-color: #f97316 !important; /* Vivid Orange top indicator */
+  background-color: #FAF6EE !important;
+  color: #243315 !important;
+  border-color: #E5DCBE !important;
+  border-top-color: #587731 !important; /* Olive top indicator */
 }
 
-html.light .dashboard-kpi-card span:not(.kpi-orange-badge):not(.bg-orange-500):not(.kpi-emoji),
-html[data-theme="light"] .dashboard-kpi-card span:not(.kpi-orange-badge):not(.bg-orange-500):not(.kpi-emoji),
-body.light .dashboard-kpi-card span:not(.kpi-orange-badge):not(.bg-orange-500):not(.kpi-emoji) {
-  color: #000000 !important;
+html.light .dashboard-kpi-card span:not(.kpi-orange-badge):not(.bg-orange-500):not(.bg-\[\#587731\]):not(.kpi-emoji),
+html[data-theme="light"] .dashboard-kpi-card span:not(.kpi-orange-badge):not(.bg-orange-500):not(.bg-\[\#587731\]):not(.kpi-emoji),
+body.light .dashboard-kpi-card span:not(.kpi-orange-badge):not(.bg-orange-500):not(.bg-\[\#587731\]):not(.kpi-emoji) {
+  color: #243315 !important;
 }
 
 html.light .dashboard-kpi-card .kpi-orange-badge,
 html[data-theme="light"] .dashboard-kpi-card .kpi-orange-badge,
 body.light .dashboard-kpi-card .kpi-orange-badge {
-  background-color: rgba(249, 115, 22, 0.15) !important;
-  color: #ea580c !important;
-  border-color: rgba(249, 115, 22, 0.35) !important;
+  background-color: rgba(88, 119, 49, 0.15) !important;
+  color: #587731 !important;
+  border-color: rgba(88, 119, 49, 0.4) !important;
 }
 
 html.light nav.md\:hidden {
-  background-color: rgba(255, 255, 255, 0.98) !important;
-  border-top-color: #fed7aa !important;
-  box-shadow: 0 -4px 20px rgba(234, 88, 12, 0.08) !important;
+  background-color: rgba(250, 246, 238, 0.98) !important;
+  border-top-color: #587731 !important;
+  box-shadow: 0 -4px 20px rgba(88, 119, 49, 0.12) !important;
 }
 
 html.light .bg-neutral-950 {
-  background-color: #ffffff !important;
+  background-color: #FAF6EE !important;
 }
 
 html.light .bg-neutral-950\/60,
 html.light .bg-neutral-950\/80,
 html.light .bg-neutral-950\/90,
 html.light .bg-neutral-950\/95 {
-  background-color: #f8fafc !important;
+  background-color: #F5EFDF !important;
 }
 
 html.light .bg-neutral-900,
@@ -114,13 +116,14 @@ html.light .bg-neutral-900\/60,
 html.light .bg-neutral-900\/70,
 html.light .bg-neutral-900\/80,
 html.light .bg-neutral-900\/90 {
-  background-color: #ffffff !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  background-color: #FAF6EE !important;
+  border-color: #E5DCBE !important;
+  box-shadow: 0 1px 4px 0 rgba(88, 119, 49, 0.05);
 }
 
 html.light .bg-neutral-900\/40,
 html.light .bg-neutral-900\/50 {
-  background-color: #f8fafc !important;
+  background-color: #F5EFDF !important;
 }
 
 html.light .border-neutral-800,
@@ -129,79 +132,80 @@ html.light .border-neutral-800\/80,
 html.light .border-neutral-800\/90,
 html.light .divide-neutral-800,
 html.light .divide-neutral-800\/80 {
-  border-color: #e2e8f0 !important;
+  border-color: #E5DCBE !important;
 }
 
 html.light .border-neutral-900 {
-  border-color: #fed7aa !important;
+  border-color: #587731 !important;
 }
 
 html.light .text-neutral-100 {
-  color: #0f172a !important;
+  color: #19240E !important;
 }
 
 html.light .text-neutral-200 {
-  color: #1e293b !important;
+  color: #243315 !important;
 }
 
 html.light .text-neutral-300 {
-  color: #334155 !important;
+  color: #30421A !important;
 }
 
 html.light .text-neutral-400 {
-  color: #475569 !important;
+  color: #4D6433 !important;
 }
 
 html.light .text-neutral-500 {
-  color: #64748b !important;
+  color: #587731 !important;
 }
 
 html.light .text-neutral-600 {
-  color: #94a3b8 !important;
+  color: #7A8967 !important;
 }
 
 /* Light Mode Input, Textarea, Select */
 html.light input,
 html.light select,
 html.light textarea {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  border-color: #cbd5e1 !important;
+  background-color: #FAF6EE !important;
+  color: #243315 !important;
+  border-color: #DCD1B0 !important;
 }
 
 html.light input::placeholder,
 html.light textarea::placeholder {
-  color: #94a3b8 !important;
+  color: #7A8967 !important;
 }
 
 html.light input:focus,
 html.light select:focus,
 html.light textarea:focus {
-  border-color: #ea580c !important;
-  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.2) !important;
+  border-color: #587731 !important;
+  box-shadow: 0 0 0 2px rgba(88, 119, 49, 0.25) !important;
 }
-/* Table Header & Cell Legibility in Light Mode */
+
+/* Table Header & Cell Legibility in Olive & Beige Theme */
 html.light thead,
 html[data-theme="light"] thead {
-  background-color: #f1f5f9 !important;
-  border-bottom: 2px solid #cbd5e1 !important;
+  background-color: #F5EFDF !important;
+  border-bottom: 2px solid #DCD1B0 !important;
 }
 
 html.light thead th,
 html[data-theme="light"] thead th {
-  color: #0f172a !important;
-  font-weight: 700 !important;
+  color: #243315 !important;
+  font-weight: 800 !important;
 }
 
 html.light tbody tr,
 html[data-theme="light"] tbody tr {
-  border-bottom: 1px solid #e2e8f0 !important;
+  border-bottom: 1px solid #E5DCBE !important;
 }
 
-/* Table & Dashboard List Hover in Light Mode */
+/* Table & Dashboard List Hover in Olive & Beige Theme */
 html.light tr:hover,
 html[data-theme="light"] tr:hover {
-  background-color: #fff7ed !important; /* Soft warm orange hover */
+  background-color: #EFE7D3 !important; /* Soft warm beige hover */
 }
 
 /* Ensure font visibility on hover in light and dark themes */
@@ -212,20 +216,20 @@ html[data-theme="light"] .group:hover span {
 
 /* Active buttons and tabs */
 html.light .bg-neutral-800 {
-  background-color: #f1f5f9 !important;
-  color: #0f172a !important;
+  background-color: #F5EFDF !important;
+  color: #243315 !important;
 }
 
 html.light .hover\:bg-neutral-800:hover {
-  background-color: #e2e8f0 !important;
+  background-color: #E5DCBE !important;
 }
 
 html.light .hover\:bg-neutral-700:hover {
-  background-color: #cbd5e1 !important;
+  background-color: #DCD1B0 !important;
 }
 
 html.light .hover\:bg-neutral-900:hover {
-  background-color: #f8fafc !important;
+  background-color: #FAF6EE !important;
 }
 
 /* Dialogs & Modal Backdrops in Light Mode */
@@ -233,13 +237,13 @@ html.light .bg-black\/85,
 html.light .bg-black\/80,
 html.light .bg-black\/75,
 html.light .bg-black\/70 {
-  background-color: rgba(15, 23, 42, 0.45) !important;
+  background-color: rgba(36, 51, 21, 0.45) !important;
 }
 
 /* Footer in Light Mode */
 html.light footer {
-  border-top-color: #fed7aa !important;
-  color: #64748b !important;
+  border-top-color: #587731 !important;
+  color: #587731 !important;
 }
 
 /* Print optimization for A4 Invoices & Receipts */

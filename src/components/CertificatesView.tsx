@@ -531,7 +531,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               <button
                 type="button"
                 onClick={() => setWizardStep(2)}
-                className="w-full sm:w-auto justify-center flex items-center gap-2 px-5 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
+                className="w-full sm:w-auto justify-center flex items-center gap-2 px-5 py-2.5 bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
               >
                 <span>Next: Select Students</span>
                 <ArrowRight className="w-4 h-4" />
@@ -544,17 +544,15 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
         {wizardStep === 2 && (
           <div className="space-y-4 animate-fadeIn">
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-              <div className={`text-xs font-medium ${isLight ? 'text-black' : 'text-neutral-300'}`}>
-                Select students to issue certificates for <strong className="text-orange-600 dark:text-orange-400 font-black">"{activeCourseName}"</strong>:
+              <div className={`text-xs font-medium ${isLight ? 'text-[#243315]' : 'text-neutral-300'}`}>
+                Select students to issue certificates for <strong className="text-[#587731] dark:text-[#8CB752] font-black">"{activeCourseName}"</strong>:
               </div>
               <button
                 type="button"
                 onClick={handleSelectAllStudents}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer text-center ${
-                  isLight ? 'bg-neutral-100 hover:bg-neutral-200 text-black border border-neutral-300' : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-200'
-                }`}
+                className="px-3.5 py-1.5 text-xs font-black rounded-lg transition-all cursor-pointer text-center bg-[#587731]/15 hover:bg-[#587731] text-[#587731] dark:text-[#8CB752] hover:text-[#FAF6EE] border border-[#587731]/40 hover:border-[#587731] shadow-xs flex items-center gap-1.5 shrink-0"
               >
-                {selectedStudentIds.length === students.length ? 'Deselect All' : 'Select All Students'}
+                <span>{selectedStudentIds.length === students.length ? '✕ Deselect All' : '✓ Select All Students'}</span>
               </button>
             </div>
 
@@ -623,11 +621,9 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               <button
                 type="button"
                 onClick={() => setWizardStep(1)}
-                className={`w-full sm:w-auto justify-center flex items-center gap-2 px-4 py-2.5 font-bold text-xs rounded-xl transition-colors cursor-pointer ${
-                  isLight ? 'bg-neutral-100 hover:bg-neutral-200 text-black border border-neutral-300' : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-200'
-                }`}
+                className="w-full sm:w-auto justify-center flex items-center gap-2 px-4 py-2.5 font-black text-xs rounded-xl transition-all cursor-pointer bg-[#587731]/15 hover:bg-[#587731] text-[#587731] dark:text-[#8CB752] hover:text-[#FAF6EE] border border-[#587731]/40 hover:border-[#587731] shadow-xs"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
                 <span>Back</span>
               </button>
 
@@ -641,7 +637,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                   }
                   setWizardStep(3);
                 }}
-                className="w-full sm:w-auto justify-center flex items-center gap-2 px-5 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
+                className="w-full sm:w-auto justify-center flex items-center gap-2 px-5 py-2.5 bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
               >
                 <span>Review & Generate ({selectedStudentIds.length})</span>
                 <ArrowRight className="w-4 h-4" />
@@ -685,11 +681,9 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               <button
                 type="button"
                 onClick={() => setWizardStep(2)}
-                className={`w-full sm:w-auto justify-center flex items-center gap-2 px-4 py-2.5 font-bold text-xs rounded-xl transition-colors cursor-pointer ${
-                  isLight ? 'bg-neutral-100 hover:bg-neutral-200 text-black border border-neutral-300' : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-200'
-                }`}
+                className="w-full sm:w-auto justify-center flex items-center gap-2 px-4 py-2.5 font-black text-xs rounded-xl transition-all cursor-pointer bg-orange-500/15 hover:bg-orange-600 text-orange-700 dark:text-orange-300 hover:text-white border border-orange-500/40 hover:border-orange-600 shadow-xs"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
                 <span>Back</span>
               </button>
 
@@ -808,13 +802,9 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                           <button
                             onClick={() => handleOpenPreview(cert)}
                             title="Preview Certificate"
-                            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                              isLight
-                                ? 'text-neutral-700 hover:text-black hover:bg-neutral-100 border border-neutral-300'
-                                : 'text-neutral-300 hover:text-orange-400 bg-neutral-800 hover:bg-neutral-700'
-                            }`}
+                            className="p-1.5 text-orange-600 dark:text-orange-400 hover:text-white bg-orange-500/15 hover:bg-orange-600 border border-orange-500/40 hover:border-orange-600 rounded-lg transition-all cursor-pointer shadow-2xs"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="w-4 h-4 stroke-[2.2]" />
                           </button>
 
                           {/* PDF Export Action Button */}
@@ -942,20 +932,18 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                 }`}>
                   <button
                     onClick={() => handleOpenPreview(cert)}
-                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
-                      isLight ? 'bg-neutral-100 hover:bg-neutral-200 text-black border border-neutral-300' : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-200'
-                    }`}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-black text-[#587731] dark:text-[#8CB752] hover:text-[#FAF6EE] bg-[#587731]/15 hover:bg-[#587731] border border-[#587731]/40 hover:border-[#587731] rounded-lg transition-all cursor-pointer shadow-xs"
                   >
-                    <Eye className="w-4 h-4 text-orange-500" />
+                    <Eye className="w-4 h-4 stroke-[2.2]" />
                     <span>Preview</span>
                   </button>
                   <button
                     onClick={() => handleDownloadDirectPdf(cert)}
                     disabled={downloadingCertId === cert.id}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-orange-600 hover:bg-orange-500 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold text-[#FAF6EE] bg-[#587731] hover:bg-[#486228] rounded-lg transition-colors cursor-pointer disabled:opacity-50"
                   >
                     {downloadingCertId === cert.id ? (
-                      <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      <Loader2 className="w-4 h-4 animate-spin text-[#FAF6EE]" />
                     ) : (
                       <FileDown className="w-4 h-4" />
                     )}
@@ -1012,7 +1000,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               {/* Top Bar: Left Corner Heading in Dark Black Bold & Right Side QR Code */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 shrink-0 scale-95 origin-left">
-                  <CortexxLogo size="sm" showTagline={true} inverted={true} mode="light" />
+                  <CortexxLogo size="sm" showTagline={true} inverted={true} mode="light" showIcon={false} />
                 </div>
                 <div className="flex flex-col items-center">
                   {previewCert.qrUrl && (
@@ -1118,9 +1106,10 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
             <div className="flex items-center justify-between pt-2 flex-wrap gap-3">
               <button
                 onClick={() => setPreviewCert(null)}
-                className="px-4 py-2 text-xs font-semibold text-neutral-300 hover:text-white bg-neutral-800 hover:bg-neutral-700 rounded-xl cursor-pointer"
+                className="px-4 py-2 text-xs font-black text-orange-400 hover:text-white bg-orange-500/15 hover:bg-orange-600 border border-orange-500/35 hover:border-orange-600 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow-xs"
               >
-                Close Preview
+                <ArrowLeft className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Close Preview</span>
               </button>
 
               <div className="flex items-center gap-2.5">

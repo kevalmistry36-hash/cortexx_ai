@@ -4,6 +4,7 @@ export interface CortexxLogoProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'hero';
   showTagline?: boolean;
   showText?: boolean;
+  showIcon?: boolean;
   inverted?: boolean; // For light background/certificate/invoice printing
   mode?: 'light' | 'dark';
   variant?: 'standard' | 'emblem' | 'mobile';
@@ -15,6 +16,7 @@ export const CortexxLogo: React.FC<CortexxLogoProps> = ({
   size = 'md',
   showTagline = true,
   showText = true,
+  showIcon = true,
   inverted = false,
   mode,
   variant = 'standard',
@@ -42,7 +44,8 @@ export const CortexxLogo: React.FC<CortexxLogoProps> = ({
       } ${currentSize.gap} select-none ${className}`}
     >
       {/* Precision Dual-Brain Circuit Icon matching the exact Cortexx AI logo */}
-      <svg
+      {showIcon && (
+        <svg
         width={currentSize.icon}
         height={currentSize.icon}
         viewBox="0 0 100 100"
@@ -173,6 +176,7 @@ export const CortexxLogo: React.FC<CortexxLogoProps> = ({
         <circle cx="50" cy="50" r="4.2" fill="#FFAA00" filter="url(#cortexxGlowEffect)" />
         <circle cx="50" cy="50" r="1.8" fill="#FFFFFF" />
       </svg>
+      )}
 
       {/* Brand Wordmark & Tagline */}
       {showText && (

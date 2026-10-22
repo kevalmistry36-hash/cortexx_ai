@@ -256,14 +256,14 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
           return (
             <div
               key={course.id}
-              className={`flex flex-col justify-between border rounded-2xl p-6 transition-all relative overflow-hidden ${
+              className={`flex flex-col justify-between border rounded-2xl p-6 transition-all duration-300 relative overflow-hidden hover:-translate-y-1 ${
                 isLight
-                  ? `bg-white border-2 ${isFlagship ? 'border-orange-500 shadow-md' : 'border-neutral-200 shadow-sm'} text-black`
-                  : `bg-neutral-900/80 ${isFlagship ? 'border-orange-500/50 shadow-lg shadow-orange-950/20' : 'border-neutral-800'} text-neutral-100`
+                  ? `bg-[#FAF6EE] border-2 ${isFlagship ? 'border-[#587731] shadow-md hover:shadow-xl' : 'border-[#E5DCBE] shadow-sm hover:shadow-lg'} text-[#243315]`
+                  : `bg-[#182214]/90 ${isFlagship ? 'border-[#587731]/70 shadow-lg shadow-[#587731]/20 hover:border-[#587731]' : 'border-[#2C3D21] hover:border-neutral-700 hover:shadow-lg'} text-neutral-100`
               }`}
             >
               {isFlagship && (
-                <div className="absolute top-0 right-0 bg-orange-600 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-bl-xl shadow-sm">
+                <div className="absolute top-0 right-0 bg-[#587731] text-[#FAF6EE] text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-bl-xl shadow-sm">
                   Flagship Program
                 </div>
               )}
@@ -271,12 +271,12 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
               <div>
                 {/* Course Metadata Strip */}
                 <div className="flex items-center gap-2 text-xs font-mono font-black">
-                  <span className={isLight ? 'text-black' : 'text-neutral-300'}>{course.duration}</span>
-                  <span className={isLight ? 'text-black' : 'text-neutral-600'}>·</span>
-                  <span className={isLight ? 'text-black' : 'text-neutral-300'}>{course.mode}</span>
+                  <span className={isLight ? 'text-[#243315]' : 'text-neutral-300'}>{course.duration}</span>
+                  <span className={isLight ? 'text-[#587731]' : 'text-neutral-600'}>·</span>
+                  <span className={isLight ? 'text-[#243315]' : 'text-neutral-300'}>{course.mode}</span>
                   {course.certificateIncluded && (
                     <>
-                      <span className={isLight ? 'text-black' : 'text-neutral-600'}>·</span>
+                      <span className={isLight ? 'text-[#587731]' : 'text-neutral-600'}>·</span>
                       <span className={`flex items-center gap-1 font-black ${isLight ? 'text-emerald-800' : 'text-emerald-400'}`}>
                         <Award className="w-3.5 h-3.5" /> Certificate
                       </span>
@@ -285,33 +285,37 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
                 </div>
 
                 {/* Course Title & Fee */}
-                <h3 className={`text-xl font-black mt-2 leading-snug tracking-tight ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                <h3 className={`text-xl font-black mt-2 leading-snug tracking-tight ${isLight ? 'text-[#19240E]' : 'text-neutral-100'}`}>
                   {course.name}
                 </h3>
 
                 <div className="mt-3 flex items-baseline gap-2">
-                  <span className={`text-3xl font-black font-mono tabular-nums ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                  <span className={`text-3xl font-black font-mono tabular-nums ${isLight ? 'text-[#19240E]' : 'text-neutral-100'}`}>
                     ₹{course.fee.toLocaleString('en-IN')}
                   </span>
-                  <span className={`text-xs font-black ${isLight ? 'text-black' : 'text-neutral-400'}`}>All-Inclusive</span>
+                  <span className={`text-xs font-black ${isLight ? 'text-[#587731]' : 'text-neutral-400'}`}>All-Inclusive</span>
                 </div>
 
-                <p className={`text-xs mt-3 line-clamp-2 leading-relaxed font-bold ${isLight ? 'text-black' : 'text-neutral-300'}`}>
+                <p className={`text-xs mt-3 line-clamp-2 leading-relaxed font-bold ${isLight ? 'text-[#243315]' : 'text-neutral-300'}`}>
                   {course.description}
                 </p>
 
-                {/* Module List (10 modules for Flagship) */}
-                <div className={`mt-5 pt-4 border-t ${isLight ? 'border-neutral-300' : 'border-neutral-800/80'}`}>
-                  <div className={`text-xs font-black uppercase tracking-wider mb-2.5 flex items-center justify-between ${isLight ? 'text-black' : 'text-neutral-300'}`}>
+                {/* Module List (Interactive Numbered Roadmap) */}
+                <div className={`mt-5 pt-4 border-t ${isLight ? 'border-[#E5DCBE]' : 'border-neutral-800/80'}`}>
+                  <div className={`text-xs font-black uppercase tracking-wider mb-2.5 flex items-center justify-between ${isLight ? 'text-[#243315]' : 'text-neutral-300'}`}>
                     <span>Curriculum Syllabus</span>
-                    <span className={`font-mono text-[11px] font-black ${isLight ? 'text-black' : 'text-neutral-400'}`}>{course.modules.length} Modules</span>
+                    <span className={`font-mono text-[11px] font-black ${isLight ? 'text-[#587731]' : 'text-neutral-400'}`}>{course.modules.length} Modules</span>
                   </div>
 
-                  <ul className={`space-y-1.5 max-h-48 overflow-y-auto pr-1 text-xs font-bold ${isLight ? 'text-black' : 'text-neutral-200'}`}>
+                  <ul className={`space-y-1.5 max-h-52 overflow-y-auto pr-1 text-xs font-bold ${isLight ? 'text-[#243315]' : 'text-neutral-200'}`}>
                     {course.modules.map((mod, modIdx) => (
-                      <li key={modIdx} className="flex items-start gap-2 py-0.5">
-                        <span className="text-orange-600 dark:text-orange-500 font-mono text-[11px] shrink-0 font-black">→</span>
-                        <span className={`truncate ${isLight ? 'text-black font-bold' : 'text-neutral-200'}`}>{mod}</span>
+                      <li key={modIdx} className="flex items-center gap-2 py-1 px-1.5 rounded-lg hover:bg-[#587731]/10 transition-colors">
+                        <span className="w-5 h-5 rounded-md bg-[#587731]/15 border border-[#587731]/30 text-[#587731] dark:text-[#8CB752] font-mono text-[10px] flex items-center justify-center shrink-0 font-black">
+                          {modIdx + 1 < 10 ? `0${modIdx + 1}` : modIdx + 1}
+                        </span>
+                        <span className={`truncate text-xs ${isLight ? 'text-[#243315] font-bold' : 'text-neutral-200'}`}>
+                          {mod.replace(/^\d+[\.\s]+/, '')}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -319,11 +323,11 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
               </div>
 
               {/* Action Buttons */}
-              <div className={`mt-6 pt-4 border-t flex flex-col gap-2 ${isLight ? 'border-neutral-300' : 'border-neutral-800'}`}>
+              <div className={`mt-6 pt-4 border-t flex flex-col gap-2 ${isLight ? 'border-[#E5DCBE]' : 'border-neutral-800'}`}>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => onEnrollInCourse(course)}
-                    className="flex-1 py-2 px-3 bg-orange-600 hover:bg-orange-700 text-white text-xs font-black rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                    className="flex-1 py-2 px-3 bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] text-xs font-black rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
                   >
                     <Users className="w-3.5 h-3.5" />
                     <span>Enroll Student</span>

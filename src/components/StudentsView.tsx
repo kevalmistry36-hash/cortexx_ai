@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Student, Course, PaymentStatus, PaymentMethod, Invoice } from '../types';
 import { getNextStudentId, getNextEnrollmentId, saveStudent, deleteStudent, updateStudentFeeStatus, getInvoices, getNextInvoiceNumber, saveInvoice } from '../services/storage';
-import { Search, Plus, User, Users, Phone, Mail, BookOpen, Trash2, Edit3, Receipt, IndianRupee, ArrowUpDown, FileSpreadsheet, CheckCircle2, RotateCcw, X, AlertTriangle, Download, FileDown, ShieldCheck, Check, Calendar, Clock } from 'lucide-react';
+import { Search, Plus, User, Users, Phone, Mail, BookOpen, Trash2, Edit3, Receipt, IndianRupee, ArrowUpDown, FileSpreadsheet, CheckCircle2, RotateCcw, X, AlertTriangle, Download, FileDown, ShieldCheck, Check, Calendar, Clock, LayoutGrid, LayoutList } from 'lucide-react';
 import { BulkStudentImportModal } from './BulkStudentImportModal';
 import { downloadInvoiceAsPdf } from '../utils/pdfExport';
 import * as XLSX from 'xlsx';
@@ -28,6 +28,15 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
   const isLight = theme === 'light';
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | PaymentStatus>('all');
+  const [viewMode, setViewMode] = useState<'table' | 'card'>(() => {
+    try {
+      const saved = localStorage.getItem('student_view_mode');
+      if (saved === 'card' || saved === 'table') return saved;
+    } catch {
+      // ignore
+    }
+    return 'table';
+  });
   const [showModal, setShowModal] = useState(isAddModalOpen);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
@@ -541,8 +550,8 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      {/* Filter, View Switcher and Search Bar */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
         {/* Search Input */}
         <div className="relative flex-1">
           <Search className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -559,404 +568,511 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
           />
         </div>
 
-        {/* Status Filter Segmented Control */}
-        <div className={`flex items-center gap-1 p-1 rounded-xl border shrink-0 ${
-          isLight ? 'bg-neutral-100 border-neutral-200' : 'bg-neutral-900 border-neutral-800'
-        }`}>
-          <button
-            onClick={() => setStatusFilter('all')}
-            className={`px-3 py-1.5 text-xs font-black rounded-lg transition-colors ${
-              statusFilter === 'all'
-                ? isLight ? 'bg-white text-black shadow-sm' : 'bg-neutral-800 text-neutral-100 shadow-sm'
-                : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
-            }`}
-          >
-            All ({students.length})
-          </button>
-          <button
-            onClick={() => setStatusFilter('paid')}
-            className={`px-3 py-1.5 text-xs font-black rounded-lg transition-colors ${
-              statusFilter === 'paid'
-                ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-black'
-                : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
-            }`}
-          >
-            Paid ({paidCount})
-          </button>
-          <button
-            onClick={() => setStatusFilter('partially_paid')}
-            className={`px-3 py-1.5 text-xs font-black rounded-lg transition-colors ${
-              statusFilter === 'partially_paid'
-                ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 font-black'
-                : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
-            }`}
-          >
-            Partial ({partialCount})
-          </button>
-          <button
-            onClick={() => setStatusFilter('unpaid')}
-            className={`px-3 py-1.5 text-xs font-black rounded-lg transition-colors ${
-              statusFilter === 'unpaid'
-                ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400 font-black'
-                : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
-            }`}
-          >
-            Pending ({unpaidCount})
-          </button>
+        {/* Right Controls: View Switcher (Table / Card) and Status Filter */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* View Mode Toggle: Table View and Card View Tabs */}
+          <div className={`flex items-center gap-1 p-1 rounded-xl border shrink-0 ${
+            isLight ? 'bg-neutral-100 border-neutral-300 shadow-sm' : 'bg-neutral-900 border-neutral-800'
+          }`}>
+            <button
+              type="button"
+              onClick={() => {
+                setViewMode('table');
+                try { localStorage.setItem('student_view_mode', 'table'); } catch {}
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg transition-all cursor-pointer ${
+                viewMode === 'table'
+                  ? 'bg-orange-600 text-white shadow-sm'
+                  : isLight
+                  ? 'text-neutral-700 hover:text-black font-bold hover:bg-neutral-200/60'
+                  : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800'
+              }`}
+              title="Switch to Table View"
+            >
+              <LayoutList className="w-3.5 h-3.5" />
+              <span>Table View</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setViewMode('card');
+                try { localStorage.setItem('student_view_mode', 'card'); } catch {}
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg transition-all cursor-pointer ${
+                viewMode === 'card'
+                  ? 'bg-orange-600 text-white shadow-sm'
+                  : isLight
+                  ? 'text-neutral-700 hover:text-black font-bold hover:bg-neutral-200/60'
+                  : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800'
+              }`}
+              title="Switch to Card View"
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span>Card View</span>
+            </button>
+          </div>
+
+          {/* Status Filter Segmented Control */}
+          <div className={`flex items-center gap-1 p-1 rounded-xl border shrink-0 ${
+            isLight ? 'bg-neutral-100 border-neutral-300 shadow-sm' : 'bg-neutral-900 border-neutral-800'
+          }`}>
+            <button
+              onClick={() => setStatusFilter('all')}
+              className={`px-3 py-1.5 text-xs font-black rounded-lg transition-colors cursor-pointer ${
+                statusFilter === 'all'
+                  ? isLight ? 'bg-white text-black shadow-sm font-black' : 'bg-neutral-800 text-neutral-100 shadow-sm'
+                  : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
+              }`}
+            >
+              All ({students.length})
+            </button>
+            <button
+              onClick={() => setStatusFilter('paid')}
+              className={`px-3 py-1.5 text-xs font-black rounded-lg transition-colors cursor-pointer ${
+                statusFilter === 'paid'
+                  ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-black'
+                  : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
+              }`}
+            >
+              Paid ({paidCount})
+            </button>
+            <button
+              onClick={() => setStatusFilter('partially_paid')}
+              className={`px-3 py-1.5 text-xs font-black rounded-lg transition-colors cursor-pointer ${
+                statusFilter === 'partially_paid'
+                  ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 font-black'
+                  : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
+              }`}
+            >
+              Partial ({partialCount})
+            </button>
+            <button
+              onClick={() => setStatusFilter('unpaid')}
+              className={`px-3 py-1.5 text-xs font-black rounded-lg transition-colors cursor-pointer ${
+                statusFilter === 'unpaid'
+                  ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400 font-black'
+                  : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
+              }`}
+            >
+              Pending ({unpaidCount})
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Students Data Grid / Table (Desktop Only) - Dashboard Card Style */}
-      <div className={`hidden md:block border rounded-xl overflow-hidden shadow-sm ${
-        isLight ? 'bg-white border-neutral-200/90 text-neutral-800' : 'bg-neutral-900/60 border-neutral-800 text-neutral-300'
-      }`}>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm border-collapse">
-            <thead className={`text-xs uppercase tracking-wider font-black border-b ${
-              isLight ? 'bg-orange-50/70 text-black border-neutral-200' : 'bg-neutral-900 text-neutral-200 font-bold border-neutral-700/80'
-            }`}>
-              <tr>
-                <th className="py-4 px-4 font-black">Student & Contact Details</th>
-                <th className="py-4 px-4 font-black">Course & Admission Date</th>
-                <th className="py-4 px-4 text-center font-black">Fee Status & Mode</th>
-                <th className="py-4 px-4 text-right font-black">Fees Payment Details</th>
-                <th className="py-4 px-4 text-right font-black">Actions</th>
-              </tr>
-            </thead>
-            <tbody className={`divide-y ${isLight ? 'divide-neutral-100' : 'divide-neutral-800/80'}`}>
-              {filteredStudents.length === 0 ? (
+      {/* 1. Students Table View */}
+      {viewMode === 'table' && (
+        <div className={`border rounded-xl overflow-hidden shadow-sm transition-all ${
+          isLight ? 'bg-white border-neutral-200/90 text-neutral-800' : 'bg-neutral-900/60 border-neutral-800 text-neutral-300'
+        }`}>
+          <div className="overflow-x-auto max-h-[75vh]">
+            <table className="w-full text-left text-sm border-collapse min-w-[720px]">
+              <thead className={`text-xs uppercase tracking-wider font-black border-b sticky top-0 z-10 backdrop-blur-md ${
+                isLight ? 'bg-orange-50/90 text-black border-neutral-200 shadow-2xs' : 'bg-neutral-900/95 text-neutral-200 font-bold border-neutral-700/80 shadow-2xs'
+              }`}>
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-neutral-500">
-                    <User className="w-8 h-8 mx-auto text-neutral-600 mb-2 opacity-50" />
-                    <p className="text-sm font-bold">No students match your criteria.</p>
-                  </td>
+                  <th className="py-4 px-4 font-black">Student & Contact Details</th>
+                  <th className="py-4 px-4 font-black">Course & Admission Date</th>
+                  <th className="py-4 px-4 text-center font-black">Fee Status & Mode</th>
+                  <th className="py-4 px-4 text-right font-black">Fees Payment Details</th>
+                  <th className="py-4 px-4 text-right font-black">Actions</th>
                 </tr>
-              ) : (
-                filteredStudents.map(student => {
-                  const course = courses.find(c => c.id === student.enrolledCourseId);
-                  const totalFee = student.agreedFee || course?.fee || 6000;
-                  const paid = student.totalPaid || 0;
-                  const balance = Math.max(0, totalFee - paid);
-                  const initials = student.name
-                    .trim()
-                    .split(/\s+/)
-                    .map(n => n[0])
-                    .join('')
-                    .toUpperCase()
-                    .slice(0, 2) || 'ST';
+              </thead>
+              <tbody className={`divide-y ${isLight ? 'divide-neutral-100' : 'divide-neutral-800/80'}`}>
+                {filteredStudents.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-12 text-center text-neutral-500">
+                      <User className="w-8 h-8 mx-auto text-neutral-600 mb-2 opacity-50" />
+                      <p className="text-sm font-bold">No students match your criteria.</p>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredStudents.map(student => {
+                    const course = courses.find(c => c.id === student.enrolledCourseId);
+                    const totalFee = student.agreedFee || course?.fee || 6000;
+                    const paid = student.totalPaid || 0;
+                    const balance = Math.max(0, totalFee - paid);
+                    const initials = student.name
+                      .trim()
+                      .split(/\s+/)
+                      .map(n => n[0])
+                      .join('')
+                      .toUpperCase()
+                      .slice(0, 2) || 'ST';
 
-                  return (
-                    <tr key={student.id} className="transition-colors">
-                      {/* Column 1: Student & Contact Details */}
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-start gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center font-bold text-orange-500 text-xs shrink-0 mt-0.5 shadow-sm">
+                    return (
+                      <tr key={student.id} className="transition-colors hover:bg-neutral-50/40 dark:hover:bg-neutral-800/40">
+                        {/* Column 1: Student & Contact Details */}
+                        <td className="py-3.5 px-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center font-bold text-orange-500 text-xs shrink-0 mt-0.5 shadow-sm">
+                              {initials}
+                            </div>
+                            <div className="min-w-0 space-y-0.5">
+                              {/* Line 1: Student Name - Bold Pure Black in light */}
+                              <div className={`font-black text-sm tracking-tight truncate ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                                {student.name}
+                              </div>
+                              {/* Line 2: Phone Number */}
+                              <div className={`flex items-center gap-1.5 text-xs font-mono font-bold ${isLight ? 'text-black' : 'text-neutral-300'}`}>
+                                <Phone className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                                <span>+91 {student.phone}</span>
+                              </div>
+                              {/* Line 3: Mail ID */}
+                              <div className={`flex items-center gap-1.5 text-xs font-mono font-medium ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
+                                <Mail className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+                                <span className="truncate max-w-[190px]" title={student.email}>{student.email}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Column 2: Course & Admission Date */}
+                        <td className="py-3.5 px-4">
+                          <div className="space-y-0.5">
+                            {/* Line 1: Course Name - Bold Pure Black in light */}
+                            <div className={`font-black text-sm tracking-tight ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                              {student.enrolledCourseName}
+                            </div>
+                            {/* Line 2: Duration */}
+                            <div className={`text-xs flex items-center gap-1.5 font-bold ${isLight ? 'text-black' : 'text-neutral-300'}`}>
+                              <BookOpen className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                              <span>{course?.duration || '1 Month Practical'}</span>
+                            </div>
+                            {/* Line 3: Duration Date / Admission Date */}
+                            <div className={`text-xs font-mono flex items-center gap-1.5 font-medium ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
+                              <Calendar className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+                              <span>{student.enrollmentDate}</span>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Column 3: Fee Status & Mode */}
+                        <td className="py-3.5 px-4 text-center">
+                          <div className="inline-flex flex-col items-center gap-1">
+                            <select
+                              value={student.paymentStatus}
+                              onChange={e => handleTableFeeStatusChange(student, e.target.value as PaymentStatus)}
+                              aria-label={`Fee Status for ${student.name}`}
+                              className={`text-xs font-black px-2.5 py-1 rounded-lg border cursor-pointer focus:outline-none transition-all shadow-sm ${
+                                student.paymentStatus === 'paid'
+                                  ? isLight ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50'
+                                  : student.paymentStatus === 'partially_paid'
+                                  ? isLight ? 'bg-amber-50 text-amber-800 border-amber-300' : 'bg-amber-500/20 text-amber-400 border-amber-500/50'
+                                  : isLight ? 'bg-rose-50 text-rose-800 border-rose-300' : 'bg-rose-500/20 text-rose-400 border-rose-500/50'
+                              }`}
+                            >
+                              <option value="paid" className="bg-white dark:bg-neutral-900 text-emerald-600 dark:text-emerald-400 font-bold">
+                                ✓ Paid
+                              </option>
+                              <option value="unpaid" className="bg-white dark:bg-neutral-900 text-rose-600 dark:text-rose-400 font-bold">
+                                ✕ Unpaid
+                              </option>
+                              {student.paymentStatus === 'partially_paid' && (
+                                <option value="partially_paid" className="bg-white dark:bg-neutral-900 text-amber-600 dark:text-amber-400 font-bold">
+                                  ⏳ Partial
+                                </option>
+                              )}
+                            </select>
+                            <span className={`text-[10px] font-mono uppercase font-black ${isLight ? 'text-black' : 'text-neutral-400'}`}>
+                              {student.paymentMethod || 'UPI'}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Column 4: Fees Payment Details */}
+                        <td className="py-3.5 px-4 text-right font-mono text-xs">
+                          {/* Total Paid with + sign */}
+                          <div className="flex items-center justify-end gap-1.5">
+                            <span className={`text-[11px] font-sans font-bold ${isLight ? 'text-black' : 'text-neutral-400'}`}>Paid:</span>
+                            <span className={`font-black text-sm tracking-tight ${isLight ? 'text-emerald-700 font-mono' : 'text-emerald-400'}`}>
+                              +₹{paid.toLocaleString('en-IN')}
+                            </span>
+                          </div>
+
+                          {/* Total Due with RED colour indicator */}
+                          <div className="mt-1 flex items-center justify-end">
+                            {balance > 0 ? (
+                              <span className="text-xs font-black text-rose-700 dark:text-rose-400 bg-rose-500/15 px-2 py-0.5 rounded border border-rose-500/40 shadow-sm flex items-center gap-1">
+                                <span className="text-[10px] uppercase font-sans font-black">Total Due:</span>
+                                <span className="font-black">₹{balance.toLocaleString('en-IN')}</span>
+                              </span>
+                            ) : (
+                              <span className={`text-[11px] font-bold flex items-center gap-1 ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>
+                                <span>Total Due: ₹0</span>
+                                <span className="text-[10px] font-black">✓</span>
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Total Fee Reference */}
+                          <div className={`text-[10px] mt-0.5 font-bold ${isLight ? 'text-neutral-600' : 'text-neutral-500'}`}>
+                            Total: ₹{totalFee.toLocaleString('en-IN')}
+                          </div>
+                        </td>
+
+                        {/* Column 5: Actions */}
+                        <td className="py-3.5 px-4 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => handleDownloadStudentInvoicePdf(student)}
+                              title={`Download Tax Invoice (PDF) for ${student.name}`}
+                              className="p-1.5 text-orange-600 hover:text-white hover:bg-orange-600 bg-orange-500/10 border border-orange-500/30 rounded-lg transition-colors cursor-pointer group flex items-center gap-1"
+                            >
+                              <Download className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                              <span className="text-[10px] font-black">PDF</span>
+                            </button>
+                            <button
+                              onClick={() => onGenerateInvoiceForStudent(student)}
+                              title="Generate Invoice in Ledger"
+                              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                                isLight ? 'text-neutral-700 hover:text-emerald-600 hover:bg-emerald-50' : 'text-neutral-400 hover:text-emerald-400 hover:bg-neutral-800'
+                              }`}
+                            >
+                              <Receipt className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => openEditModal(student)}
+                              title="Edit Student Info"
+                              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                                isLight ? 'text-neutral-700 hover:text-blue-600 hover:bg-blue-50' : 'text-neutral-400 hover:text-blue-400 hover:bg-neutral-800'
+                              }`}
+                            >
+                              <Edit3 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleInitiateDelete(student)}
+                              title={`Delete ${student.name}'s admission record`}
+                              className="p-1.5 text-rose-600 hover:text-white hover:bg-rose-600 bg-rose-500/10 border border-rose-500/30 rounded-lg transition-colors cursor-pointer group"
+                            >
+                              <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Students Card View (High Contrast, Vivid, Zero Black/Grey, All Orange Icons) */}
+      {viewMode === 'card' && (
+        <div>
+          {filteredStudents.length === 0 ? (
+            <div className="border-2 border-orange-300 dark:border-orange-500/40 rounded-2xl p-12 text-center bg-orange-500/10 shadow-sm">
+              <User className="w-12 h-12 mx-auto text-orange-500 mb-3" />
+              <p className="text-base font-black text-orange-700 dark:text-orange-300">No students match your criteria.</p>
+              <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 font-bold">Try clearing filters or search query</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {filteredStudents.map(student => {
+                const course = courses.find(c => c.id === student.enrolledCourseId);
+                const totalFee = student.agreedFee || course?.fee || 6000;
+                const paid = student.totalPaid || 0;
+                const balance = Math.max(0, totalFee - paid);
+                const percentPaid = totalFee > 0 ? Math.min(100, Math.round((paid / totalFee) * 100)) : 100;
+                const initials = student.name
+                  .trim()
+                  .split(/\s+/)
+                  .map(n => n[0])
+                  .join('')
+                  .toUpperCase()
+                  .slice(0, 2) || 'ST';
+
+                return (
+                  <div
+                    key={student.id}
+                    className="border-2 border-[#587731]/40 dark:border-[#587731]/50 rounded-2xl p-5 flex flex-col justify-between gap-4.5 bg-gradient-to-br from-[#FAF6EE] via-[#F5EFDF] to-[#EBE2CD] dark:from-[#182214] dark:via-[#151D11] dark:to-[#121A0E] hover:border-[#587731] hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 shadow-md group"
+                  >
+                    {/* Header: Avatar, Name, IDs, Status Dropdown */}
+                    <div className="space-y-3.5">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-3 min-w-0">
+                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#587731] to-[#7EA746] border-2 border-[#587731]/40 flex items-center justify-center font-black text-[#FAF6EE] text-base shrink-0 shadow-md mt-0.5">
                             {initials}
                           </div>
-                          <div className="min-w-0 space-y-0.5">
-                            {/* Line 1: Student Name - Bold Pure Black in light */}
-                            <div className={`font-black text-sm tracking-tight truncate ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+                          <div className="min-w-0">
+                            <h4
+                              className="font-black text-lg leading-snug truncate text-[#19240E] dark:text-[#E8F3D6] tracking-tight"
+                              title={student.name}
+                            >
                               {student.name}
-                            </div>
-                            {/* Line 2: Phone Number */}
-                            <div className={`flex items-center gap-1.5 text-xs font-mono font-bold ${isLight ? 'text-black' : 'text-neutral-300'}`}>
-                              <Phone className="w-3.5 h-3.5 text-orange-500 shrink-0" />
-                              <span>+91 {student.phone}</span>
-                            </div>
-                            {/* Line 3: Mail ID */}
-                            <div className={`flex items-center gap-1.5 text-xs font-mono font-medium ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
-                              <Mail className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-                              <span className="truncate max-w-[190px]" title={student.email}>{student.email}</span>
+                            </h4>
+                            <div className="flex items-center gap-1.5 flex-wrap mt-1">
+                              {student.id && (
+                                <span className="text-[11px] font-mono font-black px-2 py-0.5 rounded-lg border-2 border-[#587731]/30 bg-[#587731]/15 text-[#587731] dark:text-[#8CB752]">
+                                  ID: {student.id}
+                                </span>
+                              )}
+                              {student.enrollmentId && (
+                                <span className="text-[11px] font-mono font-black px-2 py-0.5 rounded-lg border-2 border-[#E5DCBE] dark:border-[#2C3D21] bg-[#F5EFDF] dark:bg-[#182214] text-[#243315] dark:text-[#E8F3D6]">
+                                  {student.enrollmentId}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
-                      </td>
 
-                      {/* Column 2: Course & Admission Date */}
-                      <td className="py-3.5 px-4">
-                        <div className="space-y-0.5">
-                          {/* Line 1: Course Name - Bold Pure Black in light */}
-                          <div className={`font-black text-sm tracking-tight ${isLight ? 'text-black' : 'text-neutral-100'}`}>
-                            {student.enrolledCourseName}
+                        {/* Fee Status Dropdown */}
+                        <select
+                          value={student.paymentStatus}
+                          onChange={e => handleTableFeeStatusChange(student, e.target.value as PaymentStatus)}
+                          aria-label={`Fee Status for ${student.name}`}
+                          className={`text-xs font-black px-3 py-1.5 rounded-xl border-2 cursor-pointer focus:outline-none transition-all shrink-0 shadow-sm ${
+                            student.paymentStatus === 'paid'
+                              ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border-emerald-500/50'
+                              : student.paymentStatus === 'partially_paid'
+                              ? 'bg-amber-500/20 text-amber-800 dark:text-amber-300 border-amber-500/50'
+                              : 'bg-rose-500/20 text-rose-800 dark:text-rose-300 border-rose-500/50'
+                          }`}
+                        >
+                          <option value="paid" className="bg-[#FAF6EE] text-emerald-800 font-bold">✓ Paid</option>
+                          <option value="unpaid" className="bg-[#FAF6EE] text-rose-800 font-bold">✕ Unpaid</option>
+                          {student.paymentStatus === 'partially_paid' && (
+                            <option value="partially_paid" className="bg-[#FAF6EE] text-amber-800 font-bold">⏳ Partial</option>
+                          )}
+                        </select>
+                      </div>
+
+                      {/* Contact Info Card */}
+                      <div className="p-3 rounded-xl border-2 border-[#E5DCBE] dark:border-[#2C3D21] bg-[#FAF6EE]/80 dark:bg-[#182214]/60 text-xs space-y-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 font-mono font-black text-[#243315] dark:text-[#E8F3D6] text-sm">
+                            <Phone className="w-4 h-4 text-[#587731] shrink-0" />
+                            <span>+91 {student.phone}</span>
                           </div>
-                          {/* Line 2: Duration */}
-                          <div className={`text-xs flex items-center gap-1.5 font-bold ${isLight ? 'text-black' : 'text-neutral-300'}`}>
-                            <BookOpen className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                          <a
+                            href={`tel:+91${student.phone}`}
+                            className="text-xs font-black px-3 py-1 rounded-lg bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] shadow-sm transition-all"
+                          >
+                            Call
+                          </a>
+                        </div>
+                        <div className="flex items-center gap-2 font-mono text-xs font-bold text-[#243315] dark:text-[#E8F3D6]">
+                          <Mail className="w-4 h-4 text-[#587731] shrink-0" />
+                          <span className="truncate" title={student.email}>{student.email}</span>
+                        </div>
+                      </div>
+
+                      {/* Enrolled Course & Duration Details */}
+                      <div className="p-3 rounded-xl border-2 border-[#E5DCBE] dark:border-[#2C3D21] bg-[#FAF6EE]/80 dark:bg-[#182214]/60 text-xs space-y-2">
+                        <div className="font-black text-sm tracking-tight flex items-center gap-2 text-[#243315] dark:text-[#E8F3D6]">
+                          <BookOpen className="w-4 h-4 text-[#587731] shrink-0" />
+                          <span className="truncate">{student.enrolledCourseName}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs gap-2 pt-1.5 border-t border-[#E5DCBE] dark:border-[#2C3D21]">
+                          <div className="flex items-center gap-1.5 font-black text-[#243315] dark:text-[#E8F3D6]">
+                            <Clock className="w-4 h-4 text-[#587731] shrink-0" />
                             <span>{course?.duration || '1 Month Practical'}</span>
                           </div>
-                          {/* Line 3: Duration Date / Admission Date */}
-                          <div className={`text-xs font-mono flex items-center gap-1.5 font-medium ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
-                            <Calendar className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+                          <div className="flex items-center gap-1.5 font-mono font-black text-[#243315] dark:text-[#E8F3D6]">
+                            <Calendar className="w-4 h-4 text-[#587731] shrink-0" />
                             <span>{student.enrollmentDate}</span>
                           </div>
                         </div>
-                      </td>
+                      </div>
 
-                      {/* Column 3: Fee Status & Mode */}
-                      <td className="py-3.5 px-4 text-center">
-                        <div className="inline-flex flex-col items-center gap-1">
-                          <select
-                            value={student.paymentStatus}
-                            onChange={e => handleTableFeeStatusChange(student, e.target.value as PaymentStatus)}
-                            aria-label={`Fee Status for ${student.name}`}
-                            className={`text-xs font-black px-2.5 py-1 rounded-lg border cursor-pointer focus:outline-none transition-all shadow-sm ${
-                              student.paymentStatus === 'paid'
-                                ? isLight ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50'
-                                : student.paymentStatus === 'partially_paid'
-                                ? isLight ? 'bg-amber-50 text-amber-800 border-amber-300' : 'bg-amber-500/20 text-amber-400 border-amber-500/50'
-                                : isLight ? 'bg-rose-50 text-rose-800 border-rose-300' : 'bg-rose-500/20 text-rose-400 border-rose-500/50'
-                            }`}
-                          >
-                            <option value="paid" className="bg-white dark:bg-neutral-900 text-emerald-600 dark:text-emerald-400 font-bold">
-                              ✓ Paid
-                            </option>
-                            <option value="unpaid" className="bg-white dark:bg-neutral-900 text-rose-600 dark:text-rose-400 font-bold">
-                              ✕ Unpaid
-                            </option>
-                            {student.paymentStatus === 'partially_paid' && (
-                              <option value="partially_paid" className="bg-white dark:bg-neutral-900 text-amber-600 dark:text-amber-400 font-bold">
-                                ⏳ Partial
-                              </option>
-                            )}
-                          </select>
-                          <span className={`text-[10px] font-mono uppercase font-black ${isLight ? 'text-black' : 'text-neutral-400'}`}>
-                            {student.paymentMethod || 'UPI'}
-                          </span>
+                      {/* Fee Breakdown & Status */}
+                      <div className="p-3.5 rounded-xl border-2 border-[#E5DCBE] dark:border-[#2C3D21] bg-[#FAF6EE]/90 dark:bg-[#182214]/80 space-y-2.5">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-[#243315] dark:text-[#C2B694]">Total Course Fee:</span>
+                          <span className="font-mono font-black text-sm text-[#19240E] dark:text-[#FAF6EE]">₹{totalFee.toLocaleString('en-IN')}</span>
                         </div>
-                      </td>
-
-                      {/* Column 4: Fees Payment Details */}
-                      <td className="py-3.5 px-4 text-right font-mono text-xs">
-                        {/* Total Paid with + sign */}
-                        <div className="flex items-center justify-end gap-1.5">
-                          <span className={`text-[11px] font-sans font-bold ${isLight ? 'text-black' : 'text-neutral-400'}`}>Paid:</span>
-                          <span className={`font-black text-sm tracking-tight ${isLight ? 'text-emerald-700 font-mono' : 'text-emerald-400'}`}>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-[#243315] dark:text-[#C2B694]">Total Paid:</span>
+                          <span className="font-mono font-black text-base text-emerald-700 dark:text-emerald-400">
                             +₹{paid.toLocaleString('en-IN')}
                           </span>
                         </div>
-
-                        {/* Total Due with RED colour indicator */}
-                        <div className="mt-1 flex items-center justify-end">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-[#243315] dark:text-[#C2B694]">Total Due:</span>
                           {balance > 0 ? (
-                            <span className="text-xs font-black text-rose-700 dark:text-rose-400 bg-rose-500/15 px-2 py-0.5 rounded border border-rose-500/40 shadow-sm flex items-center gap-1">
-                              <span className="text-[10px] uppercase font-sans font-black">Total Due:</span>
-                              <span className="font-black">₹{balance.toLocaleString('en-IN')}</span>
+                            <span className="text-xs font-black text-rose-700 dark:text-rose-400 bg-rose-500/20 border-2 border-rose-400 px-2.5 py-0.5 rounded-lg shadow-sm font-mono">
+                              ₹{balance.toLocaleString('en-IN')}
                             </span>
                           ) : (
-                            <span className={`text-[11px] font-bold flex items-center gap-1 ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>
-                              <span>Total Due: ₹0</span>
-                              <span className="text-[10px] font-black">✓</span>
+                            <span className="text-xs font-black text-emerald-700 dark:text-emerald-400 bg-emerald-500/20 border-2 border-emerald-400 px-2.5 py-0.5 rounded-lg font-mono">
+                              ₹0 ✓ Paid
                             </span>
                           )}
                         </div>
 
-                        {/* Total Fee Reference */}
-                        <div className={`text-[10px] mt-0.5 font-bold ${isLight ? 'text-neutral-600' : 'text-neutral-500'}`}>
-                          Total: ₹{totalFee.toLocaleString('en-IN')}
+                        {/* Progress Bar & Payment Method */}
+                        <div className="space-y-1.5 pt-2 border-t border-[#E5DCBE] dark:border-[#2C3D21]">
+                          <div className="flex items-center justify-between text-[11px]">
+                            <span className="font-mono uppercase font-black px-2 py-0.5 rounded-md bg-[#587731]/15 border border-[#587731]/30 text-[#587731] dark:text-[#8CB752]">
+                              Mode: {student.paymentMethod || 'UPI'}
+                            </span>
+                            <span className="font-black text-[#587731] dark:text-[#8CB752]">
+                              {percentPaid}% Paid
+                            </span>
+                          </div>
+                          <div className="w-full h-2 rounded-full bg-[#E5DCBE] dark:bg-neutral-800 border border-[#DCD1B0] dark:border-neutral-700 overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-[#587731] to-[#8CB752] rounded-full transition-all duration-300"
+                              style={{ width: `${percentPaid}%` }}
+                            />
+                          </div>
                         </div>
-                      </td>
 
-                      {/* Column 5: Actions */}
-                      <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            onClick={() => handleDownloadStudentInvoicePdf(student)}
-                            title={`Download Tax Invoice (PDF) for ${student.name}`}
-                            className="p-1.5 text-orange-600 hover:text-white hover:bg-orange-600 bg-orange-500/10 border border-orange-500/30 rounded-lg transition-colors cursor-pointer group flex items-center gap-1"
+                        {student.notes && (
+                          <p
+                            className="text-xs font-bold italic truncate pt-1.5 border-t border-[#E5DCBE] dark:border-[#2C3D21] text-[#243315] dark:text-[#C2B694]"
+                            title={student.notes}
                           >
-                            <Download className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                            <span className="text-[10px] font-black">PDF</span>
-                          </button>
-                          <button
-                            onClick={() => onGenerateInvoiceForStudent(student)}
-                            title="Generate Invoice in Ledger"
-                            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                              isLight ? 'text-neutral-700 hover:text-emerald-600 hover:bg-emerald-50' : 'text-neutral-400 hover:text-emerald-400 hover:bg-neutral-800'
-                            }`}
-                          >
-                            <Receipt className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => openEditModal(student)}
-                            title="Edit Student Info"
-                            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                              isLight ? 'text-neutral-700 hover:text-blue-600 hover:bg-blue-50' : 'text-neutral-400 hover:text-blue-400 hover:bg-neutral-800'
-                            }`}
-                          >
-                            <Edit3 className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleInitiateDelete(student)}
-                            title={`Delete ${student.name}'s admission record`}
-                            className="p-1.5 text-rose-600 hover:text-white hover:bg-rose-600 bg-rose-500/10 border border-rose-500/30 rounded-lg transition-colors cursor-pointer group"
-                          >
-                            <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                            "{student.notes}"
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Action Buttons Footer with Olive & Beige styling */}
+                    <div className="pt-3 border-t-2 border-[#E5DCBE] dark:border-[#2C3D21] grid grid-cols-4 gap-2">
+                      <button
+                        onClick={() => handleDownloadStudentInvoicePdf(student)}
+                        className="py-2 px-2 text-xs font-black text-[#587731] dark:text-[#8CB752] hover:text-[#FAF6EE] hover:bg-[#587731] bg-[#587731]/15 border-2 border-[#587731]/40 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer group"
+                        title="Download Tax Invoice PDF"
+                      >
+                        <Download className="w-4 h-4 text-[#587731] group-hover:text-[#FAF6EE] transition-colors" />
+                        <span>PDF</span>
+                      </button>
+                      <button
+                        onClick={() => onGenerateInvoiceForStudent(student)}
+                        className="py-2 px-2 text-xs font-black text-[#587731] dark:text-[#8CB752] hover:text-[#FAF6EE] hover:bg-[#587731] bg-[#587731]/15 border-2 border-[#587731]/40 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer group"
+                        title="View / Record Invoice"
+                      >
+                        <Receipt className="w-4 h-4 text-[#587731] group-hover:text-[#FAF6EE] transition-colors" />
+                        <span>Bill</span>
+                      </button>
+                      <button
+                        onClick={() => openEditModal(student)}
+                        className="py-2 px-2 text-xs font-black text-[#587731] dark:text-[#8CB752] hover:text-[#FAF6EE] hover:bg-[#587731] bg-[#587731]/15 border-2 border-[#587731]/40 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer group"
+                        title="Edit Student Info"
+                      >
+                        <Edit3 className="w-4 h-4 text-[#587731] group-hover:text-[#FAF6EE] transition-colors" />
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        onClick={() => handleInitiateDelete(student)}
+                        className="py-2 px-2 text-xs font-black text-rose-600 dark:text-rose-400 hover:text-white hover:bg-rose-600 bg-rose-500/15 border-2 border-rose-500/40 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer group"
+                        title="Delete Student"
+                      >
+                        <Trash2 className="w-4 h-4 text-rose-600 group-hover:text-white transition-colors" />
+                        <span>Del</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
-      </div>
-
-      {/* Mobile Card List (Instant touch actions on phone screens) */}
-      <div className="md:hidden space-y-3">
-        {filteredStudents.length === 0 ? (
-          <div className={`border rounded-xl p-8 text-center text-neutral-500 ${
-            isLight ? 'bg-white border-neutral-200' : 'bg-neutral-900/60 border-neutral-800'
-          }`}>
-            <User className="w-8 h-8 mx-auto text-neutral-500 mb-2 opacity-50" />
-            <p className="text-sm font-bold">No students match your criteria.</p>
-          </div>
-        ) : (
-          filteredStudents.map(student => {
-            const course = courses.find(c => c.id === student.enrolledCourseId);
-            const totalFee = student.agreedFee || course?.fee || 6000;
-            const paid = student.totalPaid || 0;
-            const balance = Math.max(0, totalFee - paid);
-            const initials = student.name
-              .trim()
-              .split(/\s+/)
-              .map(n => n[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2) || 'ST';
-
-            return (
-              <div
-                key={student.id}
-                className={`border rounded-xl p-4 space-y-3.5 shadow-sm transition-colors ${
-                  isLight ? 'bg-white border-2 border-neutral-200 text-black' : 'bg-neutral-900/90 border border-neutral-800 text-neutral-100'
-                }`}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-2.5 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center font-bold text-orange-500 text-xs shrink-0 mt-0.5">
-                      {initials}
-                    </div>
-                    <div className="min-w-0 space-y-0.5">
-                      {/* Line 1: Student Name */}
-                      <div className={`font-black text-base leading-tight truncate ${isLight ? 'text-black' : 'text-neutral-100'}`}>{student.name}</div>
-                      {/* Line 2: Phone Number */}
-                      <div className={`flex items-center gap-1.5 text-xs font-mono font-bold ${isLight ? 'text-black' : 'text-neutral-300'}`}>
-                        <Phone className="w-3 h-3 text-orange-500 shrink-0" />
-                        <span>+91 {student.phone}</span>
-                      </div>
-                      {/* Line 3: Mail ID */}
-                      <div className={`flex items-center gap-1.5 text-xs font-mono font-medium ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
-                        <Mail className="w-3 h-3 text-neutral-400 shrink-0" />
-                        <span className="truncate max-w-[170px]" title={student.email}>{student.email}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Mobile Fee Status Dropdown */}
-                  <select
-                    value={student.paymentStatus}
-                    onChange={e => handleTableFeeStatusChange(student, e.target.value as PaymentStatus)}
-                    aria-label={`Fee Status for ${student.name}`}
-                    className={`text-xs font-black px-2.5 py-1.5 rounded-lg border cursor-pointer focus:outline-none transition-all shrink-0 ${
-                      student.paymentStatus === 'paid'
-                        ? isLight ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50'
-                        : student.paymentStatus === 'partially_paid'
-                        ? isLight ? 'bg-amber-50 text-amber-800 border-amber-300' : 'bg-amber-500/20 text-amber-400 border-amber-500/50'
-                        : isLight ? 'bg-rose-50 text-rose-800 border-rose-300' : 'bg-rose-500/20 text-rose-400 border-rose-500/50'
-                    }`}
-                  >
-                    <option value="paid" className="bg-white dark:bg-neutral-900 text-emerald-600 dark:text-emerald-400">✓ Paid</option>
-                    <option value="unpaid" className="bg-white dark:bg-neutral-900 text-rose-600 dark:text-rose-400">✕ Unpaid</option>
-                    {student.paymentStatus === 'partially_paid' && (
-                      <option value="partially_paid" className="bg-white dark:bg-neutral-900 text-amber-600 dark:text-amber-400">⏳ Partial</option>
-                    )}
-                  </select>
-                </div>
-
-                {/* Course & Admission Details Block */}
-                <div className={`text-xs space-y-2 p-3 rounded-lg border ${
-                  isLight ? 'bg-orange-50/50 border-orange-100 text-black' : 'bg-neutral-950/60 border-neutral-800/80 text-neutral-300'
-                }`}>
-                  <div className="space-y-0.5">
-                    {/* Line 1: Course Name */}
-                    <div className={`font-black text-sm tracking-tight ${isLight ? 'text-black' : 'text-neutral-100'}`}>{student.enrolledCourseName}</div>
-                    {/* Line 2: Duration */}
-                    <div className={`flex items-center gap-1.5 font-bold ${isLight ? 'text-black' : 'text-neutral-300'}`}>
-                      <BookOpen className="w-3 h-3 text-orange-500 shrink-0" />
-                      <span>{course?.duration || '1 Month Practical'}</span>
-                    </div>
-                    {/* Line 3: Duration Date / Admission Date */}
-                    <div className={`font-mono flex items-center gap-1.5 ${isLight ? 'text-neutral-600' : 'text-neutral-400'}`}>
-                      <Calendar className="w-3 h-3 text-neutral-400 shrink-0" />
-                      <span>{student.enrollmentDate}</span>
-                    </div>
-                  </div>
-
-                  {/* Fees Payment Details Block */}
-                  <div className={`pt-2 border-t space-y-1 font-mono ${isLight ? 'border-orange-200' : 'border-neutral-800/80'}`}>
-                    <div className="flex items-center justify-between">
-                      <span className={`font-sans text-xs font-bold ${isLight ? 'text-black' : 'text-neutral-400'}`}>Total Paid:</span>
-                      <span className={`font-black text-sm ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>+₹{paid.toLocaleString('en-IN')}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className={`font-sans text-xs font-bold ${isLight ? 'text-black' : 'text-neutral-400'}`}>Total Due:</span>
-                      {balance > 0 ? (
-                        <span className="text-xs font-black text-rose-700 dark:text-rose-400 bg-rose-500/15 px-2 py-0.5 rounded border border-rose-500/40">
-                          ₹{balance.toLocaleString('en-IN')}
-                        </span>
-                      ) : (
-                        <span className={`text-xs font-black ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>₹0 ✓</span>
-                      )}
-                    </div>
-                    <div className={`text-[10px] text-right font-bold ${isLight ? 'text-neutral-600' : 'text-neutral-500'}`}>
-                      Course Fee: ₹{totalFee.toLocaleString('en-IN')}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Mobile Actions: PDF Download, Invoice, Edit, Delete */}
-                <div className={`flex items-center justify-end gap-1.5 pt-2 border-t flex-wrap ${isLight ? 'border-neutral-200' : 'border-neutral-800/80'}`}>
-                  <button
-                    onClick={() => handleDownloadStudentInvoicePdf(student)}
-                    className="px-2.5 py-1 text-xs text-orange-600 hover:text-white hover:bg-orange-600 bg-orange-500/10 border border-orange-500/30 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
-                    title="Download Invoice (PDF format)"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    <span className="font-bold">PDF</span>
-                  </button>
-                  <button
-                    onClick={() => onGenerateInvoiceForStudent(student)}
-                    className={`px-2.5 py-1 text-xs rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer ${
-                      isLight ? 'text-black bg-neutral-100 hover:bg-neutral-200' : 'text-neutral-300 hover:text-emerald-400 bg-neutral-800 hover:bg-neutral-700'
-                    }`}
-                  >
-                    <Receipt className="w-3.5 h-3.5 text-emerald-500" />
-                    <span>Invoice</span>
-                  </button>
-                  <button
-                    onClick={() => openEditModal(student)}
-                    className={`px-2.5 py-1 text-xs rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer ${
-                      isLight ? 'text-black bg-neutral-100 hover:bg-neutral-200' : 'text-neutral-300 hover:text-blue-400 bg-neutral-800 hover:bg-neutral-700'
-                    }`}
-                  >
-                    <Edit3 className="w-3.5 h-3.5 text-blue-500" />
-                    <span>Edit</span>
-                  </button>
-                  <button
-                    onClick={() => handleInitiateDelete(student)}
-                    className="px-2.5 py-1 text-xs font-bold text-rose-600 hover:text-white hover:bg-rose-600 bg-rose-500/10 border border-rose-500/30 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                    <span>Delete</span>
-                  </button>
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
+      )}
 
       {/* Admission / Edit Student Modal */}
       {showModal && (

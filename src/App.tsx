@@ -201,7 +201,7 @@ export default function App() {
   // 2. PIN-based authentication gate: App is strictly accessible only after entering Admin PIN
   if (!isAuthenticated) {
     return (
-      <div className={`min-h-screen ${theme === 'light' ? 'bg-[#fafafc]' : 'bg-neutral-950'} flex flex-col font-sans`}>
+      <div className={`min-h-screen ${theme === 'light' ? 'bg-[#F5EFDF]' : 'bg-[#11180E]'} flex flex-col font-sans`}>
         <AdminLockModal
           isOpen={true}
           isMandatoryGate={true}
@@ -223,7 +223,7 @@ export default function App() {
   return (
     <div
       className={`min-h-screen ${
-        theme === 'light' ? 'bg-[#fafafc] text-neutral-900' : 'bg-neutral-950 text-neutral-100'
+        theme === 'light' ? 'bg-[#F5EFDF] text-[#243315]' : 'bg-[#11180E] text-neutral-100'
       } flex flex-col font-sans transition-colors duration-200 w-full max-w-full overflow-x-hidden`}
     >
       {/* Top Bar Navigation with Theme Switcher right near Admin Lock */}

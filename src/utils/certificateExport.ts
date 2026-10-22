@@ -74,61 +74,13 @@ export const OFFICIAL_SEAL_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBo
   </g>
 </svg>`;
 
-// SVG string for the authentic Cortexx AI top-left logo with dual-brain icon
-export const CORTEXX_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 100" width="420" height="100" fill="none">
-  <defs>
-    <linearGradient id="cortexxOrangeGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FFAA00" />
-      <stop offset="50%" stop-color="#FF6A00" />
-      <stop offset="100%" stop-color="#DD3B00" />
-    </linearGradient>
-    <linearGradient id="cortexxDarkCircuit" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1e293b" />
-      <stop offset="100%" stop-color="#0f172a" />
-    </linearGradient>
-    <filter id="cortexxGlowEffect" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="2" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-    </filter>
-  </defs>
-
-  <!-- Dual Brain Icon -->
-  <g transform="translate(10, 6) scale(0.88)">
-    <circle cx="50" cy="50" r="38" fill="url(#cortexxOrangeGlow)" opacity="0.22" filter="url(#cortexxGlowEffect)" />
-    <!-- Left Brain Hemisphere Orange -->
-    <path d="M 48 18 C 36 18 20 28 20 44 C 20 54 26 62 26 70 C 26 78 36 84 48 84 Z" fill="url(#cortexxOrangeGlow)" stroke="#ea580c" stroke-width="1.2" />
-    <path d="M 48 26 L 36 26 L 30 32 L 25 32" stroke="#FFF7ED" stroke-width="2" stroke-linecap="round" />
-    <path d="M 48 38 L 38 38 L 32 44 L 23 44" stroke="#FFF7ED" stroke-width="2" stroke-linecap="round" />
-    <path d="M 48 50 L 32 50 L 28 56 L 24 64" stroke="#FFF7ED" stroke-width="2" stroke-linecap="round" />
-    <path d="M 48 62 L 38 62 L 32 68 L 30 76" stroke="#FFF7ED" stroke-width="2" stroke-linecap="round" />
-    <path d="M 48 74 L 40 74 L 38 78" stroke="#FFF7ED" stroke-width="2" stroke-linecap="round" />
-    <circle cx="25" cy="32" r="2.5" fill="#FFFFFF" />
-    <circle cx="23" cy="44" r="2.5" fill="#FFFFFF" />
-    <circle cx="24" cy="64" r="2.5" fill="#FFFFFF" />
-    <circle cx="30" cy="76" r="2.5" fill="#FFFFFF" />
-    <circle cx="35" cy="50" r="2" fill="#FFE082" />
-
-    <!-- Right Brain Hemisphere Navy -->
-    <path d="M 52 18 C 64 18 80 28 80 44 C 80 54 74 62 74 70 C 74 78 64 84 52 84 Z" fill="url(#cortexxDarkCircuit)" stroke="#0f172a" stroke-width="1.2" />
-    <path d="M 52 26 L 64 26 L 70 32 L 75 32" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round" opacity="0.9" />
-    <path d="M 52 38 L 62 38 L 68 44 L 77 44" stroke="#fb923c" stroke-width="1.8" stroke-linecap="round" opacity="0.95" />
-    <path d="M 52 50 L 68 50 L 72 56 L 76 64" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round" opacity="0.9" />
-    <path d="M 52 62 L 62 62 L 68 68 L 70 76" stroke="#fb923c" stroke-width="1.8" stroke-linecap="round" opacity="0.95" />
-    <path d="M 52 74 L 60 74 L 62 78" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round" opacity="0.9" />
-    <circle cx="75" cy="32" r="2.2" fill="#f8fafc" />
-    <circle cx="77" cy="44" r="2.5" fill="#FF8800" />
-    <circle cx="76" cy="64" r="2.2" fill="#f8fafc" />
-    <circle cx="70" cy="76" r="2.2" fill="#FF8800" />
-
-    <line x1="50" y1="18" x2="50" y2="84" stroke="#FFAA00" stroke-width="2.5" stroke-dasharray="3 2" />
-    <circle cx="50" cy="50" r="3" fill="#FF6A00" />
-  </g>
-
-  <!-- Typography: Pure Bold Black + Orange Accent -->
-  <text x="110" y="52" font-family="'Arial Black', Arial, sans-serif" font-weight="900" font-size="36" fill="#000000" letter-spacing="-0.5">
+// SVG string for the authentic Cortexx AI top typography (logo icon removed, exact typography preserved)
+export const CORTEXX_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 75" width="350" height="75" fill="none">
+  <!-- Typography: Pure Bold Black + Orange Accent (Exact Same Appearance, Zero Logo Icon) -->
+  <text x="0" y="40" font-family="'Arial Black', Arial, sans-serif" font-weight="900" font-size="36" fill="#000000" letter-spacing="-0.5">
     Cortexx <tspan fill="#ea580c">AI</tspan>
   </text>
-  <text x="112" y="74" font-family="Arial, sans-serif" font-weight="800" font-size="11.5" fill="#1e293b" letter-spacing="2">
+  <text x="2" y="62" font-family="Arial, sans-serif" font-weight="800" font-size="11" fill="#1e293b" letter-spacing="1.8">
     WHERE THINKING MEETS TECHNOLOGY
   </text>
 </svg>`;
@@ -137,15 +89,14 @@ let cachedSealDataUrl: string | null = null;
 let cachedLogoDataUrl: string | null = null;
 
 /**
- * Converts the official seal SVG into a high-res raster PNG data URL.
+ * Converts the official uploaded seal into a high-res raster PNG data URL.
  */
 export async function getOfficialSealPngDataUrl(size = 400): Promise<string> {
   if (cachedSealDataUrl) return cachedSealDataUrl;
   return new Promise((resolve) => {
     try {
       const img = new Image();
-      const svgBlob = new Blob([OFFICIAL_SEAL_SVG], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(svgBlob);
+      img.crossOrigin = 'anonymous';
       img.onload = () => {
         const canvas = document.createElement('canvas');
         canvas.width = size;
@@ -156,25 +107,34 @@ export async function getOfficialSealPngDataUrl(size = 400): Promise<string> {
           cachedSealDataUrl = canvas.toDataURL('image/png');
           resolve(cachedSealDataUrl);
         } else {
-          resolve('');
+          resolve('/assets/aistudio/cortexx_ai_seal_transparent_978ffaba.png');
         }
-        URL.revokeObjectURL(url);
       };
       img.onerror = () => {
-        URL.revokeObjectURL(url);
-        resolve('');
+        fetch('/assets/aistudio/cortexx_ai_seal_transparent_978ffaba.png')
+          .then(res => res.blob())
+          .then(blob => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              cachedSealDataUrl = reader.result as string;
+              resolve(cachedSealDataUrl);
+            };
+            reader.onerror = () => resolve('');
+            reader.readAsDataURL(blob);
+          })
+          .catch(() => resolve(''));
       };
-      img.src = url;
+      img.src = '/assets/aistudio/cortexx_ai_seal_transparent_978ffaba.png';
     } catch {
-      resolve('');
+      resolve('/assets/aistudio/cortexx_ai_seal_transparent_978ffaba.png');
     }
   });
 }
 
 /**
- * Converts the Cortexx AI Logo SVG into a high-res raster PNG data URL.
+ * Converts the Cortexx AI Typography SVG into a high-res raster PNG data URL.
  */
-export async function getCortexxLogoPngDataUrl(width = 600, height = 143): Promise<string> {
+export async function getCortexxLogoPngDataUrl(width = 700, height = 150): Promise<string> {
   if (cachedLogoDataUrl) return cachedLogoDataUrl;
   return new Promise((resolve) => {
     try {
@@ -468,15 +428,7 @@ export function downloadCertificateAsDoc(
         <!-- Centered Attached Official Seal -->
         <td class="footer-cell">
           <div class="official-seal-box">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="80" height="80">
-              <circle cx="100" cy="100" r="96" fill="#ffffff" stroke="#0a215c" stroke-width="4" />
-              <circle cx="100" cy="100" r="90" fill="none" stroke="#0a215c" stroke-width="1.5" />
-              <circle cx="100" cy="100" r="68" fill="none" stroke="#0a215c" stroke-width="2" />
-              <text x="100" y="38" text-anchor="middle" fill="#0a215c" font-size="9" font-weight="900" font-family="Arial">CORTEXX AI INSTITUTE</text>
-              <text x="100" y="172" text-anchor="middle" fill="#0a215c" font-size="6" font-weight="900" font-family="Arial">WHERE THINKING MEETS TECHNOLOGY</text>
-              <text x="100" y="105" text-anchor="middle" fill="#0a215c" font-size="24">🧠</text>
-              <text x="100" y="128" text-anchor="middle" fill="#0a215c" font-size="11" font-weight="bold" font-family="Arial">Cortexx AI</text>
-            </svg>
+            <img src="/assets/aistudio/cortexx_ai_seal_transparent_978ffaba.png" alt="Official Seal" style="width: 80pt; height: 80pt; object-fit: contain; display: block; margin: 0 auto;" />
           </div>
         </td>
 
@@ -557,10 +509,10 @@ export async function downloadCertificateDirectlyAsPdf(
     qrDataUrl = '';
   }
 
-  // 2. Fetch official seal PNG and authentic Cortexx logo PNG
+  // 2. Fetch official seal PNG and authentic Cortexx typography PNG
   const [sealPng, logoPng] = await Promise.all([
     getOfficialSealPngDataUrl(400),
-    getCortexxLogoPngDataUrl(600, 143),
+    getCortexxLogoPngDataUrl(700, 150),
   ]);
 
   // 3. Render pixel-perfect vector PDF
@@ -573,7 +525,7 @@ export async function downloadCertificateDirectlyAsPdf(
  * - Date and all 3 signatures sit cleanly ABOVE the horizontal line.
  * - Printed names and titles sit comfortably BELOW the horizontal line.
  * - Center Official Seal is scaled and centered.
- * - Top Left renders the authentic Cortexx dual-brain circuit logo.
+ * - Top Left renders the authentic Cortexx brand typography (logo icon removed).
  */
 function generateDirectVectorPdf(
   cert: CertificateRecord,
@@ -606,10 +558,10 @@ function generateDirectVectorPdf(
   pdf.setFillColor(255, 255, 255);
   pdf.rect(32, 32, pageWidth - 64, pageHeight - 64, 'F');
 
-  // 4. Top Left Header: Official Cortexx Logo PNG
+  // 4. Top Header: Cortexx Brand Typography (Logo icon removed, text appearance preserved)
   if (logoPngDataUrl) {
     try {
-      pdf.addImage(logoPngDataUrl, 'PNG', 46, 40, 168, 40);
+      pdf.addImage(logoPngDataUrl, 'PNG', 46, 42, 140, 30);
     } catch {
       renderFallbackLogoText(pdf, 46, 58);
     }

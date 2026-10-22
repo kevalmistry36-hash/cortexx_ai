@@ -435,47 +435,47 @@ Accounts Office, Cortexx AI Institute`;
   const paidInvoicesCount = invoices.filter(i => i.paymentStatus === 'paid').length;
   const pendingInvoicesCount = invoices.filter(i => i.paymentStatus !== 'paid').length;
 
-  // Shared card classes - identical appearance to Dashboard
+  // Shared card classes - Olive & Beige palette
   const kpiCardClass = isLight
-    ? 'dashboard-kpi-card bg-white border-2 border-neutral-200 border-t-4 border-t-orange-500 shadow-md hover:border-orange-500 text-black rounded-xl p-5 transition-all relative overflow-hidden'
-    : 'dashboard-kpi-card bg-neutral-900/80 border border-neutral-800 border-t-4 border-t-orange-500 hover:border-neutral-700 text-neutral-100 rounded-xl p-5 transition-all relative overflow-hidden';
+    ? 'dashboard-kpi-card bg-[#FAF6EE] border-2 border-[#E5DCBE] border-t-4 border-t-[#587731] shadow-md hover:border-[#587731] text-[#243315] rounded-xl p-5 transition-all relative overflow-hidden'
+    : 'dashboard-kpi-card bg-[#182214]/90 border border-[#2C3D21] border-t-4 border-t-[#587731] hover:border-[#587731]/70 text-neutral-100 rounded-xl p-5 transition-all relative overflow-hidden';
 
   const kpiTitleClass = isLight
-    ? 'text-xs font-black tracking-wider uppercase text-black font-sans'
+    ? 'text-xs font-black tracking-wider uppercase text-[#243315] font-sans'
     : 'text-xs font-bold tracking-wider uppercase text-neutral-200 font-sans';
 
   const kpiNumberClass = isLight
-    ? 'text-3xl sm:text-4xl font-black font-sans tabular-nums text-black tracking-tight'
+    ? 'text-3xl sm:text-4xl font-black font-sans tabular-nums text-[#19240E] tracking-tight'
     : 'text-3xl sm:text-4xl font-black font-sans tabular-nums text-white tracking-tight';
 
   const kpiSubtextClass = isLight
-    ? 'mt-3 text-xs text-black font-extrabold font-sans'
+    ? 'mt-3 text-xs text-[#243315] font-extrabold font-sans'
     : 'mt-3 text-xs text-neutral-300 font-semibold font-sans';
 
   const kpiBadgeClass =
-    'kpi-orange-badge text-[11px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-md bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-500/30 font-sans';
+    'kpi-orange-badge text-[11px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-md bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 font-sans';
 
   const kpiIconBoxClass =
-    'w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/35 flex items-center justify-center text-orange-600 dark:text-orange-400 shadow-sm shrink-0';
+    'w-9 h-9 rounded-xl bg-[#587731]/15 border border-[#587731]/35 flex items-center justify-center text-[#587731] dark:text-[#8CB752] shadow-sm shrink-0';
 
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* Header - Matches Dashboard Command Center */}
-      <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b ${isLight ? 'border-neutral-300' : 'border-neutral-800/80'}`}>
+      <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b ${isLight ? 'border-[#E5DCBE]' : 'border-neutral-800/80'}`}>
         <div>
-          <h1 className={`text-2xl lg:text-3xl font-extrabold tracking-tight ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+          <h1 className={`text-2xl lg:text-3xl font-extrabold tracking-tight ${isLight ? 'text-[#19240E]' : 'text-neutral-100'}`}>
             Invoices & Payment Receipts
           </h1>
-          <p className={`text-sm mt-1 ${isLight ? 'text-black font-semibold' : 'text-neutral-400'}`}>
-            Cortexx AI Institute · <span className="text-orange-500 font-bold">Billing Ledgers, PDF Documents & WhatsApp Receipts</span>
+          <p className={`text-sm mt-1 ${isLight ? 'text-[#243315] font-semibold' : 'text-neutral-400'}`}>
+            Cortexx AI Institute · <span className="text-[#587731] font-bold">Billing Ledgers, PDF Documents & WhatsApp Receipts</span>
           </p>
         </div>
 
         <button
           onClick={openGenerateModal}
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-black rounded-xl shadow-md transition-colors shrink-0 text-sm cursor-pointer"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] font-black rounded-xl shadow-md transition-colors shrink-0 text-sm cursor-pointer"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 text-[#FAF6EE]" />
           <span>Generate New Invoice</span>
         </button>
       </div>
@@ -805,10 +805,10 @@ Accounts Office, Cortexx AI Institute`;
           isLight ? 'bg-white border-neutral-200/90 text-neutral-800' : 'bg-neutral-900/60 border-neutral-800 text-neutral-300'
         }`}>
           {/* Desktop Invoices Table */}
-          <div className="hidden md:block overflow-x-auto">
+          <div className="hidden md:block overflow-x-auto max-h-[75vh]">
             <table className="w-full text-left text-sm border-collapse">
-              <thead className={`text-xs uppercase tracking-wider font-black border-b ${
-                isLight ? 'bg-orange-50/70 text-black border-neutral-200' : 'bg-neutral-900/90 text-neutral-200 font-bold border-neutral-800'
+              <thead className={`text-xs uppercase tracking-wider font-black border-b sticky top-0 z-10 backdrop-blur-md ${
+                isLight ? 'bg-orange-50/90 text-black border-neutral-200 shadow-2xs' : 'bg-neutral-900/95 text-neutral-200 font-bold border-neutral-800 shadow-2xs'
               }`}>
                 <tr>
                   <th className="py-3.5 px-4 font-black">Invoice #</th>
@@ -831,7 +831,7 @@ Accounts Office, Cortexx AI Institute`;
                   </tr>
                 ) : (
                   filteredInvoices.map(inv => (
-                    <tr key={inv.invoiceNumber} className="transition-colors">
+                    <tr key={inv.invoiceNumber} className="transition-colors hover:bg-neutral-50/60 dark:hover:bg-neutral-800/40">
                       <td className="py-3.5 px-4 font-mono text-xs text-orange-600 dark:text-orange-400 font-black whitespace-nowrap">
                         {inv.invoiceNumber}
                       </td>
