@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Student, Course, PaymentStatus, PaymentMethod, Invoice } from '../types';
+import { Student, Course, PaymentStatus, PaymentMethod, Invoice, PhaseNumber, PhasePerson } from '../types';
 import { getNextStudentId, getNextEnrollmentId, saveStudent, deleteStudent, updateStudentFeeStatus, getInvoices, getNextInvoiceNumber, saveInvoice } from '../services/storage';
 import { Search, Plus, User, Users, Phone, Mail, BookOpen, Trash2, Edit3, Receipt, IndianRupee, ArrowUpDown, FileSpreadsheet, CheckCircle2, RotateCcw, X, AlertTriangle, Download, FileDown, ShieldCheck, Check, Calendar, Clock, LayoutGrid, LayoutList } from 'lucide-react';
 import { BulkStudentImportModal } from './BulkStudentImportModal';
@@ -55,6 +55,7 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
   const [formAmountPaid, setFormAmountPaid] = useState<number>(0);
   const [formPaymentMethod, setFormPaymentMethod] = useState<PaymentMethod>('UPI');
   const [formNotes, setFormNotes] = useState('');
+  const [formPhase, setFormPhase] = useState<PhaseNumber>(1);
   const [formError, setFormError] = useState('');
 
   // Sync external add modal prop
@@ -78,6 +79,7 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
     setFormAmountPaid(0);
     setFormPaymentMethod('UPI');
     setFormNotes('');
+    setFormPhase(1);
     setFormError('');
     setShowModal(true);
   };
@@ -92,6 +94,7 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
     setFormFeeStatus(student.paymentStatus);
     setFormAmountPaid(student.totalPaid);
     setFormNotes(student.notes || '');
+    setFormPhase(student.phase || 1);
     setFormError('');
     setShowModal(true);
   };
@@ -244,6 +247,10 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
       paymentStatus = 'partially_paid';
     }
 
+    const person: PhasePerson = formPhase === 2 ? 'Hiren' : formPhase === 3 ? 'Shweta' : 'Keval';
+    const now = new Date().toISOString();
+    const formattedDate = now.split('T')[0];
+
     if (editingStudent) {
       const updated: Student = {
         ...editingStudent,
@@ -257,9 +264,14 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
         totalPaid: paid,
         paymentStatus,
         notes: formNotes.trim(),
+        phase: formPhase,
+        phaseAssignedPerson: person,
+        phaseAssignedAt: editingStudent.phase === formPhase && editingStudent.phaseAssignedAt ? editingStudent.phaseAssignedAt : formattedDate,
+        phaseUpdatedAt: now,
+        phaseUpdatedBy: 'Kevalmistry36@gmail.com',
       };
       saveStudent(updated);
-      setDeleteNotification(`Student "${updated.name}" updated successfully.`);
+      setDeleteNotification(`Student "${updated.name}" updated successfully (Phase ${formPhase} — ${person}).`);
     } else {
       const newStudent: Student = {
         id: getNextStudentId(),
@@ -275,9 +287,14 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
         paymentStatus,
         notes: formNotes.trim(),
         createdAt: new Date().toISOString(),
+        phase: formPhase,
+        phaseAssignedPerson: person,
+        phaseAssignedAt: formattedDate,
+        phaseUpdatedAt: now,
+        phaseUpdatedBy: 'Kevalmistry36@gmail.com',
       };
       saveStudent(newStudent);
-      setDeleteNotification(`Student "${newStudent.name}" admitted successfully! Status: ${paymentStatus === 'paid' ? 'Paid (Fees Received updated)' : 'Unpaid'}.`);
+      setDeleteNotification(`Student "${newStudent.name}" admitted successfully! Assigned to Phase ${formPhase} (${person}). Status: ${paymentStatus === 'paid' ? 'Paid' : 'Unpaid'}.`);
     }
     setTimeout(() => setDeleteNotification(null), 6000);
 
@@ -1474,6 +1491,56 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                     </span>
                   </div>
                 </div>
+              </div>
+
+              {/* Phase Selection (Phase 1 Keval / Phase 2 Hiren / Phase 3 Shweta) */}
+              <div>
+                <label className="block text-xs font-semibold text-neutral-300 uppercase tracking-wider mb-1">
+                  Assign Phase Workflow *
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setFormPhase(1)}
+                    className={`py-2 px-2 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                      formPhase === 1
+                        ? 'bg-[#587731] text-[#FAF6EE] border-[#486228] shadow-md font-black'
+                        : 'bg-neutral-950 text-neutral-300 border-neutral-800 hover:border-[#587731]/60 font-semibold'
+                    }`}
+                  >
+                    <span className="text-xs">Phase 1</span>
+                    <span className="text-[10px] opacity-90 font-mono">Keval</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormPhase(2)}
+                    className={`py-2 px-2 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                      formPhase === 2
+                        ? 'bg-[#587731] text-[#FAF6EE] border-[#486228] shadow-md font-black'
+                        : 'bg-neutral-950 text-neutral-300 border-neutral-800 hover:border-[#587731]/60 font-semibold'
+                    }`}
+                  >
+                    <span className="text-xs">Phase 2</span>
+                    <span className="text-[10px] opacity-90 font-mono">Hiren</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormPhase(3)}
+                    className={`py-2 px-2 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                      formPhase === 3
+                        ? 'bg-[#587731] text-[#FAF6EE] border-[#486228] shadow-md font-black'
+                        : 'bg-neutral-950 text-neutral-300 border-neutral-800 hover:border-[#587731]/60 font-semibold'
+                    }`}
+                  >
+                    <span className="text-xs">Phase 3</span>
+                    <span className="text-[10px] opacity-90 font-mono">Shweta</span>
+                  </button>
+                </div>
+                <p className="text-[11px] text-neutral-400 mt-1 font-sans">
+                  {formPhase === 1 && '• Phase 1 (Keval): Baseline student intake.'}
+                  {formPhase === 2 && '• Phase 2 (Hiren): Counts in Phase 2 and excludes student from Phase 1.'}
+                  {formPhase === 3 && '• Phase 3 (Shweta): Counts in Phase 3 and excludes student from Phases 1 & 2.'}
+                </p>
               </div>
 
               {/* Enrollment Date */}

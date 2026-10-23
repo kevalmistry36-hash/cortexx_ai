@@ -28,6 +28,7 @@ import {
   User,
   Filter,
   SlidersHorizontal,
+  Plus,
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { Student, Course, PhaseNumber, PhasePerson } from '../types';
@@ -36,6 +37,9 @@ import {
   getPhasePerson,
   savePhaseAssignments,
   getPhaseAuditLogs,
+  saveStudent,
+  getNextStudentId,
+  getNextEnrollmentId,
 } from '../services/storage';
 import { fetchAndSyncAllDataFromFirebase } from '../services/firebase';
 
@@ -107,6 +111,17 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
   // Student Details Modal
   const [viewingStudent, setViewingStudent] = useState<Student | null>(null);
 
+  // Quick Add / Move Student directly into a Phase modal state
+  const [quickAddModalPhase, setQuickAddModalPhase] = useState<PhaseNumber | null>(null);
+  const [quickAddSearch, setQuickAddSearch] = useState('');
+  const [quickAddTab, setQuickAddTab] = useState<'move' | 'create'>('move');
+  const [quickNewName, setQuickNewName] = useState('');
+  const [quickNewPhone, setQuickNewPhone] = useState('');
+  const [quickNewEmail, setQuickNewEmail] = useState('');
+  const [quickNewCourseId, setQuickNewCourseId] = useState(courses[0]?.id || '');
+  const [quickNewFeeStatus, setQuickNewFeeStatus] = useState<'unpaid' | 'paid'>('unpaid');
+  const [isSubmittingQuick, setIsSubmittingQuick] = useState(false);
+
   // Table section scroll refs
   const phase1Ref = useRef<HTMLDivElement>(null);
   const phase2Ref = useRef<HTMLDivElement>(null);
@@ -177,6 +192,19 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
     });
     return { p1, p2, p3, total: Object.keys(pendingChanges).length };
   }, [pendingChanges]);
+
+  // Real-time effective active counts (live database state + any staged transfers)
+  const displayCounts = useMemo(() => {
+    let p1 = 0;
+    let p2 = 0;
+    let p3 = 0;
+    allCategorizedStudents.forEach(s => {
+      if (s.effectivePhase === 2) p2++;
+      else if (s.effectivePhase === 3) p3++;
+      else p1++;
+    });
+    return { p1, p2, p3, total: allCategorizedStudents.length };
+  }, [allCategorizedStudents]);
 
   // Filtering & Sorting function for each phase table
   const filterAndSort = (phaseNum: PhaseNumber, tableSearch: string) => {
@@ -296,6 +324,146 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
     setConfirmModalData(null);
     setSelectedStudentIds([]);
     setIsSelectorOpen(false);
+  };
+
+  // Immediate save & transfer action (exclusively reassigns phase and immediately writes to database)
+  const handleDirectTransferAndSave = async () => {
+    if (!confirmModalData) return;
+    const { targetPhase, targetPerson, studentsToMove } = confirmModalData;
+
+    const itemsToSave = studentsToMove.map(s => ({
+      studentId: s.id,
+      phase: targetPhase,
+    }));
+
+    if (targetPhase === 1) setIsSavingPhase1(true);
+    if (targetPhase === 2) setIsSavingPhase2(true);
+    if (targetPhase === 3) setIsSavingPhase3(true);
+
+    try {
+      const res = await savePhaseAssignments(itemsToSave, 'Kevalmistry36@gmail.com');
+      if (res.success) {
+        setPendingChanges(prev => {
+          const next = { ...prev };
+          studentsToMove.forEach(s => delete next[s.id]);
+          return next;
+        });
+
+        showFeedback(
+          'success',
+          `✓ Successfully assigned ${res.count} student(s) to Phase ${targetPhase} (${targetPerson}) and removed from previous phase!`
+        );
+      } else {
+        showFeedback('error', `Failed to transfer students: ${res.error || 'Database error'}`);
+      }
+    } catch (err: any) {
+      showFeedback('error', `Transfer error: ${err?.message || 'Unable to connect to database'}`);
+    } finally {
+      setIsSavingPhase1(false);
+      setIsSavingPhase2(false);
+      setIsSavingPhase3(false);
+      setConfirmModalData(null);
+      setSelectedStudentIds([]);
+      setIsSelectorOpen(false);
+    }
+  };
+
+  // Open Quick Add Modal for Phase 1, Phase 2, or Phase 3
+  const handleOpenQuickAddModal = (phase: PhaseNumber) => {
+    setQuickAddModalPhase(phase);
+    setQuickAddSearch('');
+    setQuickAddTab('move');
+    setQuickNewName('');
+    setQuickNewPhone('');
+    setQuickNewEmail('');
+    setQuickNewCourseId(courses[0]?.id || '');
+    setQuickNewFeeStatus('unpaid');
+  };
+
+  // Immediate move of an existing student directly into a phase
+  const handleQuickMoveExistingStudent = async (student: Student, targetPhase: PhaseNumber) => {
+    setIsSubmittingQuick(true);
+    const targetPerson = getPhasePerson(targetPhase);
+    const currentPhase = getPhaseForStudent(student).phase;
+    try {
+      const res = await savePhaseAssignments(
+        [{ studentId: student.id, phase: targetPhase }],
+        'Kevalmistry36@gmail.com'
+      );
+      if (res.success) {
+        setPendingChanges(prev => {
+          const next = { ...prev };
+          delete next[student.id];
+          return next;
+        });
+        showFeedback(
+          'success',
+          `✓ ${student.name} moved to Phase ${targetPhase} (${targetPerson}) and removed from Phase ${currentPhase}!`
+        );
+        setQuickAddModalPhase(null);
+      } else {
+        showFeedback('error', `Transfer error: ${res.error}`);
+      }
+    } catch (err: any) {
+      showFeedback('error', err?.message || 'Failed to move student');
+    } finally {
+      setIsSubmittingQuick(false);
+    }
+  };
+
+  // Immediate registration of a new student directly into Phase 1, Phase 2, or Phase 3
+  const handleQuickCreateNewStudent = async (targetPhase: PhaseNumber) => {
+    if (!quickNewName.trim()) {
+      showFeedback('error', 'Please enter student full name.');
+      return;
+    }
+    const cleanPhone = quickNewPhone.replace(/\D/g, '');
+    if (cleanPhone.length < 10) {
+      showFeedback('error', 'Please enter a valid 10-digit mobile number.');
+      return;
+    }
+
+    const course = courses.find(c => c.id === quickNewCourseId) || courses[0];
+    const totalFee = course?.fee || 5000;
+    const paid = quickNewFeeStatus === 'paid' ? totalFee : 0;
+    const targetPerson = getPhasePerson(targetPhase);
+    const now = new Date().toISOString();
+    const formattedDate = now.split('T')[0];
+
+    setIsSubmittingQuick(true);
+    try {
+      const newStudent: Student = {
+        id: getNextStudentId(),
+        name: quickNewName.trim(),
+        phone: cleanPhone,
+        email: quickNewEmail.trim().toLowerCase() || `${cleanPhone}@cortexx.student`,
+        enrolledCourseId: course.id,
+        enrolledCourseName: course.name,
+        enrollmentId: getNextEnrollmentId(),
+        enrollmentDate: formattedDate,
+        agreedFee: totalFee,
+        totalPaid: paid,
+        paymentStatus: quickNewFeeStatus,
+        notes: `Direct admission into Phase ${targetPhase} (${targetPerson})`,
+        createdAt: now,
+        phase: targetPhase,
+        phaseAssignedPerson: targetPerson,
+        phaseAssignedAt: formattedDate,
+        phaseUpdatedAt: now,
+        phaseUpdatedBy: 'Kevalmistry36@gmail.com',
+      };
+
+      saveStudent(newStudent);
+      showFeedback(
+        'success',
+        `✓ ${newStudent.name} admitted directly to Phase ${targetPhase} (${targetPerson})! Count updated in Phase ${targetPhase}.`
+      );
+      setQuickAddModalPhase(null);
+    } catch (err: any) {
+      showFeedback('error', err?.message || 'Failed to admit student');
+    } finally {
+      setIsSubmittingQuick(false);
+    }
   };
 
   // Quick single-student transfer action directly from row
@@ -583,7 +751,7 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
           <div className="mt-4 flex items-baseline justify-between gap-2">
             <div>
               <span className={kpiNumberClass}>
-                {dbCounts.p1}
+                {displayCounts.p1}
               </span>
               <span className={`text-xs ml-2 font-bold ${isLight ? 'text-[#243315]' : 'text-neutral-400'}`}>
                 Students Active
@@ -628,7 +796,7 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
           <div className="mt-4 flex items-baseline justify-between gap-2">
             <div>
               <span className={kpiNumberClass}>
-                {dbCounts.p2}
+                {displayCounts.p2}
               </span>
               <span className={`text-xs ml-2 font-bold ${isLight ? 'text-[#243315]' : 'text-neutral-400'}`}>
                 Students Active
@@ -673,7 +841,7 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
           <div className="mt-4 flex items-baseline justify-between gap-2">
             <div>
               <span className={kpiNumberClass}>
-                {dbCounts.p3}
+                {displayCounts.p3}
               </span>
               <span className={`text-xs ml-2 font-bold ${isLight ? 'text-[#243315]' : 'text-neutral-400'}`}>
                 Students Active
@@ -2109,11 +2277,11 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
               <strong>Essential Rule:</strong> Moving students assigns them exclusively to Phase {confirmModalData.targetPhase} ({confirmModalData.targetPerson}) and removes them from previous phases. Course, fees, and invoice records remain 100% intact.
             </div>
 
-            <div className="flex items-center justify-end gap-2.5 pt-2">
+            <div className="flex items-center justify-end gap-2.5 pt-2 flex-wrap">
               <button
                 type="button"
                 onClick={() => setConfirmModalData(null)}
-                className={`px-4 py-2 text-xs font-bold rounded-xl border transition-colors cursor-pointer ${
+                className={`px-3.5 py-2 text-xs font-bold rounded-xl border transition-colors cursor-pointer ${
                   isLight ? 'border-[#E5DCBE] hover:bg-[#FAF6EE]' : 'border-neutral-700 hover:bg-neutral-800'
                 }`}
               >
@@ -2122,9 +2290,20 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
               <button
                 type="button"
                 onClick={handleConfirmTransfer}
-                className="px-4 py-2 text-xs font-black rounded-xl bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] shadow-md transition-all cursor-pointer"
+                className={`px-3.5 py-2 text-xs font-bold rounded-xl border transition-colors cursor-pointer ${
+                  isLight ? 'border-[#E5DCBE] hover:bg-[#FAF6EE] text-[#243315]' : 'border-neutral-700 hover:bg-neutral-800 text-neutral-200'
+                }`}
+                title="Stage changes to commit later via the Save Changes button"
               >
-                Confirm &amp; Stage for Phase {confirmModalData.targetPhase}
+                Stage for Later
+              </button>
+              <button
+                type="button"
+                onClick={handleDirectTransferAndSave}
+                className="flex items-center gap-1.5 px-4 py-2 text-xs font-black rounded-xl bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] shadow-md transition-all cursor-pointer"
+              >
+                <CheckCircle2 className="w-4 h-4 text-[#FAF6EE]" />
+                <span>Save &amp; Move to Phase {confirmModalData.targetPhase} ({confirmModalData.targetPerson}) Now</span>
               </button>
             </div>
           </div>

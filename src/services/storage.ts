@@ -11,6 +11,7 @@ import {
   deleteReceiptFromFirebase,
   syncCertificateToFirebase,
   deleteCertificateFromFirebase,
+  syncPhaseAssignmentToFirebase,
   batchSavePhaseAssignmentsToFirebase,
 } from './firebase';
 
@@ -257,8 +258,17 @@ export function saveStudent(student: Student): Student {
   }
 
   emitChange();
-  syncStudentToFirebase(student).catch(() => {});
-  return student;
+  syncStudentToFirebase(studentToSave).catch(() => {});
+  syncPhaseAssignmentToFirebase({
+    studentId: studentToSave.id,
+    studentName: studentToSave.name,
+    phase: studentToSave.phase || 1,
+    assignedPerson: studentToSave.phaseAssignedPerson || (studentToSave.phase === 2 ? 'Hiren' : studentToSave.phase === 3 ? 'Shweta' : 'Keval'),
+    assignedAt: studentToSave.phaseAssignedAt || new Date().toISOString().split('T')[0],
+    updatedAt: new Date().toISOString(),
+    updatedBy: studentToSave.phaseUpdatedBy || 'admin',
+  }).catch(() => {});
+  return studentToSave;
 }
 
 export function updateStudentFeeStatus(
@@ -646,6 +656,11 @@ export function bulkSaveStudents(items: BulkStudentInput[]): {
       paymentStatus: status,
       notes: item.notes?.trim() || 'Imported via Excel spreadsheet',
       createdAt: new Date().toISOString(),
+      phase: 1,
+      phaseAssignedPerson: 'Keval',
+      phaseAssignedAt: enrollmentDate,
+      phaseUpdatedAt: new Date().toISOString(),
+      phaseUpdatedBy: 'system_import',
     };
 
     newStudents.push(student);
