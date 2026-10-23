@@ -1,6 +1,7 @@
 import React from 'react';
 import { Student, Course, Invoice, PaymentReceipt } from '../types';
-import { Users, BookOpen, CheckCircle, Clock, Plus, Receipt, Sparkles, ArrowRight, IndianRupee, Youtube } from 'lucide-react';
+import { Users, BookOpen, CheckCircle, Clock, Plus, Receipt, Sparkles, ArrowRight, IndianRupee, Layers } from 'lucide-react';
+import { getPhaseForStudent } from '../services/storage';
 
 interface DashboardViewProps {
   students: Student[];
@@ -10,7 +11,7 @@ interface DashboardViewProps {
   onOpenAddStudent: () => void;
   onOpenAddCourse: () => void;
   onOpenGenerateInvoice: () => void;
-  onNavigateToView: (view: 'students' | 'courses' | 'invoices' | 'ad-studio' | 'youtube') => void;
+  onNavigateToView: (view: 'students' | 'courses' | 'invoices' | 'certificates' | 'phase' | 'ad-studio' | 'youtube') => void;
   onSelectInvoice: (invoice: Invoice) => void;
   theme?: 'light' | 'dark';
 }
@@ -52,6 +53,18 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
   const totalBilled = totalReceived + totalPending;
   const collectionRate = totalBilled > 0 ? Math.min(100, Math.round((totalReceived / totalBilled) * 100)) : 100;
+
+  // Real-time Phase Workflow Counts (Phase 1 Keval, Phase 2 Hiren, Phase 3 Shweta)
+  const phaseCounts = students.reduce(
+    (acc, s) => {
+      const info = getPhaseForStudent(s);
+      if (info.phase === 2) acc.phase2++;
+      else if (info.phase === 3) acc.phase3++;
+      else acc.phase1++;
+      return acc;
+    },
+    { phase1: 0, phase2: 0, phase3: 0 }
+  );
 
   const isLight = theme === 'light';
 
@@ -307,32 +320,171 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </button>
 
         <button
-          onClick={() => onNavigateToView('youtube')}
+          onClick={() => onNavigateToView('phase')}
           className={`flex items-center justify-between p-4 rounded-xl font-bold transition-all duration-200 group cursor-pointer border hover:-translate-y-0.5 active:translate-y-0 ${
             isLight
-              ? 'bg-white hover:bg-red-50/80 border-neutral-300 hover:border-red-500 text-black shadow-sm hover:shadow-xl'
-              : 'bg-gradient-to-r from-neutral-900 to-red-950/30 hover:to-red-950/60 border-red-500/30 hover:border-red-500/60 text-neutral-100 shadow-sm hover:shadow-xl'
+              ? 'bg-[#FAF6EE] hover:bg-[#F5EFDF] border-[#E5DCBE] hover:border-[#587731] text-[#243315] shadow-sm hover:shadow-xl'
+              : 'bg-neutral-900/90 hover:bg-neutral-850 hover:border-[#587731]/50 border-neutral-800 text-neutral-100 shadow-sm hover:shadow-xl'
           }`}
         >
           <div className="flex items-center gap-3">
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
               isLight
-                ? 'bg-red-100 text-red-600 group-hover:bg-red-600 group-hover:text-white'
-                : 'bg-red-500/20 border border-red-500/30 text-red-400 group-hover:bg-red-500/30'
+                ? 'bg-[#587731]/15 text-[#587731]'
+                : 'bg-[#587731]/20 border border-[#587731]/30 text-[#8CB752]'
             }`}>
-              <Youtube className="w-5 h-5" />
+              <Layers className="w-5 h-5" />
             </div>
             <div className="text-left">
-              <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-black group-hover:text-black' : 'text-neutral-100 group-hover:text-white'}`}>
-                YouTube Videos
+              <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-[#19240E]' : 'text-neutral-100'}`}>
+                Phase Management
               </div>
-              <div className={`text-xs font-bold mt-0.5 transition-colors ${isLight ? 'text-neutral-700 group-hover:text-black' : 'text-neutral-400 group-hover:text-neutral-200'}`}>
-                @CortexxWorld · 13 Videos
+              <div className={`text-xs font-bold mt-0.5 transition-colors ${isLight ? 'text-[#243315]' : 'text-neutral-400'}`}>
+                Keval · Hiren · Shweta ({students.length} students)
               </div>
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 text-red-500 group-hover:text-red-600 group-hover:translate-x-1 transition-transform" />
+          <ArrowRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${isLight ? 'text-[#587731]' : 'text-[#8CB752]'}`} />
         </button>
+      </div>
+
+      {/* Phase Workflow & Actual Student Counts (Phase 1, Phase 2, Phase 3) */}
+      <div className={`p-5 rounded-2xl border-2 transition-all ${
+        isLight
+          ? 'bg-[#FAF6EE] border-[#E5DCBE] text-[#243315]'
+          : 'bg-[#182214]/90 border-[#2C3D21] text-neutral-100'
+      }`}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E5DCBE] dark:border-[#2C3D21]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#587731]/15 border border-[#587731]/30 flex items-center justify-center text-[#587731] dark:text-[#8CB752]">
+              <Layers className="w-4 h-4 stroke-[2.5]" />
+            </div>
+            <div>
+              <h3 className={`font-black text-base tracking-tight ${isLight ? 'text-[#19240E]' : 'text-neutral-100'}`}>
+                Phase Workflow &amp; Student Counts
+              </h3>
+              <p className={`text-xs ${isLight ? 'text-[#243315] font-semibold' : 'text-neutral-400'}`}>
+                Live student allocation across Phase 1 (Keval), Phase 2 (Hiren), and Phase 3 (Shweta)
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => onNavigateToView('phase')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg transition-colors cursor-pointer self-start sm:self-auto ${
+              isLight
+                ? 'bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] shadow-sm'
+                : 'bg-[#587731] hover:bg-[#6D933D] text-[#FAF6EE] shadow-sm'
+            }`}
+          >
+            <span>Open Phase Tab</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* 3 Interactive Phase Cards Showing Actual Live Counts */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mt-4">
+          {/* Phase 1 Card */}
+          <div
+            onClick={() => onNavigateToView('phase')}
+            className={`p-4 rounded-xl border transition-all cursor-pointer hover:-translate-y-0.5 shadow-xs ${
+              isLight
+                ? 'bg-white hover:bg-[#F5EFDF] border-[#E5DCBE] hover:border-[#587731]'
+                : 'bg-neutral-950/60 hover:bg-neutral-900 border-neutral-800 hover:border-[#587731]'
+            }`}
+          >
+            <div className="flex items-center justify-between text-xs pb-1 font-bold">
+              <span className="flex items-center gap-1.5 text-[#587731] dark:text-[#8CB752] font-black uppercase text-[11px] tracking-wider">
+                <span className="w-5 h-5 rounded-md bg-[#587731]/15 flex items-center justify-center text-[10px] font-black">1</span>
+                <span>Phase 1 — Keval</span>
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] font-black">
+                Intake
+              </span>
+            </div>
+            <div className="mt-2.5 flex items-baseline justify-between">
+              <span className={`text-3xl font-black font-sans tabular-nums tracking-tight ${isLight ? 'text-[#19240E]' : 'text-neutral-100'}`}>
+                {phaseCounts.phase1}
+              </span>
+              <span className={`text-xs font-bold ${isLight ? 'text-[#243315]' : 'text-neutral-400'}`}>
+                Students Active
+              </span>
+            </div>
+            <div className={`mt-2 pt-2 border-t text-[11px] font-semibold flex items-center justify-between ${
+              isLight ? 'border-[#E5DCBE] text-[#243315]' : 'border-neutral-800 text-neutral-400'
+            }`}>
+              <span>Unassigned &amp; New Admissions</span>
+              <span className="text-[#587731] dark:text-[#8CB752] font-bold">Manage →</span>
+            </div>
+          </div>
+
+          {/* Phase 2 Card */}
+          <div
+            onClick={() => onNavigateToView('phase')}
+            className={`p-4 rounded-xl border transition-all cursor-pointer hover:-translate-y-0.5 shadow-xs ${
+              isLight
+                ? 'bg-white hover:bg-[#F5EFDF] border-[#E5DCBE] hover:border-[#587731]'
+                : 'bg-neutral-950/60 hover:bg-neutral-900 border-neutral-800 hover:border-[#587731]'
+            }`}
+          >
+            <div className="flex items-center justify-between text-xs pb-1 font-bold">
+              <span className="flex items-center gap-1.5 text-[#587731] dark:text-[#8CB752] font-black uppercase text-[11px] tracking-wider">
+                <span className="w-5 h-5 rounded-md bg-[#587731]/15 flex items-center justify-center text-[10px] font-black">2</span>
+                <span>Phase 2 — Hiren</span>
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] font-black">
+                Ongoing
+              </span>
+            </div>
+            <div className="mt-2.5 flex items-baseline justify-between">
+              <span className={`text-3xl font-black font-sans tabular-nums tracking-tight ${isLight ? 'text-[#19240E]' : 'text-neutral-100'}`}>
+                {phaseCounts.phase2}
+              </span>
+              <span className={`text-xs font-bold ${isLight ? 'text-[#243315]' : 'text-neutral-400'}`}>
+                Students Active
+              </span>
+            </div>
+            <div className={`mt-2 pt-2 border-t text-[11px] font-semibold flex items-center justify-between ${
+              isLight ? 'border-[#E5DCBE] text-[#243315]' : 'border-neutral-800 text-neutral-400'
+            }`}>
+              <span>Intermediate Cohort</span>
+              <span className="text-[#587731] dark:text-[#8CB752] font-bold">Manage →</span>
+            </div>
+          </div>
+
+          {/* Phase 3 Card */}
+          <div
+            onClick={() => onNavigateToView('phase')}
+            className={`p-4 rounded-xl border transition-all cursor-pointer hover:-translate-y-0.5 shadow-xs ${
+              isLight
+                ? 'bg-white hover:bg-[#F5EFDF] border-[#E5DCBE] hover:border-[#587731]'
+                : 'bg-neutral-950/60 hover:bg-neutral-900 border-neutral-800 hover:border-[#587731]'
+            }`}
+          >
+            <div className="flex items-center justify-between text-xs pb-1 font-bold">
+              <span className="flex items-center gap-1.5 text-[#587731] dark:text-[#8CB752] font-black uppercase text-[11px] tracking-wider">
+                <span className="w-5 h-5 rounded-md bg-[#587731]/15 flex items-center justify-center text-[10px] font-black">3</span>
+                <span>Phase 3 — Shweta</span>
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] font-black">
+                Placement
+              </span>
+            </div>
+            <div className="mt-2.5 flex items-baseline justify-between">
+              <span className={`text-3xl font-black font-sans tabular-nums tracking-tight ${isLight ? 'text-[#19240E]' : 'text-neutral-100'}`}>
+                {phaseCounts.phase3}
+              </span>
+              <span className={`text-xs font-bold ${isLight ? 'text-[#243315]' : 'text-neutral-400'}`}>
+                Students Active
+              </span>
+            </div>
+            <div className={`mt-2 pt-2 border-t text-[11px] font-semibold flex items-center justify-between ${
+              isLight ? 'border-[#E5DCBE] text-[#243315]' : 'border-neutral-800 text-neutral-400'
+            }`}>
+              <span>Capstones &amp; Final Review</span>
+              <span className="text-[#587731] dark:text-[#8CB752] font-bold">Manage →</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Two Column Grid: Recent Invoices & Recent Students */}

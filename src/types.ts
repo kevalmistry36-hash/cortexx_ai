@@ -1,6 +1,30 @@
 export type PaymentStatus = 'unpaid' | 'partially_paid' | 'paid';
 export type PaymentMethod = 'UPI' | 'Cash' | 'Bank Transfer' | 'Card';
 
+export type PhaseNumber = 1 | 2 | 3;
+export type PhasePerson = 'Keval' | 'Hiren' | 'Shweta';
+
+export interface PhaseAssignment {
+  studentId: string;
+  studentName: string;
+  phase: PhaseNumber;
+  assignedPerson: PhasePerson;
+  assignedAt: string;
+  updatedAt: string;
+  updatedBy?: string;
+}
+
+export interface PhaseAuditLog {
+  id: string;
+  studentId: string;
+  studentName: string;
+  previousPhase?: PhaseNumber;
+  newPhase: PhaseNumber;
+  changedBy: string;
+  timestamp: string;
+  note?: string;
+}
+
 export interface Student {
   id: string; // e.g. COR-STU-2026-0001
   name: string;
@@ -18,6 +42,11 @@ export interface Student {
   status?: 'active' | 'deactivated';
   notes?: string;
   createdAt: string;
+  phase?: PhaseNumber;
+  phaseAssignedPerson?: PhasePerson;
+  phaseAssignedAt?: string;
+  phaseUpdatedAt?: string;
+  phaseUpdatedBy?: string;
 }
 
 export interface Course {

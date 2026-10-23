@@ -109,6 +109,37 @@
         "createdAt": { "type": "string" }
       },
       "required": ["id", "studentName", "courseName", "startDate", "endDate", "issueDate", "verificationCode"]
+    },
+    "PhaseAssignment": {
+      "title": "PhaseAssignment",
+      "description": "Represents the active exclusive phase assignment of a student (Phase 1 Keval, Phase 2 Hiren, Phase 3 Shweta).",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "phase": { "type": "number", "enum": [1, 2, 3] },
+        "assignedPerson": { "type": "string", "enum": ["Keval", "Hiren", "Shweta"] },
+        "assignedAt": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "updatedBy": { "type": "string" }
+      },
+      "required": ["studentId", "phase", "assignedPerson", "assignedAt"]
+    },
+    "PhaseAuditLog": {
+      "title": "PhaseAuditLog",
+      "description": "Audit trail logging every phase transfer and modification with timestamp and user ID.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "previousPhase": { "type": "number" },
+        "newPhase": { "type": "number" },
+        "changedBy": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "note": { "type": "string" }
+      },
+      "required": ["id", "studentId", "newPhase", "timestamp"]
     }
   },
   "firestore": {
@@ -131,6 +162,14 @@
     "/certificates/{certificateId}": {
       "schema": "Certificate",
       "description": "Collection of issued student completion certificates verifiable globally across any device."
+    },
+    "/phase_assignments/{studentId}": {
+      "schema": "PhaseAssignment",
+      "description": "Collection of exclusive Phase assignments ensuring one phase per student."
+    },
+    "/phase_audit_logs/{logId}": {
+      "schema": "PhaseAuditLog",
+      "description": "Collection of immutable audit logs tracking student transfers between phases."
     }
   }
 }

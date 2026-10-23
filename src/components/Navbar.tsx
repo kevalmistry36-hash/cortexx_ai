@@ -1,8 +1,8 @@
 import React from 'react';
 import { CortexxLogo } from './CortexxLogo';
-import { Lock, Settings, Sparkles, LayoutDashboard, Users, BookOpen, Receipt, Sun, Moon, Award, Youtube } from 'lucide-react';
+import { Lock, Settings, Sparkles, LayoutDashboard, Users, BookOpen, Receipt, Sun, Moon, Award, Layers } from 'lucide-react';
 
-export type NavView = 'dashboard' | 'students' | 'courses' | 'invoices' | 'certificates' | 'youtube' | 'ad-studio';
+export type NavView = 'dashboard' | 'students' | 'courses' | 'invoices' | 'certificates' | 'phase' | 'youtube' | 'ad-studio';
 
 interface NavbarProps {
   activeView: NavView;
@@ -29,7 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'courses', label: 'Courses', icon: <BookOpen className="w-5 h-5 md:w-3.5 md:h-3.5" /> },
     { id: 'invoices', label: 'Invoices', icon: <Receipt className="w-5 h-5 md:w-3.5 md:h-3.5" /> },
     { id: 'certificates', label: 'Certificates', icon: <Award className="w-5 h-5 md:w-3.5 md:h-3.5 text-black dark:text-amber-400" /> },
-    { id: 'youtube', label: 'YouTube Videos', icon: <Youtube className="w-5 h-5 md:w-3.5 md:h-3.5 text-black dark:text-red-500" /> },
+    { id: 'phase', label: 'Phase', icon: <Layers className="w-5 h-5 md:w-3.5 md:h-3.5 text-[#587731] dark:text-[#8CB752]" /> },
   ];
 
   return (
@@ -49,7 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <CortexxLogo size="sm" showTagline={false} inverted={theme === 'light'} />
           </div>
 
-          {/* Zone 2: Desktop Navigation Links (Olive & Beige colors) */}
+          {/* Zone 2: Desktop Navigation Links (Olive & Beige colors matching all tabs) */}
           <nav className="hidden md:flex items-center gap-1.5 lg:gap-2">
             {navItems.map(item => {
               const isActive = activeView === item.id;

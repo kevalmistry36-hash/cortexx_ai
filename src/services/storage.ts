@@ -1,4 +1,4 @@
-import { Student, Course, Invoice, PaymentReceipt, PaymentMethod, PaymentStatus, CertificateRecord } from '../types';
+import { Student, Course, Invoice, PaymentReceipt, PaymentMethod, PaymentStatus, CertificateRecord, PhaseAssignment, PhaseAuditLog, PhaseNumber, PhasePerson } from '../types';
 import { INITIAL_COURSES, INITIAL_STUDENTS, INITIAL_INVOICES, INITIAL_RECEIPTS } from '../constants/initialData';
 import {
   syncCourseToFirebase,
@@ -11,6 +11,7 @@ import {
   deleteReceiptFromFirebase,
   syncCertificateToFirebase,
   deleteCertificateFromFirebase,
+  batchSavePhaseAssignmentsToFirebase,
 } from './firebase';
 
 const STORAGE_KEYS = {
@@ -21,6 +22,8 @@ const STORAGE_KEYS = {
   CERTIFICATES: 'cortexx_certificates_v1',
   DEACTIVATED_STUDENTS: 'cortexx_deactivated_students_v1',
   ADMIN_PIN: 'cortexx_admin_pin_v1',
+  PHASE_ASSIGNMENTS: 'cortexx_phase_assignments_v1',
+  PHASE_AUDIT_LOGS: 'cortexx_phase_audit_logs_v1',
 };
 
 const DB_EVENT = 'cortexx-db-change';
@@ -169,10 +172,16 @@ export function getNextEnrollmentId(): string {
 export function saveStudent(student: Student): Student {
   const students = getStudents();
   const index = students.findIndex(s => s.id === student.id);
+  const studentToSave: Student = {
+    ...student,
+    phase: student.phase || 1,
+    phaseAssignedPerson: student.phaseAssignedPerson || (student.phase === 2 ? 'Hiren' : student.phase === 3 ? 'Shweta' : 'Keval'),
+    phaseAssignedAt: student.phaseAssignedAt || student.enrollmentDate || student.createdAt || new Date().toISOString().split('T')[0],
+  };
   if (index >= 0) {
-    students[index] = student;
+    students[index] = studentToSave;
   } else {
-    students.unshift(student);
+    students.unshift(studentToSave);
   }
   localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(students));
 
@@ -969,4 +978,144 @@ export function resetToDefaults() {
   setAdminAuthenticated(false);
   emitChange();
 }
+
+// ----------------- Phase Management System -----------------
+
+export function getPhasePerson(phase: PhaseNumber): PhasePerson {
+  switch (phase) {
+    case 2:
+      return 'Hiren';
+    case 3:
+      return 'Shweta';
+    case 1:
+    default:
+      return 'Keval';
+  }
+}
+
+export function getPhaseForStudent(student: Student): {
+  phase: PhaseNumber;
+  assignedPerson: PhasePerson;
+  assignedAt: string;
+} {
+  if (student.phase === 2) {
+    return {
+      phase: 2,
+      assignedPerson: 'Hiren',
+      assignedAt: student.phaseAssignedAt || student.enrollmentDate || student.createdAt || new Date().toISOString().split('T')[0],
+    };
+  }
+  if (student.phase === 3) {
+    return {
+      phase: 3,
+      assignedPerson: 'Shweta',
+      assignedAt: student.phaseAssignedAt || student.enrollmentDate || student.createdAt || new Date().toISOString().split('T')[0],
+    };
+  }
+  // Default to Phase 1 (Keval) for all new, unassigned, or legacy students
+  return {
+    phase: 1,
+    assignedPerson: 'Keval',
+    assignedAt: student.phaseAssignedAt || student.enrollmentDate || student.createdAt || new Date().toISOString().split('T')[0],
+  };
+}
+
+export function getPhaseAuditLogs(): PhaseAuditLog[] {
+  if (typeof window === 'undefined') return [];
+  const raw = localStorage.getItem(STORAGE_KEYS.PHASE_AUDIT_LOGS);
+  if (!raw) return [];
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
+}
+
+export async function savePhaseAssignments(
+  items: { studentId: string; phase: PhaseNumber }[],
+  operator = 'Kevalmistry36@gmail.com'
+): Promise<{ success: boolean; count: number; error?: string }> {
+  if (!items || items.length === 0) {
+    return { success: true, count: 0 };
+  }
+
+  try {
+    const students = getStudents();
+    const now = new Date().toISOString();
+    const formattedDate = now.split('T')[0];
+    const assignments: PhaseAssignment[] = [];
+    const newLogs: PhaseAuditLog[] = [];
+    const existingLogs = getPhaseAuditLogs();
+
+    let updatedCount = 0;
+
+    for (const item of items) {
+      const idx = students.findIndex(s => s.id === item.studentId);
+      if (idx >= 0) {
+        const student = students[idx];
+        const prevPhaseInfo = getPhaseForStudent(student);
+        const person = getPhasePerson(item.phase);
+
+        // Update student record exclusively
+        students[idx] = {
+          ...student,
+          phase: item.phase,
+          phaseAssignedPerson: person,
+          phaseAssignedAt: student.phase === item.phase && student.phaseAssignedAt ? student.phaseAssignedAt : formattedDate,
+          phaseUpdatedAt: now,
+          phaseUpdatedBy: operator,
+        };
+
+        assignments.push({
+          studentId: student.id,
+          studentName: student.name,
+          phase: item.phase,
+          assignedPerson: person,
+          assignedAt: students[idx].phaseAssignedAt || formattedDate,
+          updatedAt: now,
+          updatedBy: operator,
+        });
+
+        // Record audit entry
+        if (prevPhaseInfo.phase !== item.phase) {
+          newLogs.push({
+            id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            studentId: student.id,
+            studentName: student.name,
+            previousPhase: prevPhaseInfo.phase,
+            newPhase: item.phase,
+            changedBy: operator,
+            timestamp: now,
+            note: `Transferred from Phase ${prevPhaseInfo.phase} (${prevPhaseInfo.assignedPerson}) to Phase ${item.phase} (${person})`,
+          });
+        }
+
+        updatedCount++;
+      }
+    }
+
+    // 1. Commit to LocalStorage immediately
+    localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(students));
+    if (newLogs.length > 0) {
+      const mergedLogs = [...newLogs, ...existingLogs].slice(0, 200); // keep last 200 logs
+      localStorage.setItem(STORAGE_KEYS.PHASE_AUDIT_LOGS, JSON.stringify(mergedLogs));
+    }
+
+    // 2. Notify entire UI across tabs and components
+    emitChange();
+
+    // 3. Commit atomic transaction to Firestore (both phase_assignments and students collections)
+    try {
+      await batchSavePhaseAssignmentsToFirebase(assignments, newLogs);
+    } catch (firebaseErr) {
+      console.warn('Firebase phase sync note (cached locally):', firebaseErr);
+    }
+
+    return { success: true, count: updatedCount };
+  } catch (err: any) {
+    console.error('Failed to save phase assignments:', err);
+    return { success: false, count: 0, error: err?.message || 'Database error occurred while transferring students.' };
+  }
+}
+
 

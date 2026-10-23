@@ -12,6 +12,7 @@ import {
   query,
   where,
   limit,
+  writeBatch,
 } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 import {
@@ -20,6 +21,8 @@ import {
   Invoice,
   PaymentReceipt,
   CertificateRecord,
+  PhaseAssignment,
+  PhaseAuditLog,
 } from '../types';
 import {
   getStudents,
@@ -123,6 +126,11 @@ export async function syncStudentToFirebase(student: Student): Promise<{ success
       notes: student.notes || '',
       createdAt: student.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      phase: student.phase || 1,
+      phaseAssignedPerson: student.phaseAssignedPerson || (student.phase === 2 ? 'Hiren' : student.phase === 3 ? 'Shweta' : 'Keval'),
+      phaseAssignedAt: student.phaseAssignedAt || student.enrollmentDate || student.createdAt || new Date().toISOString(),
+      phaseUpdatedAt: student.phaseUpdatedAt || new Date().toISOString(),
+      phaseUpdatedBy: student.phaseUpdatedBy || '',
     });
     return { success: true };
   } catch (err) {
@@ -283,6 +291,107 @@ export async function deleteCertificateFromFirebase(id: string): Promise<void> {
     await deleteDoc(doc(db, 'certificates', id));
   } catch (err) {
     handleFirestoreError(err, OperationType.DELETE, path);
+  }
+}
+
+// --- Phase Assignments (Atomic & Exclusive) ---
+export async function syncPhaseAssignmentToFirebase(assignment: PhaseAssignment): Promise<{ success: boolean; error?: string }> {
+  const path = `phase_assignments/${assignment.studentId}`;
+  try {
+    await setDoc(doc(db, 'phase_assignments', assignment.studentId), {
+      studentId: assignment.studentId,
+      studentName: assignment.studentName,
+      phase: assignment.phase,
+      assignedPerson: assignment.assignedPerson,
+      assignedAt: assignment.assignedAt,
+      updatedAt: assignment.updatedAt || new Date().toISOString(),
+      updatedBy: assignment.updatedBy || 'admin',
+    });
+    return { success: true };
+  } catch (err) {
+    handleFirestoreError(err, OperationType.WRITE, path);
+    return { success: false, error: String(err) };
+  }
+}
+
+export async function logPhaseTransferToFirebase(log: PhaseAuditLog): Promise<void> {
+  const path = `phase_audit_logs/${log.id}`;
+  try {
+    await setDoc(doc(db, 'phase_audit_logs', log.id), {
+      id: log.id,
+      studentId: log.studentId,
+      studentName: log.studentName,
+      previousPhase: log.previousPhase ?? null,
+      newPhase: log.newPhase,
+      changedBy: log.changedBy,
+      timestamp: log.timestamp,
+      note: log.note || '',
+    });
+  } catch (err) {
+    handleFirestoreError(err, OperationType.WRITE, path);
+  }
+}
+
+export async function batchSavePhaseAssignmentsToFirebase(
+  assignments: PhaseAssignment[],
+  logs?: PhaseAuditLog[]
+): Promise<{ success: boolean; count: number; error?: string }> {
+  if (assignments.length === 0) return { success: true, count: 0 };
+  try {
+    const batch = writeBatch(db);
+    const now = new Date().toISOString();
+
+    for (const a of assignments) {
+      // 1. Exclusive doc in phase_assignments
+      const phaseDocRef = doc(db, 'phase_assignments', a.studentId);
+      batch.set(phaseDocRef, {
+        studentId: a.studentId,
+        studentName: a.studentName,
+        phase: a.phase,
+        assignedPerson: a.assignedPerson,
+        assignedAt: a.assignedAt,
+        updatedAt: now,
+        updatedBy: a.updatedBy || 'Kevalmistry36@gmail.com',
+      });
+
+      // 2. Atomic sync to Student document
+      const studentDocRef = doc(db, 'students', a.studentId);
+      batch.set(
+        studentDocRef,
+        {
+          phase: a.phase,
+          phaseAssignedPerson: a.assignedPerson,
+          phaseAssignedAt: a.assignedAt,
+          phaseUpdatedAt: now,
+          phaseUpdatedBy: a.updatedBy || 'Kevalmistry36@gmail.com',
+          updatedAt: now,
+        },
+        { merge: true }
+      );
+    }
+
+    // 3. Audit logs if present
+    if (logs && logs.length > 0) {
+      for (const log of logs) {
+        const logDocRef = doc(db, 'phase_audit_logs', log.id);
+        batch.set(logDocRef, {
+          id: log.id,
+          studentId: log.studentId,
+          studentName: log.studentName,
+          previousPhase: log.previousPhase ?? null,
+          newPhase: log.newPhase,
+          changedBy: log.changedBy,
+          timestamp: log.timestamp || now,
+          note: log.note || '',
+        });
+      }
+    }
+
+    await batch.commit();
+    return { success: true, count: assignments.length };
+  } catch (err: any) {
+    handleFirestoreError(err, OperationType.WRITE, 'batch_phase_assignments');
+    return { success: false, count: 0, error: err?.message || String(err) };
   }
 }
 
@@ -600,12 +709,40 @@ export function subscribeToAllFirebaseRealtime(onSync?: () => void): () => void 
       handleFirestoreError(err, OperationType.LIST, 'certificates');
     });
 
+    const unsubPhaseAssignments = onSnapshot(collection(db, 'phase_assignments'), snapshot => {
+      let changed = false;
+      const currentStudents = getStudents();
+      snapshot.docChanges().forEach(change => {
+        const assignment = change.doc.data() as PhaseAssignment;
+        const sIdx = currentStudents.findIndex(s => s.id === assignment.studentId);
+        if (sIdx >= 0) {
+          currentStudents[sIdx] = {
+            ...currentStudents[sIdx],
+            phase: assignment.phase,
+            phaseAssignedPerson: assignment.assignedPerson,
+            phaseAssignedAt: assignment.assignedAt,
+            phaseUpdatedAt: assignment.updatedAt,
+            phaseUpdatedBy: assignment.updatedBy,
+          };
+          changed = true;
+        }
+      });
+      if (changed) {
+        localStorage.setItem('cortexx_students_v1', JSON.stringify(currentStudents));
+        window.dispatchEvent(new CustomEvent('cortexx-db-change'));
+        if (onSync) onSync();
+      }
+    }, err => {
+      handleFirestoreError(err, OperationType.LIST, 'phase_assignments');
+    });
+
     return () => {
       unsubStudents();
       unsubCourses();
       unsubInvoices();
       unsubReceipts();
       unsubCertificates();
+      unsubPhaseAssignments();
     };
   } catch (err) {
     console.error('Failed to subscribe to Firebase realtime:', err);

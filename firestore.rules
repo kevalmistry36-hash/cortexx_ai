@@ -43,5 +43,17 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isValidId(certificateId);
     }
+
+    // 6. Phase Assignments Collection (Exclusive Phase Mapping per Student ID)
+    match /phase_assignments/{studentId} {
+      allow read: if true;
+      allow write: if isValidId(studentId);
+    }
+
+    // 7. Phase Audit Logs Collection
+    match /phase_audit_logs/{logId} {
+      allow read: if true;
+      allow write: if isValidId(logId);
+    }
   }
 }

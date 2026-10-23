@@ -20,6 +20,7 @@ import { CoursesView } from './components/CoursesView';
 import { InvoicesView } from './components/InvoicesView';
 import { BannerStudioView } from './components/BannerStudioView';
 import { YouTubeVideosView } from './components/YouTubeVideosView';
+import { PhaseManagementView } from './components/PhaseManagementView';
 import { CertificatesView } from './components/CertificatesView';
 import { CertificateVerificationGateway } from './components/CertificateVerificationGateway';
 import { InvoiceModal } from './components/InvoiceModal';
@@ -305,8 +306,12 @@ export default function App() {
           />
         )}
 
-        {activeView === 'youtube' && (
-          <YouTubeVideosView theme={theme} />
+        {(activeView === 'phase' || (activeView as any) === 'youtube') && (
+          <PhaseManagementView
+            students={students}
+            courses={courses}
+            theme={theme}
+          />
         )}
 
         {activeView === 'ad-studio' && (
