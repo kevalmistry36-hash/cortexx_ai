@@ -117,28 +117,28 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
     setCourseToDelete(null);
   };
 
-  // Shared card classes - identical appearance to Dashboard
+  // Shared card classes - Olive & Beige palette matching Dashboard, Students & Invoices
   const kpiCardClass = isLight
-    ? 'dashboard-kpi-card bg-white border-2 border-neutral-200 border-t-4 border-t-orange-500 shadow-md hover:border-orange-500 text-black rounded-xl p-5 transition-all relative overflow-hidden'
-    : 'dashboard-kpi-card bg-neutral-900/80 border border-neutral-800 border-t-4 border-t-orange-500 hover:border-neutral-700 text-neutral-100 rounded-xl p-5 transition-all relative overflow-hidden';
+    ? 'dashboard-kpi-card bg-[#FAF6EE] border-2 border-[#E5DCBE] border-t-4 border-t-[#587731] shadow-sm hover:shadow-xl hover:border-[#587731] hover:-translate-y-0.5 text-[#243315] rounded-xl p-4 sm:p-5 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between'
+    : 'dashboard-kpi-card bg-[#182214]/90 border border-[#2C3D21] border-t-4 border-t-[#587731] hover:border-[#587731]/70 hover:shadow-xl hover:shadow-[#587731]/10 hover:-translate-y-0.5 text-neutral-100 rounded-xl p-4 sm:p-5 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between';
 
   const kpiTitleClass = isLight
-    ? 'text-xs font-black tracking-wider uppercase text-black font-sans'
-    : 'text-xs font-bold tracking-wider uppercase text-neutral-200 font-sans';
+    ? 'text-[11px] sm:text-xs font-black tracking-wider uppercase text-[#243315] font-sans truncate'
+    : 'text-[11px] sm:text-xs font-bold tracking-wider uppercase text-neutral-200 font-sans truncate';
 
   const kpiNumberClass = isLight
-    ? 'text-2xl sm:text-3xl font-black font-sans tabular-nums text-black tracking-tight'
-    : 'text-2xl sm:text-3xl font-black font-sans tabular-nums text-white tracking-tight';
+    ? 'text-2xl sm:text-3xl xl:text-4xl font-black font-sans tabular-nums text-[#19240E] tracking-tight'
+    : 'text-2xl sm:text-3xl xl:text-4xl font-black font-sans tabular-nums text-white tracking-tight';
 
   const kpiSubtextClass = isLight
-    ? 'mt-2.5 text-xs text-black font-extrabold font-sans'
-    : 'mt-2.5 text-xs text-neutral-300 font-semibold font-sans';
+    ? 'mt-2.5 sm:mt-3 text-[11px] sm:text-xs text-[#243315] font-extrabold font-sans'
+    : 'mt-2.5 sm:mt-3 text-[11px] sm:text-xs text-neutral-300 font-semibold font-sans';
 
   const kpiBadgeClass =
-    'kpi-orange-badge text-[11px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-md bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-500/30 font-sans shrink-0';
+    'text-[10px] sm:text-[11px] uppercase font-black tracking-wider px-2 sm:px-2.5 py-0.5 rounded-md bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 font-sans shrink-0';
 
   const kpiIconBoxClass =
-    'w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/35 flex items-center justify-center text-orange-600 dark:text-orange-400 shadow-sm shrink-0';
+    'w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#587731]/15 border border-[#587731]/35 flex items-center justify-center text-[#587731] dark:text-[#8CB752] shadow-sm shrink-0';
 
   const certifiedCount = courses.filter(c => c.certificateIncluded).length;
   const totalModules = courses.reduce((sum, c) => sum + (c.modules?.length || 0), 0);
@@ -146,19 +146,19 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* Header - Matches Dashboard Command Center */}
-      <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b ${isLight ? 'border-neutral-300' : 'border-neutral-800/80'}`}>
+      <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b ${isLight ? 'border-[#E5DCBE]' : 'border-[#2C3D21]'}`}>
         <div>
-          <h1 className={`text-2xl lg:text-3xl font-extrabold tracking-tight ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+          <h1 className={`text-2xl lg:text-3xl font-extrabold tracking-tight ${isLight ? 'text-[#19240E]' : 'text-neutral-100'}`}>
             Course Curriculum Catalog
           </h1>
-          <p className={`text-sm mt-1 ${isLight ? 'text-black font-bold' : 'text-neutral-400'}`}>
-            Cortexx AI Institute · <span className="text-orange-600 dark:text-orange-500 font-black">Practical AI Modules, Pricing & Syllabus</span>
+          <p className={`text-sm mt-1 ${isLight ? 'text-[#243315] font-bold' : 'text-neutral-400'}`}>
+            Cortexx AI Institute · <span className="text-[#587731] dark:text-[#8CB752] font-black">Practical AI Modules, Pricing &amp; Syllabus</span>
           </p>
         </div>
 
         <button
           onClick={openAddModal}
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-black rounded-xl shadow-md transition-colors shrink-0 text-sm cursor-pointer"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] font-black rounded-xl shadow-md transition-colors shrink-0 text-sm cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Course</span>
@@ -175,7 +175,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
               <span className={kpiTitleClass}>Total Courses</span>
             </div>
             <div className={kpiIconBoxClass}>
-              <BookOpen className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+              <BookOpen className="w-4 h-4 text-[#587731] dark:text-[#8CB752]" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline justify-between gap-2">
@@ -183,7 +183,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
             <span className={kpiBadgeClass}>Live</span>
           </div>
           <div className={kpiSubtextClass}>
-            <span className={isLight ? 'text-black font-extrabold' : 'text-neutral-300'}>Active Academic Programs</span>
+            <span className={isLight ? 'text-[#243315] font-extrabold' : 'text-neutral-300'}>Active Academic Programs</span>
           </div>
         </div>
 
@@ -195,7 +195,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
               <span className={kpiTitleClass}>Flagship Program</span>
             </div>
             <div className={kpiIconBoxClass}>
-              <Sparkles className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+              <Sparkles className="w-4 h-4 text-[#587731] dark:text-[#8CB752]" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline justify-between gap-2">
@@ -203,7 +203,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
             <span className={kpiBadgeClass}>Practical AI</span>
           </div>
           <div className={kpiSubtextClass}>
-            <span className={isLight ? 'text-black font-extrabold' : 'text-neutral-300'}>Hands-on Masterclass</span>
+            <span className={isLight ? 'text-[#243315] font-extrabold' : 'text-neutral-300'}>Hands-on Masterclass</span>
           </div>
         </div>
 
@@ -215,7 +215,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
               <span className={kpiTitleClass}>Certifications</span>
             </div>
             <div className={kpiIconBoxClass}>
-              <Award className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+              <Award className="w-4 h-4 text-[#587731] dark:text-[#8CB752]" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline justify-between gap-2">
@@ -223,7 +223,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
             <span className={kpiBadgeClass}>Included</span>
           </div>
           <div className={kpiSubtextClass}>
-            <span className={isLight ? 'text-black font-extrabold' : 'text-amber-400'}>QR Verified Credentials</span>
+            <span className={isLight ? 'text-[#243315] font-extrabold' : 'text-amber-400'}>QR Verified Credentials</span>
           </div>
         </div>
 
@@ -235,7 +235,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
               <span className={kpiTitleClass}>Practical Modules</span>
             </div>
             <div className={kpiIconBoxClass}>
-              <CheckCircle className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+              <CheckCircle className="w-4 h-4 text-[#587731] dark:text-[#8CB752]" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline justify-between gap-2">
@@ -243,7 +243,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
             <span className={kpiBadgeClass}>Topics</span>
           </div>
           <div className={kpiSubtextClass}>
-            <span className={isLight ? 'text-black font-extrabold' : 'text-neutral-300'}>Curriculum Breakdown</span>
+            <span className={isLight ? 'text-[#243315] font-extrabold' : 'text-neutral-300'}>Curriculum Breakdown</span>
           </div>
         </div>
       </div>
@@ -493,7 +493,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs rounded-lg transition-colors"
+                  className="px-5 py-2 bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] font-black text-xs rounded-xl shadow-md transition-colors cursor-pointer"
                 >
                   Save Course
                 </button>

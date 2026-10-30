@@ -251,22 +251,21 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
       c.verificationCode.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Shared card classes - identical appearance to Dashboard
+  // Shared card classes - Olive & Beige palette matching Dashboard, Students, Courses & Invoices
   const kpiCardClass = isLight
-    ? 'dashboard-kpi-card bg-white border-2 border-neutral-200 border-t-4 border-t-orange-500 shadow-md hover:border-orange-500 text-black rounded-xl p-5 transition-all'
-    : 'dashboard-kpi-card bg-neutral-900 border border-neutral-800 border-t-4 border-t-orange-500 hover:border-neutral-700 text-neutral-100 rounded-xl p-5 transition-all';
+    ? 'dashboard-kpi-card bg-[#FAF6EE] border-2 border-[#E5DCBE] border-t-4 border-t-[#587731] shadow-sm hover:shadow-xl hover:border-[#587731] hover:-translate-y-0.5 text-[#243315] rounded-xl p-4 sm:p-5 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between'
+    : 'dashboard-kpi-card bg-[#182214]/90 border border-[#2C3D21] border-t-4 border-t-[#587731] hover:border-[#587731]/70 hover:shadow-xl hover:shadow-[#587731]/10 hover:-translate-y-0.5 text-neutral-100 rounded-xl p-4 sm:p-5 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between';
   const kpiTitleClass = isLight
-    ? 'text-xs uppercase tracking-wider font-black text-black flex items-center gap-1.5'
-    : 'text-xs uppercase tracking-wider font-bold text-neutral-400 flex items-center gap-1.5';
+    ? 'text-xs uppercase tracking-wider font-black text-[#243315] flex items-center gap-1.5'
+    : 'text-xs uppercase tracking-wider font-bold text-neutral-200 flex items-center gap-1.5';
   const kpiNumberClass = isLight
-    ? 'text-2xl font-black text-black tracking-tight mt-1'
-    : 'text-2xl font-black text-neutral-100 tracking-tight mt-1';
+    ? 'text-2xl font-black text-[#19240E] tracking-tight mt-1'
+    : 'text-2xl font-black text-white tracking-tight mt-1';
   const kpiSubtextClass = isLight
-    ? 'text-[11px] font-black text-black mt-1'
-    : 'text-[11px] font-medium text-neutral-500 mt-1';
-  const kpiBadgeClass = isLight
-    ? 'text-[10px] font-black px-2 py-0.5 rounded-full bg-orange-100 text-black border border-orange-300'
-    : 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20';
+    ? 'text-[11px] font-black text-[#243315] mt-1'
+    : 'text-[11px] font-medium text-neutral-300 mt-1';
+  const kpiBadgeClass =
+    'text-[10px] uppercase font-black px-2 py-0.5 rounded-full bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30';
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -274,30 +273,24 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
       <div
         className={`p-4 sm:p-5 rounded-2xl border transition-all ${
           isLight
-            ? 'bg-gradient-to-r from-orange-50 via-white to-amber-50 border-neutral-200 shadow-sm'
-            : 'bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-950 border-neutral-800'
+            ? 'bg-[#FAF6EE] border-[#E5DCBE] text-[#243315] shadow-sm'
+            : 'bg-[#182214]/90 border-[#2C3D21] text-neutral-100'
         } flex flex-col md:flex-row md:items-center justify-between gap-4`}
       >
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-xl sm:text-2xl shrink-0">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#587731]/15 border border-[#587731]/35 flex items-center justify-center text-xl sm:text-2xl shrink-0">
             📜
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className={`text-xl sm:text-2xl font-black tracking-tight ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+              <h1 className={`text-xl sm:text-2xl font-black tracking-tight ${isLight ? 'text-[#19240E]' : 'text-neutral-100'}`}>
                 Course Completion Certificates
               </h1>
-              <span
-                className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                  isLight
-                    ? 'bg-orange-100 text-orange-800 border border-orange-300'
-                    : 'bg-orange-500/15 text-orange-400 border border-orange-500/30'
-                }`}
-              >
+              <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30">
                 Verifiable Credentials
               </span>
             </div>
-            <p className={`text-xs sm:text-sm mt-0.5 font-bold ${isLight ? 'text-black' : 'text-neutral-100'}`}>
+            <p className={`text-xs sm:text-sm mt-0.5 font-bold ${isLight ? 'text-[#243315]' : 'text-neutral-300'}`}>
               Generate verifiable graduation credentials with QR validation, official institute seal, and instant PDF downloads
             </p>
           </div>
@@ -309,16 +302,16 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
             <button
               onClick={handleBulkPdfDownload}
               disabled={isBulkDownloading}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 hover:from-amber-500 hover:to-orange-500 disabled:opacity-50 text-neutral-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-md transition-all cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 bg-[#587731] hover:bg-[#486228] disabled:opacity-50 text-[#FAF6EE] font-black text-xs uppercase tracking-wider rounded-xl shadow-md transition-all cursor-pointer"
             >
               {isBulkDownloading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin text-neutral-950" />
+                  <Loader2 className="w-4 h-4 animate-spin text-[#FAF6EE]" />
                   <span>Exporting ({bulkProgress.current}/{bulkProgress.total})...</span>
                 </>
               ) : (
                 <>
-                  <FileDown className="w-4 h-4 text-neutral-950" />
+                  <FileDown className="w-4 h-4 text-[#FAF6EE]" />
                   <span>Bulk PDF Download</span>
                 </>
               )}
@@ -327,11 +320,11 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
 
           <div
             className={`px-4 py-2 rounded-xl text-xs font-mono border ${
-              isLight ? 'bg-white border-neutral-300 text-black shadow-xs' : 'bg-neutral-900 border-neutral-800 text-neutral-200'
+              isLight ? 'bg-[#F5EFDF] border-[#E5DCBE] text-[#243315] shadow-xs' : 'bg-[#11180E] border-[#2C3D21] text-neutral-200'
             }`}
           >
-            <span className={isLight ? 'text-neutral-600' : 'text-neutral-400'}>Issued: </span>
-            <span className="text-orange-600 dark:text-orange-400 font-black text-sm">{certificates.length}</span>
+            <span className={isLight ? 'text-[#243315] font-bold' : 'text-neutral-400'}>Issued: </span>
+            <span className="text-[#587731] dark:text-[#8CB752] font-black text-sm">{certificates.length}</span>
           </div>
         </div>
       </div>
@@ -408,21 +401,21 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
 
       {/* CERTIFICATE WIZARD CONTAINER */}
       <div
-        className={`border rounded-2xl p-5 sm:p-6 shadow-md space-y-6 ${
-          isLight ? 'bg-white border-2 border-neutral-200 text-black' : 'bg-neutral-900/80 border border-neutral-800 text-neutral-100'
+        className={`border-2 rounded-2xl p-5 sm:p-6 shadow-md space-y-6 ${
+          isLight ? 'bg-[#FAF6EE] border-[#E5DCBE] text-[#243315]' : 'bg-[#182214]/90 border-[#2C3D21] text-neutral-100'
         }`}
       >
         <div className={`flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b gap-3 ${
-          isLight ? 'border-neutral-200' : 'border-neutral-800'
+          isLight ? 'border-[#E5DCBE]' : 'border-[#2C3D21]'
         }`}>
           <div className="flex items-center gap-2.5 group cursor-pointer">
-            <div className="w-8 h-8 rounded-lg bg-orange-500/15 border border-orange-500/30 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-orange-500/25 transition-all">
-              <Sparkles className="w-4 h-4 text-orange-600 dark:text-orange-400 group-hover:text-orange-500 transition-colors" />
+            <div className="w-8 h-8 rounded-lg bg-[#587731]/15 border border-[#587731]/30 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-[#587731]/25 transition-all">
+              <Sparkles className="w-4 h-4 text-[#587731] dark:text-[#8CB752] transition-colors" />
             </div>
             <h2 className={`text-base sm:text-lg font-black tracking-tight transition-colors ${
               isLight
-                ? 'text-orange-700 hover:text-orange-500'
-                : 'text-orange-400 hover:text-orange-300'
+                ? 'text-[#19240E]'
+                : 'text-neutral-100'
             }`}>
               Certificate Generation Wizard
             </h2>
@@ -431,28 +424,28 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
             <span
               className={`px-2.5 py-1.5 rounded-lg font-bold text-center sm:text-left ${
                 wizardStep === 1
-                  ? 'bg-orange-500 text-white'
-                  : isLight ? 'bg-neutral-100 text-neutral-600' : 'bg-neutral-800 text-neutral-400'
+                  ? 'bg-[#587731] text-[#FAF6EE]'
+                  : isLight ? 'bg-[#F5EFDF] text-[#243315] border border-[#E5DCBE]' : 'bg-neutral-800 text-neutral-400'
               }`}
             >
-              Step 1: Course & Dates
+              Step 1: Course &amp; Dates
             </span>
-            <span className={`hidden sm:inline ${isLight ? 'text-neutral-400' : 'text-neutral-600'}`}>→</span>
+            <span className={`hidden sm:inline ${isLight ? 'text-[#243315]' : 'text-neutral-600'}`}>→</span>
             <span
               className={`px-2.5 py-1.5 rounded-lg font-bold text-center sm:text-left ${
                 wizardStep === 2
-                  ? 'bg-orange-500 text-white'
-                  : isLight ? 'bg-neutral-100 text-neutral-600' : 'bg-neutral-800 text-neutral-400'
+                  ? 'bg-[#587731] text-[#FAF6EE]'
+                  : isLight ? 'bg-[#F5EFDF] text-[#243315] border border-[#E5DCBE]' : 'bg-neutral-800 text-neutral-400'
               }`}
             >
               Step 2: Select Students ({selectedStudentIds.length})
             </span>
-            <span className={`hidden sm:inline ${isLight ? 'text-neutral-400' : 'text-neutral-600'}`}>→</span>
+            <span className={`hidden sm:inline ${isLight ? 'text-[#243315]' : 'text-neutral-600'}`}>→</span>
             <span
               className={`px-2.5 py-1.5 rounded-lg font-bold text-center sm:text-left ${
                 wizardStep === 3
-                  ? 'bg-orange-500 text-white'
-                  : isLight ? 'bg-neutral-100 text-neutral-600' : 'bg-neutral-800 text-neutral-400'
+                  ? 'bg-[#587731] text-[#FAF6EE]'
+                  : isLight ? 'bg-[#F5EFDF] text-[#243315] border border-[#E5DCBE]' : 'bg-neutral-800 text-neutral-400'
               }`}
             >
               Step 3: Generate
