@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Course } from '../types';
 import { saveCourse, deleteCourse } from '../services/storage';
-import { BookOpen, CheckCircle, Clock, Plus, Sparkles, Edit3, Trash2, Award, Users, X, AlertTriangle, Youtube } from 'lucide-react';
+import { BookOpen, CheckCircle, Clock, Plus, Sparkles, Edit3, Trash2, Award, Users, X, AlertTriangle } from 'lucide-react';
 
 interface CoursesViewProps {
   courses: Course[];
@@ -324,27 +324,13 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
 
               {/* Action Buttons */}
               <div className={`mt-6 pt-4 border-t flex flex-col gap-2 ${isLight ? 'border-[#E5DCBE]' : 'border-neutral-800'}`}>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => onEnrollInCourse(course)}
-                    className="flex-1 py-2 px-3 bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] text-xs font-black rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
-                  >
-                    <Users className="w-3.5 h-3.5" />
-                    <span>Enroll Student</span>
-                  </button>
-
-                  <button
-                    onClick={() => onLaunchAdStudioForCourse(course)}
-                    className={`flex-1 py-2 px-3 border text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
-                      isLight
-                        ? 'bg-red-50 hover:bg-red-100 text-red-900 border-red-200'
-                        : 'bg-red-600/15 hover:bg-red-600/25 border-red-500/30 text-red-300'
-                    }`}
-                  >
-                    <Youtube className="w-3.5 h-3.5 text-red-500" />
-                    <span>Watch Video</span>
-                  </button>
-                </div>
+                <button
+                  onClick={() => onEnrollInCourse(course)}
+                  className="w-full py-2.5 px-3 bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md cursor-pointer border border-[#486228] active:scale-[0.99]"
+                >
+                  <Users className="w-3.5 h-3.5" />
+                  <span>Enroll Student</span>
+                </button>
 
                 <div className={`flex items-center justify-end gap-2 pt-1 text-xs font-bold ${isLight ? 'text-black' : 'text-neutral-500'}`}>
                   <button
