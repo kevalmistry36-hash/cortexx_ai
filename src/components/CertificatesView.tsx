@@ -674,7 +674,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               <button
                 type="button"
                 onClick={() => setWizardStep(2)}
-                className="w-full sm:w-auto justify-center flex items-center gap-2 px-4 py-2.5 font-black text-xs rounded-xl transition-all cursor-pointer bg-orange-500/15 hover:bg-orange-600 text-orange-700 dark:text-orange-300 hover:text-white border border-orange-500/40 hover:border-orange-600 shadow-xs"
+                className="w-full sm:w-auto justify-center flex items-center gap-2 px-4 py-2.5 font-black text-xs rounded-xl transition-all duration-150 cursor-pointer bg-[#587731]/15 hover:bg-[#587731] text-[#587731] dark:text-[#8CB752] hover:text-[#FAF6EE] border border-[#587731]/40 hover:border-[#587731] shadow-xs active:scale-[0.99]"
               >
                 <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
                 <span>Back</span>
@@ -683,7 +683,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
               <button
                 type="button"
                 onClick={handleGenerateCertificates}
-                className="w-full sm:w-auto justify-center flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-black text-sm rounded-xl shadow-lg transition-all cursor-pointer"
+                className="w-full sm:w-auto justify-center flex items-center gap-2 px-6 py-2.5 bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] font-black text-xs uppercase tracking-wider rounded-xl shadow-md hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer border border-[#486228]"
               >
                 <Award className="w-4 h-4" />
                 <span>Generate Certificates</span>
@@ -726,7 +726,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm border-collapse">
               <thead className={`text-xs uppercase tracking-wider font-black border-b ${
-                isLight ? 'bg-orange-50/70 text-black border-neutral-200' : 'bg-neutral-900/90 text-neutral-200 font-bold border-neutral-800'
+                isLight ? 'bg-[#FAF6EE] text-[#19240E] border-[#E5DCBE]' : 'bg-neutral-900/90 text-neutral-200 font-bold border-neutral-800'
               }`}>
                 <tr>
                   <th className="py-4 px-4 font-black">Cert ID & Code</th>
@@ -795,7 +795,7 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                           <button
                             onClick={() => handleOpenPreview(cert)}
                             title="Preview Certificate"
-                            className="p-1.5 text-orange-600 dark:text-orange-400 hover:text-white bg-orange-500/15 hover:bg-orange-600 border border-orange-500/40 hover:border-orange-600 rounded-lg transition-all cursor-pointer shadow-2xs"
+                            className="p-1.5 text-[#587731] dark:text-[#8CB752] hover:text-[#FAF6EE] bg-[#587731]/15 hover:bg-[#587731] border border-[#587731]/40 hover:border-[#587731] rounded-lg transition-all cursor-pointer shadow-2xs"
                           >
                             <Eye className="w-4 h-4 stroke-[2.2]" />
                           </button>
@@ -805,10 +805,10 @@ export const CertificatesView: React.FC<CertificatesViewProps> = ({
                             onClick={() => handleDownloadDirectPdf(cert)}
                             disabled={downloadingCertId === cert.id}
                             title="Download PDF Certificate"
-                            className="p-1.5 text-orange-600 dark:text-orange-400 hover:text-orange-800 dark:hover:text-orange-200 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 rounded-lg transition-colors cursor-pointer"
+                            className="p-1.5 text-[#587731] dark:text-[#8CB752] hover:text-[#FAF6EE] bg-[#587731]/15 hover:bg-[#587731] border border-[#587731]/40 hover:border-[#587731] rounded-lg transition-all cursor-pointer shadow-2xs disabled:opacity-50"
                           >
                             {downloadingCertId === cert.id ? (
-                              <Loader2 className="w-4 h-4 animate-spin text-orange-500" />
+                              <Loader2 className="w-4 h-4 animate-spin text-[#587731]" />
                             ) : (
                               <FileDown className="w-4 h-4" />
                             )}

@@ -446,7 +446,7 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
             {lastDeletedStudent && (
               <button
                 onClick={handleUndoDelete}
-                className="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-orange-400 hover:text-orange-300 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 rounded-lg transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1 text-xs font-black text-[#587731] dark:text-[#8CB752] hover:text-[#486228] dark:hover:text-[#A4D465] bg-[#587731]/15 hover:bg-[#587731]/25 border border-[#587731]/35 rounded-lg transition-all duration-150 cursor-pointer shadow-2xs"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Undo</span>
@@ -577,7 +577,7 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search by student name, phone (+91), email, or Student ID..."
-            className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm placeholder-neutral-500 focus:outline-none focus:border-orange-500 transition-colors border ${
+            className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm placeholder-neutral-500 focus:outline-none focus:border-[#587731] focus:ring-1 focus:ring-[#587731]/30 transition-all border ${
               isLight
                 ? 'bg-white border-neutral-300 text-black font-semibold shadow-sm'
                 : 'bg-neutral-900 border-neutral-800 text-neutral-200'
@@ -589,7 +589,7 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
         <div className="flex flex-wrap items-center gap-2.5">
           {/* View Mode Toggle: Table View and Card View Tabs */}
           <div className={`flex items-center gap-1 p-1 rounded-xl border shrink-0 ${
-            isLight ? 'bg-neutral-100 border-neutral-300 shadow-sm' : 'bg-neutral-900 border-neutral-800'
+            isLight ? 'bg-[#FAF6EE] border-[#E5DCBE] shadow-2xs' : 'bg-[#182214] border-[#2C3D21]'
           }`}>
             <button
               type="button"
@@ -597,12 +597,12 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                 setViewMode('table');
                 try { localStorage.setItem('student_view_mode', 'table'); } catch {}
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg transition-all duration-150 cursor-pointer ${
                 viewMode === 'table'
-                  ? 'bg-orange-600 text-white shadow-sm'
+                  ? 'bg-[#587731] text-[#FAF6EE] shadow-sm border border-[#486228]'
                   : isLight
-                  ? 'text-neutral-700 hover:text-black font-bold hover:bg-neutral-200/60'
-                  : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800'
+                  ? 'text-[#243315] hover:text-[#587731] font-bold hover:bg-[#587731]/10'
+                  : 'text-neutral-400 hover:text-white hover:bg-[#587731]/20'
               }`}
               title="Switch to Table View"
             >
@@ -615,12 +615,12 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
                 setViewMode('card');
                 try { localStorage.setItem('student_view_mode', 'card'); } catch {}
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg transition-all duration-150 cursor-pointer ${
                 viewMode === 'card'
-                  ? 'bg-orange-600 text-white shadow-sm'
+                  ? 'bg-[#587731] text-[#FAF6EE] shadow-sm border border-[#486228]'
                   : isLight
-                  ? 'text-neutral-700 hover:text-black font-bold hover:bg-neutral-200/60'
-                  : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800'
+                  ? 'text-[#243315] hover:text-[#587731] font-bold hover:bg-[#587731]/10'
+                  : 'text-neutral-400 hover:text-white hover:bg-[#587731]/20'
               }`}
               title="Switch to Card View"
             >
@@ -631,44 +631,44 @@ export const StudentsView: React.FC<StudentsViewProps> = ({
 
           {/* Status Filter Segmented Control */}
           <div className={`flex items-center gap-1 p-1 rounded-xl border shrink-0 ${
-            isLight ? 'bg-neutral-100 border-neutral-300 shadow-sm' : 'bg-neutral-900 border-neutral-800'
+            isLight ? 'bg-[#FAF6EE] border-[#E5DCBE] shadow-2xs' : 'bg-[#182214] border-[#2C3D21]'
           }`}>
             <button
               onClick={() => setStatusFilter('all')}
-              className={`px-3 py-1.5 text-xs font-black rounded-lg transition-colors cursor-pointer ${
+              className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all duration-150 cursor-pointer ${
                 statusFilter === 'all'
-                  ? isLight ? 'bg-white text-black shadow-sm font-black' : 'bg-neutral-800 text-neutral-100 shadow-sm'
-                  : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
+                  ? 'bg-[#587731] text-[#FAF6EE] shadow-sm font-black border border-[#486228]'
+                  : isLight ? 'text-[#243315] hover:text-[#587731] font-bold hover:bg-[#587731]/10' : 'text-neutral-400 hover:text-neutral-200 hover:bg-[#587731]/15'
               }`}
             >
               All ({students.length})
             </button>
             <button
               onClick={() => setStatusFilter('paid')}
-              className={`px-3 py-1.5 text-xs font-black rounded-lg transition-colors cursor-pointer ${
+              className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all duration-150 cursor-pointer ${
                 statusFilter === 'paid'
-                  ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-black'
-                  : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
+                  ? 'bg-emerald-600 text-white shadow-sm font-black border border-emerald-700'
+                  : isLight ? 'text-[#243315] hover:text-emerald-700 font-bold hover:bg-emerald-500/10' : 'text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/15'
               }`}
             >
               Paid ({paidCount})
             </button>
             <button
               onClick={() => setStatusFilter('partially_paid')}
-              className={`px-3 py-1.5 text-xs font-black rounded-lg transition-colors cursor-pointer ${
+              className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all duration-150 cursor-pointer ${
                 statusFilter === 'partially_paid'
-                  ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 font-black'
-                  : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
+                  ? 'bg-amber-600 text-white shadow-sm font-black border border-amber-700'
+                  : isLight ? 'text-[#243315] hover:text-amber-700 font-bold hover:bg-amber-500/10' : 'text-neutral-400 hover:text-amber-400 hover:bg-amber-500/15'
               }`}
             >
               Partial ({partialCount})
             </button>
             <button
               onClick={() => setStatusFilter('unpaid')}
-              className={`px-3 py-1.5 text-xs font-black rounded-lg transition-colors cursor-pointer ${
+              className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all duration-150 cursor-pointer ${
                 statusFilter === 'unpaid'
-                  ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400 font-black'
-                  : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
+                  ? 'bg-rose-600 text-white shadow-sm font-black border border-rose-700'
+                  : isLight ? 'text-[#243315] hover:text-rose-700 font-bold hover:bg-rose-500/10' : 'text-neutral-400 hover:text-rose-400 hover:bg-rose-500/15'
               }`}
             >
               Pending ({unpaidCount})

@@ -640,24 +640,24 @@ Accounts Office, Cortexx AI Institute`;
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
           {/* Toggle between Invoices and Receipts */}
           <div className={`flex items-center gap-1 p-1 rounded-xl border shrink-0 ${
-            isLight ? 'bg-neutral-100 border-neutral-200' : 'bg-neutral-900 border-neutral-800'
+            isLight ? 'bg-[#FAF6EE] border-[#E5DCBE] shadow-2xs' : 'bg-[#182214] border-[#2C3D21]'
           }`}>
             <button
               onClick={() => setActiveTab('invoices')}
-              className={`px-4 py-1.5 text-xs font-black rounded-lg transition-colors cursor-pointer ${
+              className={`px-4 py-1.5 text-xs font-black rounded-lg transition-all duration-150 cursor-pointer ${
                 activeTab === 'invoices'
-                  ? isLight ? 'bg-white text-black shadow-sm' : 'bg-neutral-800 text-neutral-100 shadow-sm'
-                  : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
+                  ? 'bg-[#587731] text-[#FAF6EE] shadow-sm border border-[#486228]'
+                  : isLight ? 'text-[#243315] hover:text-[#587731] font-bold hover:bg-[#587731]/10' : 'text-neutral-400 hover:text-white hover:bg-[#587731]/20'
               }`}
             >
               Invoices ({invoices.length})
             </button>
             <button
               onClick={() => setActiveTab('receipts')}
-              className={`px-4 py-1.5 text-xs font-black rounded-lg transition-colors cursor-pointer ${
+              className={`px-4 py-1.5 text-xs font-black rounded-lg transition-all duration-150 cursor-pointer ${
                 activeTab === 'receipts'
-                  ? isLight ? 'bg-white text-black shadow-sm' : 'bg-neutral-800 text-neutral-100 shadow-sm'
-                  : isLight ? 'text-neutral-600 hover:text-black font-bold' : 'text-neutral-400 hover:text-neutral-200'
+                  ? 'bg-[#587731] text-[#FAF6EE] shadow-sm border border-[#486228]'
+                  : isLight ? 'text-[#243315] hover:text-[#587731] font-bold hover:bg-[#587731]/10' : 'text-neutral-400 hover:text-white hover:bg-[#587731]/20'
               }`}
             >
               Payment Receipts ({receipts.length})
@@ -672,7 +672,7 @@ Accounts Office, Cortexx AI Institute`;
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search by invoice #, receipt #, student name, or course..."
-              className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm placeholder-neutral-500 focus:outline-none focus:border-orange-500 transition-colors border ${
+              className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm placeholder-neutral-500 focus:outline-none focus:border-[#587731] focus:ring-1 focus:ring-[#587731]/30 transition-all border ${
                 isLight
                   ? 'bg-white border-neutral-300 text-black font-semibold shadow-sm'
                   : 'bg-neutral-900 border-neutral-800 text-neutral-200'
@@ -808,7 +808,7 @@ Accounts Office, Cortexx AI Institute`;
           <div className="hidden md:block overflow-x-auto max-h-[75vh]">
             <table className="w-full text-left text-sm border-collapse">
               <thead className={`text-xs uppercase tracking-wider font-black border-b sticky top-0 z-10 backdrop-blur-md ${
-                isLight ? 'bg-orange-50/90 text-black border-neutral-200 shadow-2xs' : 'bg-neutral-900/95 text-neutral-200 font-bold border-neutral-800 shadow-2xs'
+                isLight ? 'bg-[#FAF6EE] text-[#19240E] border-[#E5DCBE] shadow-2xs' : 'bg-neutral-900/95 text-neutral-200 font-bold border-neutral-800 shadow-2xs'
               }`}>
                 <tr>
                   <th className="py-3.5 px-4 font-black">Invoice #</th>
@@ -966,10 +966,10 @@ Accounts Office, Cortexx AI Institute`;
                           <button
                             onClick={() => handleDownloadInvoicePdf(inv)}
                             title="Download Invoice as PDF"
-                            className="p-1.5 text-orange-400 hover:text-orange-200 hover:bg-orange-500/20 bg-orange-500/10 border border-orange-500/30 rounded-lg transition-colors cursor-pointer group flex items-center gap-1"
+                            className="p-1.5 text-[#587731] dark:text-[#8CB752] hover:text-[#FAF6EE] hover:bg-[#587731] bg-[#587731]/15 border border-[#587731]/30 rounded-lg transition-colors cursor-pointer group flex items-center gap-1"
                           >
                             <Download className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                            <span className="text-[10px] font-bold">PDF</span>
+                            <span className="text-[10px] font-black">PDF</span>
                           </button>
                           <button
                             onClick={() => shareOnWhatsApp(inv)}
@@ -1250,7 +1250,7 @@ Accounts Office, Cortexx AI Institute`;
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm border-collapse">
               <thead className={`text-xs uppercase tracking-wider font-black border-b ${
-                isLight ? 'bg-orange-50/70 text-black border-neutral-200' : 'bg-neutral-900/90 text-neutral-200 font-bold border-neutral-800'
+                isLight ? 'bg-[#FAF6EE] text-[#19240E] border-[#E5DCBE]' : 'bg-neutral-900/90 text-neutral-200 font-bold border-neutral-800'
               }`}>
                 <tr>
                   <th className="py-3.5 px-4 font-black">Receipt #</th>

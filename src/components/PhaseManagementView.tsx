@@ -1051,7 +1051,7 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
               <button
                 type="button"
                 onClick={() => handleInitiateTransfer(1)}
-                className="flex items-center gap-1.5 px-3.5 py-2.5 text-xs font-black rounded-xl bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] shadow-md transition-transform active:scale-95 cursor-pointer shrink-0"
+                className="flex items-center gap-1.5 px-3.5 py-2.5 text-xs font-black rounded-xl bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] border border-[#486228] shadow-md hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-200 cursor-pointer shrink-0"
               >
                 <ArrowRight className="w-3.5 h-3.5 text-[#FAF6EE]" />
                 <span>Assign to Phase 1 — Keval</span>
@@ -1060,10 +1060,10 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
               <button
                 type="button"
                 onClick={() => handleInitiateTransfer(2)}
-                className={`flex items-center gap-1.5 px-3.5 py-2.5 text-xs font-bold rounded-xl border transition-all cursor-pointer shrink-0 ${
+                className={`flex items-center gap-1.5 px-3.5 py-2.5 text-xs font-black rounded-xl border transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] shadow-xs hover:shadow-xl cursor-pointer shrink-0 ${
                   isLight
-                    ? 'bg-white hover:bg-[#F5EFDF] text-[#243315] border-[#E5DCBE] hover:border-[#587731]'
-                    : 'bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border-neutral-700/80 hover:border-[#587731]'
+                    ? 'bg-[#FAF6EE] hover:bg-[#F5EFDF] text-[#243315] border-[#E5DCBE] hover:border-[#587731]'
+                    : 'bg-[#182214]/90 hover:bg-[#2C3D21] text-neutral-100 hover:text-white border-[#2C3D21] hover:border-[#587731]/70'
                 }`}
               >
                 <ArrowRight className="w-3.5 h-3.5 text-[#587731] dark:text-[#8CB752]" />
@@ -1073,10 +1073,10 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
               <button
                 type="button"
                 onClick={() => handleInitiateTransfer(3)}
-                className={`flex items-center gap-1.5 px-3.5 py-2.5 text-xs font-bold rounded-xl border transition-all cursor-pointer shrink-0 ${
+                className={`flex items-center gap-1.5 px-3.5 py-2.5 text-xs font-black rounded-xl border transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] shadow-xs hover:shadow-xl cursor-pointer shrink-0 ${
                   isLight
-                    ? 'bg-white hover:bg-[#F5EFDF] text-[#243315] border-[#E5DCBE] hover:border-[#587731]'
-                    : 'bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border-neutral-700/80 hover:border-[#587731]'
+                    ? 'bg-[#FAF6EE] hover:bg-[#F5EFDF] text-[#243315] border-[#E5DCBE] hover:border-[#587731]'
+                    : 'bg-[#182214]/90 hover:bg-[#2C3D21] text-neutral-100 hover:text-white border-[#2C3D21] hover:border-[#587731]/70'
                 }`}
               >
                 <ArrowRight className="w-3.5 h-3.5 text-[#587731] dark:text-[#8CB752]" />
@@ -1401,7 +1401,7 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
                             <button
                               type="button"
                               onClick={() => handleQuickRowTransfer(student, 2)}
-                              className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 hover:bg-[#587731] hover:text-[#FAF6EE] transition-all cursor-pointer"
+                              className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 hover:bg-[#587731] hover:text-[#FAF6EE] hover:border-[#587731] transition-all duration-150 cursor-pointer shadow-2xs"
                               title="Move to Phase 2 (Hiren)"
                             >
                               → Phase 2
@@ -1409,11 +1409,7 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
                             <button
                               type="button"
                               onClick={() => handleQuickRowTransfer(student, 3)}
-                              className={`px-2.5 py-1 text-xs font-black rounded-lg border transition-all cursor-pointer ${
-                                isLight
-                                  ? 'bg-[#FAF6EE] text-[#243315] border-[#E5DCBE] hover:bg-[#587731] hover:text-[#FAF6EE]'
-                                  : 'bg-neutral-800 text-neutral-300 border-neutral-700 hover:bg-[#587731] hover:text-[#FAF6EE]'
-                              }`}
+                              className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 hover:bg-[#587731] hover:text-[#FAF6EE] hover:border-[#587731] transition-all duration-150 cursor-pointer shadow-2xs"
                               title="Move to Phase 3 (Shweta)"
                             >
                               → Phase 3
@@ -1486,16 +1482,14 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
                       <button
                         type="button"
                         onClick={() => handleQuickRowTransfer(student, 2)}
-                        className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/20 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30"
+                        className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 hover:bg-[#587731] hover:text-[#FAF6EE] transition-colors cursor-pointer"
                       >
                         → Phase 2
                       </button>
                       <button
                         type="button"
                         onClick={() => handleQuickRowTransfer(student, 3)}
-                        className={`px-2.5 py-1 text-xs font-black rounded-lg border ${
-                          isLight ? 'bg-[#FAF6EE] text-[#243315] border-[#E5DCBE]' : 'bg-neutral-800 text-neutral-300 border-neutral-700'
-                        }`}
+                        className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 hover:bg-[#587731] hover:text-[#FAF6EE] transition-colors cursor-pointer"
                       >
                         → Phase 3
                       </button>
@@ -1741,11 +1735,7 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
                             <button
                               type="button"
                               onClick={() => handleQuickRowTransfer(student, 1)}
-                              className={`px-2.5 py-1 text-xs font-black rounded-lg border transition-all cursor-pointer ${
-                                isLight
-                                  ? 'bg-[#FAF6EE] text-[#243315] border-[#E5DCBE] hover:bg-[#587731] hover:text-[#FAF6EE]'
-                                  : 'bg-neutral-800 text-neutral-300 border-neutral-700 hover:bg-[#587731] hover:text-[#FAF6EE]'
-                              }`}
+                              className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 hover:bg-[#587731] hover:text-[#FAF6EE] hover:border-[#587731] transition-all duration-150 cursor-pointer shadow-2xs"
                               title="Move back to Phase 1 (Keval)"
                             >
                               ← Phase 1
@@ -1753,7 +1743,7 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
                             <button
                               type="button"
                               onClick={() => handleQuickRowTransfer(student, 3)}
-                              className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 hover:bg-[#587731] hover:text-[#FAF6EE] transition-all cursor-pointer"
+                              className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 hover:bg-[#587731] hover:text-[#FAF6EE] hover:border-[#587731] transition-all duration-150 cursor-pointer shadow-2xs"
                               title="Move to Phase 3 (Shweta)"
                             >
                               → Phase 3
@@ -1826,16 +1816,14 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
                       <button
                         type="button"
                         onClick={() => handleQuickRowTransfer(student, 1)}
-                        className={`px-2.5 py-1 text-xs font-black rounded-lg border ${
-                          isLight ? 'bg-[#FAF6EE] text-[#243315] border-[#E5DCBE]' : 'bg-neutral-800 text-neutral-300 border-neutral-700'
-                        }`}
+                        className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 hover:bg-[#587731] hover:text-[#FAF6EE] transition-colors cursor-pointer"
                       >
                         ← Phase 1
                       </button>
                       <button
                         type="button"
                         onClick={() => handleQuickRowTransfer(student, 3)}
-                        className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/20 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30"
+                        className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 hover:bg-[#587731] hover:text-[#FAF6EE] transition-colors cursor-pointer"
                       >
                         → Phase 3
                       </button>
@@ -2081,11 +2069,7 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
                             <button
                               type="button"
                               onClick={() => handleQuickRowTransfer(student, 1)}
-                              className={`px-2.5 py-1 text-xs font-black rounded-lg border transition-all cursor-pointer ${
-                                isLight
-                                  ? 'bg-[#FAF6EE] text-[#243315] border-[#E5DCBE] hover:bg-[#587731] hover:text-[#FAF6EE]'
-                                  : 'bg-neutral-800 text-neutral-300 border-neutral-700 hover:bg-[#587731] hover:text-[#FAF6EE]'
-                              }`}
+                              className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 hover:bg-[#587731] hover:text-[#FAF6EE] hover:border-[#587731] transition-all duration-150 cursor-pointer shadow-2xs"
                               title="Move back to Phase 1 (Keval)"
                             >
                               ← Phase 1
@@ -2093,7 +2077,7 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
                             <button
                               type="button"
                               onClick={() => handleQuickRowTransfer(student, 2)}
-                              className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 hover:bg-[#587731] hover:text-[#FAF6EE] transition-all cursor-pointer"
+                              className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 hover:bg-[#587731] hover:text-[#FAF6EE] hover:border-[#587731] transition-all duration-150 cursor-pointer shadow-2xs"
                               title="Move to Phase 2 (Hiren)"
                             >
                               ← Phase 2
@@ -2166,16 +2150,14 @@ export const PhaseManagementView: React.FC<PhaseManagementViewProps> = ({
                       <button
                         type="button"
                         onClick={() => handleQuickRowTransfer(student, 1)}
-                        className={`px-2.5 py-1 text-xs font-black rounded-lg border ${
-                          isLight ? 'bg-[#FAF6EE] text-[#243315] border-[#E5DCBE]' : 'bg-neutral-800 text-neutral-300 border-neutral-700'
-                        }`}
+                        className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 hover:bg-[#587731] hover:text-[#FAF6EE] transition-colors cursor-pointer"
                       >
                         ← Phase 1
                       </button>
                       <button
                         type="button"
                         onClick={() => handleQuickRowTransfer(student, 2)}
-                        className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/20 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30"
+                        className="px-2.5 py-1 text-xs font-black rounded-lg bg-[#587731]/15 text-[#587731] dark:text-[#8CB752] border border-[#587731]/30 hover:bg-[#587731] hover:text-[#FAF6EE] transition-colors cursor-pointer"
                       >
                         ← Phase 2
                       </button>

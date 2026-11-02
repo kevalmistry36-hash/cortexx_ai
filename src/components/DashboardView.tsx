@@ -249,7 +249,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         <button
           onClick={onOpenAddStudent}
-          className="flex items-center justify-between p-4 bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] rounded-xl font-bold shadow-md hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 group cursor-pointer"
+          className="flex items-center justify-between p-4 bg-[#587731] hover:bg-[#486228] text-[#FAF6EE] rounded-xl font-bold shadow-md hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 group cursor-pointer border border-[#486228]"
         >
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
@@ -267,79 +267,79 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           onClick={onOpenAddCourse}
           className={`flex items-center justify-between p-4 rounded-xl font-bold transition-all duration-200 group cursor-pointer border hover:-translate-y-0.5 active:translate-y-0 ${
             isLight
-              ? 'bg-[#FAF6EE] hover:bg-[#F5EFDF] border-[#E5DCBE] hover:border-[#587731] text-[#243315] shadow-sm hover:shadow-xl'
-              : 'bg-neutral-900/90 hover:bg-neutral-850 hover:border-orange-500/50 border-neutral-800 text-neutral-100 shadow-sm hover:shadow-xl'
+              ? 'bg-[#FAF6EE] hover:bg-[#F5EFDF] border-[#E5DCBE] hover:border-[#587731] text-[#243315] shadow-xs hover:shadow-xl'
+              : 'bg-[#182214]/90 hover:bg-[#2C3D21] border-[#2C3D21] hover:border-[#587731]/70 text-neutral-100 shadow-xs hover:shadow-xl'
           }`}
         >
           <div className="flex items-center gap-3">
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
               isLight
-                ? 'bg-orange-100 text-orange-700 group-hover:bg-orange-600 group-hover:text-white'
-                : 'bg-neutral-800 border border-neutral-700 text-neutral-200 group-hover:bg-orange-500/20 group-hover:text-orange-400'
+                ? 'bg-[#587731]/15 text-[#587731] group-hover:bg-[#587731] group-hover:text-[#FAF6EE]'
+                : 'bg-[#587731]/20 border border-[#587731]/30 text-[#8CB752] group-hover:bg-[#587731] group-hover:text-white'
             }`}>
               <BookOpen className="w-5 h-5" />
             </div>
             <div className="text-left">
-              <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-black group-hover:text-black' : 'text-neutral-100 group-hover:text-white'}`}>
+              <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-[#19240E] group-hover:text-[#587731]' : 'text-neutral-100 group-hover:text-white'}`}>
                 Add Course
               </div>
-              <div className={`text-xs font-bold mt-0.5 transition-colors ${isLight ? 'text-neutral-700 group-hover:text-black' : 'text-neutral-400 group-hover:text-neutral-200'}`}>
+              <div className={`text-xs font-bold mt-0.5 transition-colors ${isLight ? 'text-[#243315]' : 'text-neutral-400 group-hover:text-neutral-200'}`}>
                 Catalog curriculum
               </div>
             </div>
           </div>
-          <ArrowRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${isLight ? 'text-neutral-700 group-hover:text-black' : 'text-neutral-400 group-hover:text-orange-400'}`} />
+          <ArrowRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${isLight ? 'text-[#587731]' : 'text-[#8CB752]'}`} />
         </button>
 
         <button
           onClick={onOpenGenerateInvoice}
           className={`flex items-center justify-between p-4 rounded-xl font-bold transition-all duration-200 group cursor-pointer border hover:-translate-y-0.5 active:translate-y-0 ${
             isLight
-              ? 'bg-white hover:bg-emerald-50/80 border-neutral-300 hover:border-emerald-500 text-black shadow-sm hover:shadow-xl'
-              : 'bg-neutral-900/90 hover:bg-neutral-850 hover:border-emerald-500/50 border-neutral-800 text-neutral-100 shadow-sm hover:shadow-xl'
+              ? 'bg-[#FAF6EE] hover:bg-[#F5EFDF] border-[#E5DCBE] hover:border-[#587731] text-[#243315] shadow-xs hover:shadow-xl'
+              : 'bg-[#182214]/90 hover:bg-[#2C3D21] border-[#2C3D21] hover:border-[#587731]/70 text-neutral-100 shadow-xs hover:shadow-xl'
           }`}
         >
           <div className="flex items-center gap-3">
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
               isLight
-                ? 'bg-emerald-100 text-emerald-800 group-hover:bg-emerald-600 group-hover:text-white'
-                : 'bg-neutral-800 border border-neutral-700 text-emerald-400 group-hover:bg-emerald-500/20 group-hover:text-emerald-300'
+                ? 'bg-[#587731]/15 text-[#587731] group-hover:bg-[#587731] group-hover:text-[#FAF6EE]'
+                : 'bg-[#587731]/20 border border-[#587731]/30 text-[#8CB752] group-hover:bg-[#587731] group-hover:text-white'
             }`}>
               <Receipt className="w-5 h-5" />
             </div>
             <div className="text-left">
-              <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-black group-hover:text-black' : 'text-neutral-100 group-hover:text-white'}`}>
+              <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-[#19240E] group-hover:text-[#587731]' : 'text-neutral-100 group-hover:text-white'}`}>
                 Generate Invoice
               </div>
-              <div className={`text-xs font-bold mt-0.5 transition-colors ${isLight ? 'text-neutral-700 group-hover:text-black' : 'text-neutral-400 group-hover:text-neutral-200'}`}>
+              <div className={`text-xs font-bold mt-0.5 transition-colors ${isLight ? 'text-[#243315]' : 'text-neutral-400 group-hover:text-neutral-200'}`}>
                 PDF &amp; WhatsApp
               </div>
             </div>
           </div>
-          <ArrowRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${isLight ? 'text-neutral-700 group-hover:text-black' : 'text-neutral-400 group-hover:text-emerald-400'}`} />
+          <ArrowRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${isLight ? 'text-[#587731]' : 'text-[#8CB752]'}`} />
         </button>
 
         <button
           onClick={() => onNavigateToView('phase')}
           className={`flex items-center justify-between p-4 rounded-xl font-bold transition-all duration-200 group cursor-pointer border hover:-translate-y-0.5 active:translate-y-0 ${
             isLight
-              ? 'bg-[#FAF6EE] hover:bg-[#F5EFDF] border-[#E5DCBE] hover:border-[#587731] text-[#243315] shadow-sm hover:shadow-xl'
-              : 'bg-neutral-900/90 hover:bg-neutral-850 hover:border-[#587731]/50 border-neutral-800 text-neutral-100 shadow-sm hover:shadow-xl'
+              ? 'bg-[#FAF6EE] hover:bg-[#F5EFDF] border-[#E5DCBE] hover:border-[#587731] text-[#243315] shadow-xs hover:shadow-xl'
+              : 'bg-[#182214]/90 hover:bg-[#2C3D21] border-[#2C3D21] hover:border-[#587731]/70 text-neutral-100 shadow-xs hover:shadow-xl'
           }`}
         >
           <div className="flex items-center gap-3">
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
               isLight
-                ? 'bg-[#587731]/15 text-[#587731]'
-                : 'bg-[#587731]/20 border border-[#587731]/30 text-[#8CB752]'
+                ? 'bg-[#587731]/15 text-[#587731] group-hover:bg-[#587731] group-hover:text-[#FAF6EE]'
+                : 'bg-[#587731]/20 border border-[#587731]/30 text-[#8CB752] group-hover:bg-[#587731] group-hover:text-white'
             }`}>
               <Layers className="w-5 h-5" />
             </div>
             <div className="text-left">
-              <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-[#19240E]' : 'text-neutral-100'}`}>
+              <div className={`text-sm font-black leading-tight transition-colors ${isLight ? 'text-[#19240E] group-hover:text-[#587731]' : 'text-neutral-100 group-hover:text-white'}`}>
                 Phase Management
               </div>
-              <div className={`text-xs font-bold mt-0.5 transition-colors ${isLight ? 'text-[#243315]' : 'text-neutral-400'}`}>
+              <div className={`text-xs font-bold mt-0.5 transition-colors ${isLight ? 'text-[#243315]' : 'text-neutral-400 group-hover:text-neutral-200'}`}>
                 Keval · Hiren · Shweta ({students.length} students)
               </div>
             </div>
@@ -501,7 +501,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
             <button
               onClick={() => onNavigateToView('invoices')}
-              className="text-xs text-orange-600 hover:text-orange-700 font-extrabold flex items-center gap-1 cursor-pointer hover:underline"
+              className="text-xs text-[#587731] dark:text-[#8CB752] hover:text-[#486228] dark:hover:text-[#A4D465] font-extrabold flex items-center gap-1 cursor-pointer hover:underline"
             >
               <span>View All</span>
               <ArrowRight className="w-3.5 h-3.5" />

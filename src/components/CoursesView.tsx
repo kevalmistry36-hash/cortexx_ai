@@ -349,7 +349,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
                 <div className={`flex items-center justify-end gap-2 pt-1 text-xs font-bold ${isLight ? 'text-black' : 'text-neutral-500'}`}>
                   <button
                     onClick={() => openEditModal(course)}
-                    className={`flex items-center gap-1 cursor-pointer ${isLight ? 'text-black font-black hover:text-orange-600' : 'hover:text-neutral-300'}`}
+                    className={`flex items-center gap-1 cursor-pointer transition-colors ${isLight ? 'text-black font-black hover:text-[#587731]' : 'hover:text-[#8CB752]'}`}
                   >
                     <Edit3 className="w-3 h-3" /> Edit
                   </button>
@@ -398,7 +398,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
                   value={name}
                   onChange={e => setName(e.target.value)}
                   placeholder="e.g. 1-Month Practical AI Course"
-                  className="w-full px-3.5 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm text-neutral-100 focus:outline-none focus:border-orange-500"
+                  className="w-full px-3.5 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm text-neutral-100 focus:outline-none focus:border-[#587731] focus:ring-1 focus:ring-[#587731]/30"
                 />
               </div>
 
@@ -412,7 +412,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
                     value={duration}
                     onChange={e => setDuration(e.target.value)}
                     placeholder="1 Month"
-                    className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm text-neutral-100 focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm text-neutral-100 focus:outline-none focus:border-[#587731] focus:ring-1 focus:ring-[#587731]/30"
                   />
                 </div>
 
@@ -425,7 +425,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
                     value={mode}
                     onChange={e => setMode(e.target.value)}
                     placeholder="100% Online"
-                    className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm text-neutral-100 focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm text-neutral-100 focus:outline-none focus:border-[#587731] focus:ring-1 focus:ring-[#587731]/30"
                   />
                 </div>
 
@@ -438,7 +438,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
                     min={0}
                     value={fee}
                     onChange={e => setFee(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm font-mono text-neutral-100 focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm font-mono text-neutral-100 focus:outline-none focus:border-[#587731] focus:ring-1 focus:ring-[#587731]/30"
                   />
                 </div>
               </div>
@@ -449,7 +449,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
                   id="certCheck"
                   checked={certificateIncluded}
                   onChange={e => setCertificateIncluded(e.target.checked)}
-                  className="rounded border-neutral-700 text-orange-500 focus:ring-orange-500"
+                  className="rounded border-neutral-700 text-[#587731] focus:ring-[#587731]"
                 />
                 <label htmlFor="certCheck" className="text-xs text-neutral-300">
                   Official Course Certificate Included upon Completion
@@ -465,7 +465,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                   placeholder="Hands-on practical AI mastery from foundation to agentic tools."
-                  className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-xs text-neutral-100 focus:outline-none focus:border-orange-500"
+                  className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-xs text-neutral-100 focus:outline-none focus:border-[#587731] focus:ring-1 focus:ring-[#587731]/30"
                 />
               </div>
 
@@ -479,7 +479,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
                   value={modulesText}
                   onChange={e => setModulesText(e.target.value)}
                   placeholder="01. AI Tools & Productivity&#10;02. Prompt Engineering&#10;03. AI Image Generation..."
-                  className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-xs font-mono text-neutral-100 focus:outline-none focus:border-orange-500"
+                  className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-xs font-mono text-neutral-100 focus:outline-none focus:border-[#587731] focus:ring-1 focus:ring-[#587731]/30"
                 />
               </div>
 
