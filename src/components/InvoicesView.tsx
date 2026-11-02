@@ -682,118 +682,139 @@ Accounts Office, Cortexx AI Institute`;
         </div>
 
         {/* Filters Bar: Student Active/Deactive Mode & Payment Status */}
-        {/* Filters Bar: Student Active/Deactive Mode & Payment Status */}
-        <div className={`flex items-center justify-between gap-3 flex-wrap p-3 rounded-xl border ${
-          isLight ? 'bg-white border-neutral-200 shadow-sm' : 'bg-neutral-900/60 border-neutral-800/80'
+        <div className={`flex items-center justify-between gap-3 flex-wrap p-3 rounded-2xl border ${
+          isLight ? 'bg-[#FAF6EE] border-[#E5DCBE] shadow-2xs' : 'bg-[#182214] border-[#2C3D21]'
         }`}>
           {/* Student Active / Deactive Mode Filter */}
           <div className="flex items-center gap-2 flex-wrap">
-            <span className={`text-xs font-black mr-1 uppercase tracking-wider ${isLight ? 'text-neutral-950' : 'text-neutral-200'}`}>Student Status:</span>
-            <button
-              type="button"
-              onClick={() => setStudentActiveFilter('all')}
-              className={`px-3 py-1.5 text-xs font-black rounded-lg cursor-pointer transition-all border-2 ${
-                studentActiveFilter === 'all'
-                  ? isLight ? 'bg-neutral-900 text-white border-neutral-900 shadow-sm' : 'bg-neutral-800 text-white border-neutral-700 shadow-sm'
-                  : isLight ? 'bg-neutral-100 text-neutral-800 border-neutral-300 hover:bg-neutral-200' : 'bg-neutral-900 text-neutral-300 border-neutral-800 hover:bg-neutral-800'
-              }`}
-            >
-              All Students
-            </button>
-            <button
-              type="button"
-              onClick={() => setStudentActiveFilter('active')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg cursor-pointer transition-all border-2 ${
-                studentActiveFilter === 'active'
-                  ? 'bg-emerald-600 text-white border-emerald-700 shadow-md ring-2 ring-emerald-500/40'
-                  : isLight
-                  ? 'bg-emerald-100 text-emerald-900 border-emerald-400 hover:bg-emerald-200 shadow-xs'
-                  : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
-              }`}
-            >
-              <UserCheck className="w-3.5 h-3.5 stroke-[2.5]" />
-              <span>Active</span>
-              <span className={`text-[10px] font-mono font-black px-1.5 py-0.5 rounded ${studentActiveFilter === 'active' ? 'bg-black/20 text-white' : 'bg-emerald-200/80 text-emerald-950 dark:bg-emerald-500/30 dark:text-emerald-200'}`}>
-                {activeTab === 'invoices' ? activeInvoicesCount : activeReceiptsCount}
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setStudentActiveFilter('deactivated')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg cursor-pointer transition-all border-2 ${
-                studentActiveFilter === 'deactivated'
-                  ? 'bg-rose-600 text-white border-rose-700 shadow-md ring-2 ring-rose-500/40'
-                  : isLight
-                  ? 'bg-rose-100 text-rose-950 border-rose-400 hover:bg-rose-200 shadow-xs'
-                  : 'bg-rose-500/20 text-rose-300 border-rose-500/40 hover:bg-rose-500/30'
-              }`}
-              title="Show only students in Deactive Mode"
-            >
-              <UserX className="w-3.5 h-3.5 stroke-[2.5]" />
-              <span>Deactive Mode</span>
-              {(activeTab === 'invoices' ? deactivatedInvoicesCount : deactivatedReceiptsCount) > 0 && (
-                <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-black ${studentActiveFilter === 'deactivated' ? 'bg-black/20 text-white' : 'bg-rose-200/80 text-rose-950 dark:bg-rose-500/30 dark:text-rose-200'}`}>
-                  {activeTab === 'invoices' ? deactivatedInvoicesCount : deactivatedReceiptsCount}
+            <span className={`text-xs font-black mr-1 uppercase tracking-wider ${isLight ? 'text-[#19240E]' : 'text-neutral-200'}`}>
+              Student Status:
+            </span>
+            <div className={`inline-flex items-center gap-1 p-1 rounded-xl border shrink-0 ${
+              isLight ? 'bg-[#F5EFDF] border-[#E5DCBE]' : 'bg-[#11180E] border-[#2C3D21]'
+            }`}>
+              <button
+                type="button"
+                onClick={() => setStudentActiveFilter('all')}
+                className={`px-3 py-1.5 text-xs font-black rounded-lg cursor-pointer transition-all duration-150 ${
+                  studentActiveFilter === 'all'
+                    ? 'bg-[#587731] text-[#FAF6EE] shadow-sm border border-[#486228]'
+                    : isLight
+                    ? 'text-[#243315] hover:text-[#587731] hover:bg-[#587731]/10 border border-transparent'
+                    : 'text-neutral-200 hover:text-white hover:bg-[#587731]/20 border border-transparent'
+                }`}
+              >
+                All Students
+              </button>
+              <button
+                type="button"
+                onClick={() => setStudentActiveFilter('active')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg cursor-pointer transition-all duration-150 ${
+                  studentActiveFilter === 'active'
+                    ? 'bg-[#587731] text-[#FAF6EE] shadow-sm border border-[#486228]'
+                    : isLight
+                    ? 'text-[#243315] hover:text-[#587731] hover:bg-[#587731]/10 border border-transparent'
+                    : 'text-neutral-200 hover:text-white hover:bg-[#587731]/20 border border-transparent'
+                }`}
+              >
+                <UserCheck className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Active</span>
+                <span className={`text-[10px] font-mono font-black px-1.5 py-0.5 rounded ${
+                  studentActiveFilter === 'active'
+                    ? 'bg-black/25 text-[#FAF6EE]'
+                    : isLight ? 'bg-[#587731]/15 text-[#243315]' : 'bg-[#587731]/25 text-[#8CB752]'
+                }`}>
+                  {activeTab === 'invoices' ? activeInvoicesCount : activeReceiptsCount}
                 </span>
-              )}
-            </button>
+              </button>
+              <button
+                type="button"
+                onClick={() => setStudentActiveFilter('deactivated')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg cursor-pointer transition-all duration-150 ${
+                  studentActiveFilter === 'deactivated'
+                    ? 'bg-[#587731] text-[#FAF6EE] shadow-sm border border-[#486228]'
+                    : isLight
+                    ? 'text-[#243315] hover:text-[#587731] hover:bg-[#587731]/10 border border-transparent'
+                    : 'text-neutral-200 hover:text-white hover:bg-[#587731]/20 border border-transparent'
+                }`}
+                title="Show only students in Deactive Mode"
+              >
+                <UserX className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Deactive Mode</span>
+                {(activeTab === 'invoices' ? deactivatedInvoicesCount : deactivatedReceiptsCount) > 0 && (
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-black ${
+                    studentActiveFilter === 'deactivated'
+                      ? 'bg-black/25 text-[#FAF6EE]'
+                      : isLight ? 'bg-[#587731]/15 text-[#243315]' : 'bg-[#587731]/25 text-[#8CB752]'
+                  }`}>
+                    {activeTab === 'invoices' ? deactivatedInvoicesCount : deactivatedReceiptsCount}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Payment Status Filter (when on Invoices tab) */}
           {activeTab === 'invoices' && (
-            <div className={`flex items-center gap-1.5 p-1 rounded-xl border-2 shrink-0 ${
-              isLight ? 'bg-neutral-100 border-neutral-300' : 'bg-neutral-900 border-neutral-800'
-            }`}>
-              <span className={`text-xs font-black px-2 uppercase tracking-wider ${isLight ? 'text-neutral-950' : 'text-neutral-200'}`}>Fee Status:</span>
-              <button
-                onClick={() => setStatusFilter('all')}
-                className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all border-2 cursor-pointer ${
-                  statusFilter === 'all'
-                    ? isLight ? 'bg-neutral-900 text-white border-neutral-900 shadow-sm' : 'bg-neutral-800 text-white border-neutral-700 shadow-sm'
-                    : isLight ? 'text-neutral-700 border-transparent hover:bg-neutral-200' : 'text-neutral-400 border-transparent hover:text-white'
-                }`}
-              >
-                All
-              </button>
-              <button
-                onClick={() => setStatusFilter('paid')}
-                className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all border-2 flex items-center gap-1.5 cursor-pointer ${
-                  statusFilter === 'paid'
-                    ? 'bg-emerald-600 text-white border-emerald-700 shadow-md ring-2 ring-emerald-500/40'
-                    : isLight
-                    ? 'bg-emerald-100 text-emerald-900 border-emerald-400 hover:bg-emerald-200 shadow-xs'
-                    : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
-                }`}
-              >
-                <CheckCircle className="w-3.5 h-3.5 stroke-[2.5]" />
-                <span>Paid</span>
-              </button>
-              <button
-                onClick={() => setStatusFilter('partially_paid')}
-                className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all border-2 flex items-center gap-1.5 cursor-pointer ${
-                  statusFilter === 'partially_paid'
-                    ? 'bg-amber-500 text-neutral-950 border-amber-600 shadow-md ring-2 ring-amber-500/40'
-                    : isLight
-                    ? 'bg-amber-100 text-amber-950 border-amber-400 hover:bg-amber-200 shadow-xs'
-                    : 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
-                }`}
-              >
-                <Clock className="w-3.5 h-3.5 stroke-[2.5]" />
-                <span>Partial</span>
-              </button>
-              <button
-                onClick={() => setStatusFilter('unpaid')}
-                className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all border-2 flex items-center gap-1.5 cursor-pointer ${
-                  statusFilter === 'unpaid'
-                    ? 'bg-rose-600 text-white border-rose-700 shadow-md ring-2 ring-rose-500/40'
-                    : isLight
-                    ? 'bg-rose-100 text-rose-950 border-rose-400 hover:bg-rose-200 shadow-xs'
-                    : 'bg-rose-500/20 text-rose-300 border-rose-500/40 hover:bg-rose-500/30'
-                }`}
-              >
-                <AlertCircle className="w-3.5 h-3.5 stroke-[2.5]" />
-                <span>Pending</span>
-              </button>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className={`text-xs font-black uppercase tracking-wider ${isLight ? 'text-[#19240E]' : 'text-neutral-200'}`}>
+                Fee Status:
+              </span>
+              <div className={`inline-flex items-center gap-1 p-1 rounded-xl border shrink-0 ${
+                isLight ? 'bg-[#F5EFDF] border-[#E5DCBE]' : 'bg-[#11180E] border-[#2C3D21]'
+              }`}>
+                <button
+                  onClick={() => setStatusFilter('all')}
+                  className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all duration-150 cursor-pointer ${
+                    statusFilter === 'all'
+                      ? 'bg-[#587731] text-[#FAF6EE] shadow-sm border border-[#486228]'
+                      : isLight
+                      ? 'text-[#243315] hover:text-[#587731] hover:bg-[#587731]/10 border border-transparent'
+                      : 'text-neutral-200 hover:text-white hover:bg-[#587731]/20 border border-transparent'
+                  }`}
+                >
+                  All
+                </button>
+                <button
+                  onClick={() => setStatusFilter('paid')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg transition-all duration-150 cursor-pointer ${
+                    statusFilter === 'paid'
+                      ? 'bg-[#587731] text-[#FAF6EE] shadow-sm border border-[#486228]'
+                      : isLight
+                      ? 'text-[#243315] hover:text-[#587731] hover:bg-[#587731]/10 border border-transparent'
+                      : 'text-neutral-200 hover:text-white hover:bg-[#587731]/20 border border-transparent'
+                  }`}
+                >
+                  <CheckCircle className="w-3.5 h-3.5 stroke-[2.5]" />
+                  <span>Paid</span>
+                </button>
+                <button
+                  onClick={() => setStatusFilter('partially_paid')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg transition-all duration-150 cursor-pointer ${
+                    statusFilter === 'partially_paid'
+                      ? 'bg-[#587731] text-[#FAF6EE] shadow-sm border border-[#486228]'
+                      : isLight
+                      ? 'text-[#243315] hover:text-[#587731] hover:bg-[#587731]/10 border border-transparent'
+                      : 'text-neutral-200 hover:text-white hover:bg-[#587731]/20 border border-transparent'
+                  }`}
+                >
+                  <Clock className="w-3.5 h-3.5 stroke-[2.5]" />
+                  <span>Partial</span>
+                </button>
+                <button
+                  onClick={() => setStatusFilter('unpaid')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg transition-all duration-150 cursor-pointer ${
+                    statusFilter === 'unpaid'
+                      ? 'bg-[#587731] text-[#FAF6EE] shadow-sm border border-[#486228]'
+                      : isLight
+                      ? 'text-[#243315] hover:text-[#587731] hover:bg-[#587731]/10 border border-transparent'
+                      : 'text-neutral-200 hover:text-white hover:bg-[#587731]/20 border border-transparent'
+                  }`}
+                >
+                  <AlertCircle className="w-3.5 h-3.5 stroke-[2.5]" />
+                  <span>Pending</span>
+                </button>
+              </div>
             </div>
           )}
         </div>
